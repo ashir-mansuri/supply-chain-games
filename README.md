@@ -242,16 +242,3 @@ The **teacher's guide** (`teacher-guide.html`) has 60-minute lesson plans, the r
 | `firebase-config.js` | Online play settings (paste your Firebase config here) |
 
 There are no folders to upload.
-
-## Publishing on GitHub Pages
-
-1. Upload the files above and this README to the root of the repository.
-2. Go to **Settings > Pages**.
-3. Under **Build and deployment**, set **Source** to **Deploy from a branch**, choose **main** and **/ (root)**, then **Save**.
-4. After a minute or two, the site is live at `https://<your-username>.github.io/supply-chain-games/`.
-
-## Switching on online team play
-
-Online play uses a free Google Firebase Realtime Database: up to 100 devices connected at once, no payment card. The click-by-click steps and the database rules to copy are in the teacher's guide, under **Online team play > One-time setup**. Without it, both games still work in **Practise on one device** mode.
-
-All companies, products, prices and events in the games are made up for teaching.
