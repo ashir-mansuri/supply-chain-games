@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher dashboard: Supply Chain Games</title>
+<meta name="robots" content="noindex">
+<script src="firebase-config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1D2B36;
+  --ink-2: #33424D;
+  --muted: #56646E;
+  --concrete: #E3E5E1;
+  --concrete-2: #D5D8D3;
+  --sheet: #FBFBF9;
+  --line: #C3C8C2;
+  --yellow: #F2C200;
+  --yellow-soft: #FBEFB8;
+  --blue: #1F5FA8;
+  --blue-soft: #DCE7F4;
+  --red: #C8372D;
+  --red-soft: #F6DEDB;
+  --green: #2E7D4F;
+  --green-soft: #DCEEE3;
+  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
+h1 { font-size: clamp(44px, 8vw, 84px); }
+h2 { font-size: clamp(28px, 4.2vw, 40px); }
+h3 { font-size: 24px; }
+h4 { font-size: 19px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar {
+  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .spacer { flex: 1; }
+.lane {
+  height: 10px;
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
+  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
+  cursor: pointer; text-decoration: none; min-height: 46px;
+}
+.btn:hover { background: #fff; }
+.btn.primary { background: var(--yellow); }
+.btn.primary:hover { background: #FFD21F; }
+.btn.dark { background: var(--ink); color: #fff; }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+}
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 14px; color: var(--muted); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.status { margin: 22px 0 6px; padding: 12px 16px; border-left: 6px solid var(--green); background: var(--green-soft); }
+.status.demo { border-left-color: var(--yellow); background: var(--yellow-soft); }
+.status.off { border-left-color: var(--red); background: var(--red-soft); }
+.radio { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.radio label { display: flex; gap: 8px; align-items: center; font-weight: 500; border: 2px solid var(--ink-2); border-radius: 6px; padding: 8px 12px; background: #fff; cursor: pointer; }
+.radio input { width: 18px; height: 18px; }
+.codebig { font-family: var(--display); font-weight: 700; font-size: clamp(56px, 11vw, 120px); letter-spacing: .08em; line-height: 1; }
+.dash-head { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end; padding: 26px 0 10px; }
+@media (max-width: 760px) { .dash-head { grid-template-columns: 1fr; } }
+.live td { vertical-align: middle; }
+.pin { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: .1em; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: var(--green); margin-right: 4px; }
+.lb .bar { display: grid; grid-template-columns: 170px 1fr 150px; gap: 12px; align-items: center; margin-bottom: 8px; }
+.lb .fill { display: block; height: 30px; background: var(--blue); border-radius: 3px; min-width: 3px; }
+.lb .fill.neg { background: var(--red); }
+.lb .name { font-weight: 600; }
+.lb .val { font-family: var(--display); font-weight: 700; font-size: 22px; }
+.projector .lb .bar { grid-template-columns: 260px 1fr 200px; }
+.projector .lb .fill { height: 44px; }
+.projector .lb .name { font-size: 26px; }
+.projector .lb .val { font-size: 34px; }
+@media (max-width: 600px) { .lb .bar { grid-template-columns: 100px 1fr 100px; } }
+.mini { font-size: 13px; color: var(--muted); }
+.confirm { color: var(--red); font-weight: 600; }
+.classlist li { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.classlist { list-style: none; padding: 0; margin: 0; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Teacher dashboard</span><span class="spacer"></span><a href="teacher-guide.html#online" style="font-size:16px">Setup help</a></div></header>
+<div class="lane" aria-hidden="true"></div>
+<main id="app" class="wrap" tabindex="-1"></main>
+<script>
+/* Online team play: Firebase Realtime Database, or a one-browser demo store */
+const ONLINE = (() => {
+  const FB_VER = '10.12.2';
+  const cfg = (typeof window !== 'undefined' && window.FIREBASE_CONFIG) || null;
+  const ls = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const ss = {
+    get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+  };
+  const mode = cfg ? 'firebase' : ls.get('scg-demo') === '1' ? 'demo' : 'off';
+  const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function loadScript(src) {
+    return new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = src; s.async = false;
+      s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+      document.head.appendChild(s);
+    });
+  }
+
+  /* ---------- Firebase adapter ---------- */
+  function firebaseAdapter() {
+    let db = null;
+    return {
+      mode: 'firebase',
+      async init() {
+        const base = 'https://www.gstatic.com/firebasejs/' + FB_VER + '/';
+        if (!window.firebase) {
+          await loadScript(base + 'firebase-app-compat.js');
+          await loadScript(base + 'firebase-auth-compat.js');
+          await loadScript(base + 'firebase-database-compat.js');
+        }
+        if (!firebase.apps.length) firebase.initializeApp(cfg);
+        if (!firebase.auth().currentUser) await firebase.auth().signInAnonymously();
+        db = firebase.database();
+      },
+      async get(p) { const s = await db.ref(p).get(); return s.exists() ? s.val() : null; },
+      set(p, v) { return db.ref(p).set(v); },
+      update(p, obj) { return db.ref(p).update(obj); },
+      remove(p) { return db.ref(p).remove(); },
+      on(p, cb) {
+        const ref = db.ref(p);
+        const h = (s) => cb(s.exists() ? s.val() : null);
+        ref.on('value', h);
+        return () => ref.off('value', h);
+      },
+      async transaction(p, fn) {
+        const r = await db.ref(p).transaction((cur) => {
+          const out = fn(cur === undefined ? null : cur);
+          return out; // undefined aborts
+        });
+        return { committed: r.committed, value: r.snapshot.exists() ? r.snapshot.val() : null };
+      },
+      presence(p, info) {
+        const ref = db.ref(p);
+        const conn = db.ref('.info/connected');
+        const h = (s) => {
+          if (s.val() === true) {
+            ref.onDisconnect().update({ online: false }).then(() => ref.update(Object.assign({}, info, { online: true, seen: Date.now() })));
+          }
+        };
+        conn.on('value', h);
+        const t = setInterval(() => { ref.update({ seen: Date.now(), online: true }); }, 30000);
+        return () => { conn.off('value', h); clearInterval(t); ref.update({ online: false }); };
+      }
+    };
+  }
+
+  /* ---------- demo adapter: one browser, many tabs ---------- */
+  function demoAdapter() {
+    const KEY = 'scg-demo-db';
+    const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+    const listeners = new Set();
+    const notify = () => listeners.forEach((l) => l.check());
+    const save = (t) => { ls.set(KEY, JSON.stringify(t)); setTimeout(notify, 0); };
+    const keys = (p) => p.split('/').filter(Boolean);
+    const getAt = (t, p) => keys(p).reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), t);
+    function setAt(t, p, v) {
+      const ks = keys(p);
+      let o = t;
+      for (let i = 0; i < ks.length - 1; i++) {
+        if (!o[ks[i]] || typeof o[ks[i]] !== 'object') o[ks[i]] = {};
+        o = o[ks[i]];
+      }
+      const last = ks[ks.length - 1];
+      if (v === null || v === undefined) delete o[last]; else o[last] = clone(v);
+    }
+    window.addEventListener('storage', (e) => { if (e.key === KEY) notify(); });
+    const api = {
+      mode: 'demo',
+      async init() {},
+      async get(p) { const v = getAt(load(), p); return v === undefined ? null : clone(v); },
+      async set(p, v) { const t = load(); setAt(t, p, v); save(t); },
+      async update(p, obj) { const t = load(); Object.keys(obj).forEach((k) => setAt(t, p + '/' + k, obj[k])); save(t); },
+      async remove(p) { const t = load(); setAt(t, p, null); save(t); },
+      on(p, cb) {
+        let last;
+        const l = { check() { const v = getAt(load(), p); const s = JSON.stringify(v === undefined ? null : v); if (s !== last) { last = s; cb(JSON.parse(s)); } } };
+        listeners.add(l);
+        setTimeout(() => l.check(), 0);
+        return () => listeners.delete(l);
+      },
+      async transaction(p, fn) {
+        const t = load();
+        const cur = getAt(t, p);
+        const out = fn(cur === undefined ? null : clone(cur));
+        if (out === undefined) return { committed: false, value: cur === undefined ? null : cur };
+        setAt(t, p, out); save(t);
+        return { committed: true, value: out };
+      },
+      presence(p, info) {
+        const beat = () => api.update(p, Object.assign({}, info, { online: true, seen: Date.now() }));
+        beat();
+        const t = setInterval(beat, 4000);
+        const bye = () => { const tr = load(); const cur = getAt(tr, p); if (cur) { cur.online = false; setAt(tr, p, cur); ls.set(KEY, JSON.stringify(tr)); } };
+        window.addEventListener('pagehide', bye);
+        return () => { clearInterval(t); window.removeEventListener('pagehide', bye); bye(); notify(); };
+      }
+    };
+    return api;
+  }
+
+  const db = mode === 'firebase' ? firebaseAdapter() : mode === 'demo' ? demoAdapter() : null;
+  let initP = null;
+  function init() {
+    if (!db) return Promise.reject(new Error('Online play is not set up.'));
+    if (!initP) initP = db.init().catch((e) => { initP = null; throw e; });
+    return initP;
+  }
+
+  /* ---------- helpers ---------- */
+  function hash(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return (h >>> 0).toString(36);
+  }
+  const pinHash = (code, pin) => hash('pin|' + code + '|' + pin);
+  const teacherHash = (code, pw) => hash('teacher|' + code + '|' + pw) + hash(pw + '|' + code);
+  function encodePin(pin, pw) {
+    let out = '';
+    for (let i = 0; i < pin.length; i++) out += String.fromCharCode(48 + ((pin.charCodeAt(i) - 48 + pw.charCodeAt(i % pw.length)) % 10));
+    return out;
+  }
+  function decodePin(enc, pw) {
+    let out = '';
+    for (let i = 0; i < enc.length; i++) out += String.fromCharCode(48 + ((((enc.charCodeAt(i) - 48 - pw.charCodeAt(i % pw.length)) % 10) + 10) % 10));
+    return out;
+  }
+  const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  function newCode() { let c = ''; for (let i = 0; i < 6; i++) c += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]; return c; }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  function newPin() { return String(1000 + Math.floor(Math.random() * 9000)); }
+
+  function memberId(game) {
+    const k = 'scg-member-' + game;
+    let id = ss.get(k);
+    if (!id) { id = 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); ss.set(k, id); }
+    return id;
+  }
+  /* demo mode runs every player in one browser, so it keeps each tab's login separate */
+  const sesStore = mode === 'demo'
+    ? { get: ss.get, set: ss.set, del(k) { try { sessionStorage.removeItem(k); } catch (e) {} } }
+    : ls;
+  const session = {
+    get(game) { try { return JSON.parse(sesStore.get('scg-session-' + game)); } catch (e) { return null; } },
+    set(game, s) { sesStore.set('scg-session-' + game, JSON.stringify(s)); },
+    clear(game) { sesStore.del('scg-session-' + game); }
+  };
+
+  /* members present in a team, oldest first */
+  function onlineMembers(presence) {
+    const now = Date.now();
+    return Object.keys(presence || {}).map((id) => Object.assign({ id }, presence[id]))
+      .filter((m) => m.online !== false && (mode === 'firebase' || now - (m.seen || 0) < 15000))
+      .sort((a, b) => (a.joined || 0) - (b.joined || 0) || (a.id < b.id ? -1 : 1));
+  }
+
+  const P = {
+    meta: (c) => `classes/${c}/meta`,
+    teams: (c) => `classes/${c}/teams`,
+    presence: (c, t) => `classes/${c}/presence/${t}`,
+    play: (c, t) => `classes/${c}/play/${t}`,
+    board: (c, t) => `classes/${c}/board${t ? '/' + t : ''}`
+  };
+
+  async function findClass(code) {
+    await init();
+    const meta = await db.get(P.meta(code));
+    if (!meta) return null;
+    const teams = (await db.get(P.teams(code))) || {};
+    return { code, meta, teams };
+  }
+
+  const GAME_NAMES = { ss: 'Supplier Showdown', wr: 'Warehouse Rush' };
+  const GAME_PAGES = { ss: 'supplier-showdown.html', wr: 'warehouse-rush.html' };
+
+  /* the join screen, shared by both games */
+  function joinUI(el, game, onJoined) {
+    let found = null, err = '', busy = false;
+    const vals = { code: '', team: '', pin: '', name: (session.get(game) || {}).name || '' };
+    function draw() {
+      if (!found) {
+        el.innerHTML = `
+          <h3>Join your team</h3>
+          <p class="small muted">Everyone in your team joins on their own phone or laptop with the same team and PIN.</p>
+          <label for="jCode">Class code</label>
+          <input type="text" id="jCode" maxlength="8" autocomplete="off" autocapitalize="characters" value="${esc(vals.code)}" style="text-transform:uppercase" placeholder="For example KX4P7Q">
+          ${err ? `<p class="err" role="alert">${esc(err)}</p>` : ''}
+          <button class="btn primary" type="button" data-j="find" style="width:100%;margin-top:12px" ${busy ? 'disabled' : ''}>${busy ? 'Looking for your class…' : 'Find my class'}</button>`;
+      } else {
+        const teams = Object.keys(found.teams).sort((a, b) => (found.teams[a].order || 0) - (found.teams[b].order || 0));
+        el.innerHTML = `
+          <h3>${esc(found.meta.name || 'Your class')}</h3>
+          <p class="small muted">Class code ${esc(found.code)}. <button class="btn ghost small" type="button" data-j="back">Change</button></p>
+          <label for="jTeam">Your team</label>
+          <select id="jTeam"><option value="">Choose your team</option>${teams.map((t) => `<option value="${esc(t)}" ${vals.team === t ? 'selected' : ''}>${esc(found.teams[t].name)}</option>`).join('')}</select>
+          <div style="height:10px"></div>
+          <label for="jPin">Team PIN</label>
+          <input type="text" id="jPin" inputmode="numeric" maxlength="4" autocomplete="off" value="${esc(vals.pin)}" placeholder="4 digits">
+          <div style="height:10px"></div>
+          <label for="jName">Your name</label>
+          <input type="text" id="jName" maxlength="20" autocomplete="off" value="${esc(vals.name)}" placeholder="So your team knows who is who">
+          ${err ? `<p class="err" role="alert">${esc(err)}</p>` : ''}
+          <button class="btn primary" type="button" data-j="join" style="width:100%;margin-top:12px" ${busy ? 'disabled' : ''}>${busy ? 'Joining…' : 'Join team'}</button>`;
+      }
+      el.querySelectorAll('input,select').forEach((i) => i.addEventListener('input', () => {
+        if (i.id === 'jCode') vals.code = i.value; if (i.id === 'jTeam') vals.team = i.value; if (i.id === 'jPin') vals.pin = i.value; if (i.id === 'jName') vals.name = i.value;
+        if (err) { err = ''; el.querySelector('.err')?.remove(); }
+      }));
+      el.querySelectorAll('select').forEach((i) => i.addEventListener('change', () => { vals.team = i.value; }));
+    }
+    el.addEventListener('click', async (e) => {
+      const b = e.target.closest('[data-j]');
+      if (!b || busy) return;
+      const act = b.dataset.j;
+      if (act === 'back') { found = null; err = ''; draw(); return; }
+      if (act === 'find') {
+        const code = normCode(vals.code);
+        if (code.length < 4) { err = 'Enter the class code your teacher gave you.'; draw(); return; }
+        busy = true; draw();
+        try {
+          const c = await findClass(code);
+          busy = false;
+          if (!c) { err = 'No class with code ' + code + '. Check the code with your teacher.'; draw(); return; }
+          if (c.meta.game !== game) {
+            busy = false; found = null;
+            err = '';
+            el.innerHTML = `<h3>Wrong game</h3><p>Class ${esc(code)} is playing ${GAME_NAMES[c.meta.game]}.</p><a class="btn primary" href="${GAME_PAGES[c.meta.game]}">Open ${GAME_NAMES[c.meta.game]}</a> <button class="btn ghost" type="button" data-j="back">Try another code</button>`;
+            return;
+          }
+          found = c; vals.code = code; draw();
+        } catch (ex) { busy = false; err = 'Could not reach the game server. Check your internet connection and try again.'; draw(); }
+        return;
+      }
+      if (act === 'join') {
+        if (!vals.team) { err = 'Choose your team.'; draw(); return; }
+        if (!/^\d{4}$/.test(vals.pin.trim())) { err = 'The team PIN is 4 digits.'; draw(); return; }
+        if (!vals.name.trim()) { err = 'Enter your name.'; draw(); return; }
+        const team = found.teams[vals.team];
+        if (!team || team.pinHash !== pinHash(found.code, vals.pin.trim())) { err = 'That PIN doesn’t match this team. Check it with your teacher.'; draw(); return; }
+        const s = { code: found.code, teamId: vals.team, teamName: team.name, name: vals.name.trim(), className: found.meta.name || '', game };
+        session.set(game, s);
+        onJoined(s);
+      }
+    });
+    draw();
+  }
+
+  /* start presence for this device in its team; returns stop() */
+  function startPresence(s) {
+    const id = memberId(s.game);
+    const joinedKey = 'scg-joined-' + s.game + '-' + s.code + '-' + s.teamId;
+    let joined = Number(ss.get(joinedKey));
+    if (!joined) { joined = Date.now(); ss.set(joinedKey, String(joined)); }
+    return db.presence(P.presence(s.code, s.teamId) + '/' + id, { name: s.name, joined });
+  }
+
+  function enableDemo() { ls.set('scg-demo', '1'); }
+  function disableDemo() { ls.del('scg-demo'); ls.del('scg-demo-db'); }
+
+  return { mode, available: !!db, db, init, P, hash, pinHash, teacherHash, encodePin, decodePin, newCode, newPin, normCode, memberId, session, onlineMembers, findClass, joinUI, startPresence, enableDemo, disableDemo, GAME_NAMES, GAME_PAGES, esc, clone };
+})();
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const esc = ONLINE.esc;
+  const db = ONLINE.db;
+  const LIST_KEY = 'scg-teacher-classes';
+  const ls = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const int = (n) => Math.round(n).toLocaleString('en-IN');
+  const lakh = (n) => (n < 0 ? '−' : '') + '₹' + (Math.abs(n) / 1e5).toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' lakh';
+  const MONTHS = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November'];
+  const ROUND_NAMES = { 1: 'Day one', 2: 'ABC slotting', 3: 'Batch picking' };
+
+  let view = 'home', err = '', openErr = '', busy = false;
+  let cls = null; // { code, pw, meta, teams, presence, board }
+  let unsub = [], showPins = false, projector = false, confirm = null, renameErr = '', tick = null;
+
+  const myClasses = () => ls.get(LIST_KEY) || [];
+  function remember(c) {
+    const list = myClasses().filter((x) => x.code !== c.code);
+    list.unshift(c);
+    ls.set(LIST_KEY, list.slice(0, 30));
+  }
+
+  function statusHtml() {
+    if (ONLINE.mode === 'firebase') return `<div class="status"><b>Online play is switched on.</b> Teams can join from any device.</div>`;
+    if (ONLINE.mode === 'demo') return `<div class="status demo"><b>Demo mode.</b> Online play works only in this browser, across tabs. Open the game in a few tabs to see how a team plays together. <button class="btn small" data-act="demo-off" style="margin-left:6px">Turn off demo mode</button></div>`;
+    return `<div class="status off"><b>Online play isn&rsquo;t switched on yet.</b> Follow the <a href="teacher-guide.html#online">setup steps in the teacher&rsquo;s guide</a> (about 15 minutes, free). Until then, you can try it in demo mode in this browser.
+      <div class="row" style="margin-top:10px"><button class="btn primary small" data-act="demo-on">Try demo mode</button></div></div>`;
+  }
+
+  function render() {
+    if (view === 'home') renderHome();
+    else if (view === 'dash') renderDash();
+  }
+
+  function renderHome() {
+    const list = myClasses();
+    app.innerHTML = `
+      ${statusHtml()}
+      <section style="padding:22px 0 10px">
+        <h1 style="font-size:clamp(40px,7vw,68px)">Teacher dashboard</h1>
+        <p style="font-size:19px;max-width:38em">Create a class, give each team its PIN, and watch every team&rsquo;s progress and score live. Students join from the game page with your class code.</p>
+      </section>
+      ${ONLINE.available ? `
+      <div class="grid2">
+        <form class="sheet" id="createForm" novalidate>
+          <h3>Create a class</h3>
+          <label for="cName">Class name</label>
+          <input type="text" id="cName" maxlength="40" autocomplete="off" placeholder="For example, Section A, Monday">
+          <div style="height:12px"></div>
+          <label>Game</label>
+          <div class="radio" role="radiogroup">
+            <label><input type="radio" name="cGame" value="ss" checked> Supplier Showdown</label>
+            <label><input type="radio" name="cGame" value="wr"> Warehouse Rush</label>
+          </div>
+          <div style="height:12px"></div>
+          <div class="grid2" style="gap:12px">
+            <div><label for="cTeams">Number of teams</label>
+              <select id="cTeams">${Array.from({ length: 14 }, (_, i) => i + 2).map((n) => `<option ${n === 6 ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+            <div><label for="cPw">Teacher password</label>
+              <input type="text" id="cPw" maxlength="30" autocomplete="off" placeholder="At least 4 characters"></div>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">You need the password to open this class on another device. Students never see it.</p>
+          ${err ? `<p class="err" role="alert">${esc(err)}</p>` : ''}
+          <button class="btn primary" type="submit" style="margin-top:8px" ${busy ? 'disabled' : ''}>${busy ? 'Creating…' : 'Create class'}</button>
+        </form>
+        <div>
+          <section class="sheet">
+            <h3>Your classes on this device</h3>
+            ${list.length ? `<ul class="classlist">${list.map((c) => `<li><span><b>${esc(c.name)}</b><br><span class="mini">${ONLINE.GAME_NAMES[c.game]}, code ${esc(c.code)}, ${new Date(c.created).toLocaleDateString('en-IN')}</span></span><span><button class="btn small primary" data-act="open-saved" data-code="${esc(c.code)}">Open</button> <button class="btn small ghost" data-act="forget" data-code="${esc(c.code)}">Remove from list</button></span></li>`).join('')}</ul>` : '<p class="muted small">Classes you create on this device appear here.</p>'}
+          </section>
+          <form class="sheet" id="openForm" novalidate style="margin-top:16px">
+            <h3>Open a class from another device</h3>
+            <div class="grid2" style="gap:12px">
+              <div><label for="oCode">Class code</label><input type="text" id="oCode" maxlength="8" autocomplete="off" style="text-transform:uppercase"></div>
+              <div><label for="oPw">Teacher password</label><input type="text" id="oPw" maxlength="30" autocomplete="off"></div>
+            </div>
+            ${openErr ? `<p class="err" role="alert">${esc(openErr)}</p>` : ''}
+            <button class="btn" type="submit" style="margin-top:10px">Open class</button>
+          </form>
+        </div>
+      </div>` : ''}
+      <p class="footer">Class data is stored in your own Firebase project. Students&rsquo; names are kept only while the class exists; delete a class when you&rsquo;re done with it.</p>`;
+    const cf = document.getElementById('createForm');
+    if (cf) {
+      cf.addEventListener('submit', (e) => { e.preventDefault(); createClass(); });
+      cf.querySelectorAll('input').forEach((i) => i.addEventListener('input', () => { if (err) { err = ''; cf.querySelector('.err')?.remove(); } }));
+    }
+    const of = document.getElementById('openForm');
+    if (of) {
+      of.addEventListener('submit', (e) => { e.preventDefault(); openClass(ONLINE.normCode(document.getElementById('oCode').value), document.getElementById('oPw').value); });
+      of.querySelectorAll('input').forEach((i) => i.addEventListener('input', () => { if (openErr) { openErr = ''; of.querySelector('.err')?.remove(); } }));
+    }
+  }
+
+  async function createClass() {
+    const name = document.getElementById('cName').value.trim();
+    const game = (document.querySelector('input[name=cGame]:checked') || {}).value || 'ss';
+    const n = Number(document.getElementById('cTeams').value);
+    const pw = document.getElementById('cPw').value;
+    if (!name) { err = 'Enter a class name.'; return renderHome(); }
+    if (pw.length < 4) { err = 'The teacher password needs at least 4 characters.'; return renderHome(); }
+    busy = true; renderHome();
+    try {
+      await ONLINE.init();
+      let code;
+      for (let i = 0; i < 5; i++) { code = ONLINE.newCode(); if (!(await db.get(ONLINE.P.meta(code)))) break; }
+      const teams = {};
+      for (let i = 1; i <= n; i++) {
+        const pin = ONLINE.newPin();
+        teams['t' + i] = { name: 'Team ' + i, order: i, pinHash: ONLINE.pinHash(code, pin), pinEnc: ONLINE.encodePin(pin, pw) };
+      }
+      const created = Date.now();
+      await db.set('classes/' + code, { meta: { name, game, created, teacherHash: ONLINE.teacherHash(code, pw) }, teams });
+      remember({ code, name, game, created, pw });
+      busy = false;
+      startDash(code, pw);
+    } catch (e) {
+      busy = false; err = 'Could not create the class. Check your internet connection and the setup steps, then try again.'; renderHome();
+    }
+  }
+
+  async function openClass(code, pw) {
+    if (code.length < 4) { openErr = 'Enter the class code.'; return renderHome(); }
+    try {
+      await ONLINE.init();
+      const meta = await db.get(ONLINE.P.meta(code));
+      if (!meta) { openErr = 'No class with code ' + code + '.'; myClasses().some((c) => c.code === code) && ls.set(LIST_KEY, myClasses().filter((c) => c.code !== code)); return renderHome(); }
+      if (meta.teacherHash !== ONLINE.teacherHash(code, pw)) { openErr = 'That password doesn’t match this class.'; return renderHome(); }
+      remember({ code, name: meta.name, game: meta.game, created: meta.created, pw });
+      startDash(code, pw);
+    } catch (e) { openErr = 'Could not reach the game server. Check your internet connection.'; renderHome(); }
+  }
+
+  function stopDash() { unsub.forEach((u) => u()); unsub = []; clearInterval(tick); cls = null; }
+
+  function startDash(code, pw) {
+    stopDash();
+    cls = { code, pw, meta: null, teams: {}, presence: {}, board: {} };
+    view = 'dash'; confirm = null; showPins = false; projector = false;
+    renderDash();
+    unsub = [
+      db.on(ONLINE.P.meta(code), (v) => { if (!cls) return; cls.meta = v; if (!v) { stopDash(); view = 'home'; openErr = 'That class has been deleted.'; renderHome(); return; } renderDash(); }),
+      db.on(ONLINE.P.teams(code), (v) => { if (!cls) return; cls.teams = v || {}; renderLive(); }),
+      db.on('classes/' + code + '/presence', (v) => { if (!cls) return; cls.presence = v || {}; renderLive(); }),
+      db.on(ONLINE.P.board(code), (v) => { if (!cls) return; cls.board = v || {}; renderLive(); })
+    ];
+    tick = setInterval(renderLive, 5000);
+  }
+
+  function teamIds() { return Object.keys(cls.teams).sort((a, b) => (cls.teams[a].order || 0) - (cls.teams[b].order || 0)); }
+  function gamePage() { return ONLINE.GAME_PAGES[cls.meta.game]; }
+  function siteBase() { return location.href.replace(/[#?].*$/, '').replace(/teacher\.html$/, ''); }
+
+  function renderDash() {
+    if (!cls) return;
+    if (!cls.meta) { app.innerHTML = `<div style="padding:60px 0"><h2>Opening class&hellip;</h2></div>`; return; }
+    const g = cls.meta.game;
+    app.innerHTML = `
+      <div class="${projector ? 'projector' : ''}">
+      <section class="dash-head">
+        <div>
+          <p class="kicker" style="margin:0">${esc(ONLINE.GAME_NAMES[g])}</p>
+          <h1 style="font-size:clamp(36px,6vw,60px);margin-bottom:6px">${esc(cls.meta.name)}</h1>
+          <p style="font-size:19px;margin:0">Students open <b>${esc(siteBase() + gamePage())}</b>, choose <b>Join your team</b> and enter the class code.</p>
+        </div>
+        <div style="text-align:right"><div class="small muted">Class code</div><div class="codebig">${esc(cls.code)}</div></div>
+      </section>
+      <div class="row" style="margin:8px 0 18px">
+        <button class="btn ${projector ? 'primary' : ''}" data-act="projector" aria-pressed="${projector}">${projector ? 'Leave projector view' : 'Projector view'}</button>
+        ${projector ? '' : `<button class="btn" data-act="pins" aria-pressed="${showPins}">${showPins ? 'Hide PINs' : 'Show PINs'}</button>
+        <button class="btn" data-act="addteam">Add a team</button>
+        <button class="btn ghost" data-act="home">All my classes</button>`}
+      </div>
+      <section class="sheet"><h2 style="margin-bottom:12px">${g === 'ss' ? 'Profit so far' : 'Lines picked per hour'}</h2><div id="lb" class="lb"></div></section>
+      ${projector ? '' : `
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>Teams</h3><div id="teamsTable"></div></section>
+      <div class="grid2" style="margin-top:16px">
+        <form class="sheet" id="renameForm" novalidate>
+          <h3>Rename a team</h3>
+          <div class="grid2" style="gap:12px">
+            <div><label for="rTeam">Team</label><select id="rTeam">${teamIds().map((t) => `<option value="${t}">${esc(cls.teams[t].name)}</option>`).join('')}</select></div>
+            <div><label for="rName">New name</label><input type="text" id="rName" maxlength="24" autocomplete="off"></div>
+          </div>
+          ${renameErr ? `<p class="err" role="alert">${esc(renameErr)}</p>` : ''}
+          <button class="btn" type="submit" style="margin-top:10px">Save name</button>
+          <p class="tiny muted">Rename teams before they start playing. A game already under way keeps its old name in its reports.</p>
+        </form>
+        <section class="sheet">
+          <h3>When the class is over</h3>
+          <p class="small">Deleting the class removes its teams, PINs, students&rsquo; names and results.</p>
+          ${confirm === 'delete' ? `<p class="confirm">Delete ${esc(cls.meta.name)} for good?</p><div class="row"><button class="btn dark" data-act="delete-yes">Delete class</button><button class="btn" data-act="cancel">Keep it</button></div>` : `<button class="btn" data-act="delete">Delete this class</button>`}
+        </section>
+      </div>`}
+      </div>
+      <p class="footer">Scores update by themselves while this page is open.</p>`;
+    const rf = document.getElementById('renameForm');
+    if (rf) {
+      rf.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const t = document.getElementById('rTeam').value, nm = document.getElementById('rName').value.trim();
+        if (!nm) { renameErr = 'Enter the new team name.'; renderDash(); return; }
+        if (teamIds().some((x) => x !== t && cls.teams[x].name.toLowerCase() === nm.toLowerCase())) { renameErr = 'Another team already has that name.'; renderDash(); return; }
+        renameErr = '';
+        db.set(ONLINE.P.teams(cls.code) + '/' + t + '/name', nm);
+        cls.teams[t].name = nm;
+        renderDash();
+      });
+      rf.querySelector('#rName').addEventListener('input', () => { if (renameErr) { renameErr = ''; rf.querySelector('.err')?.remove(); } });
+    }
+    renderLive();
+  }
+
+  function membersOnline(t) { return ONLINE.onlineMembers((cls.presence || {})[t]); }
+
+  function progressText(t) {
+    const b = cls.board[t];
+    if (!b) return 'Not started';
+    if (cls.meta.game === 'ss') return b.done ? 'Finished' : 'Planning ' + MONTHS[b.month];
+    if (b.done) return 'Finished';
+    if (b.view === 'abc') return 'Re-slotting the warehouse';
+    return 'Round ' + b.round + ': ' + ROUND_NAMES[b.round] + (b.view === 'play' ? ', trip ' + ((b.tripIdx || 0) + 1) : '');
+  }
+  function scoreValue(t) {
+    const b = cls.board[t];
+    if (!b) return null;
+    if (cls.meta.game === 'ss') return b.profit;
+    return b.r3 || b.r2 || b.r1 || null;
+  }
+  function scoreText(t) {
+    const b = cls.board[t];
+    if (!b) return '';
+    if (cls.meta.game === 'ss') return `${lakh(b.profit)}<br><span class="mini">${b.fill}% of orders delivered</span>`;
+    return ['r1', 'r2', 'r3'].map((k, i) => b[k] ? `R${i + 1}: <b>${int(b[k])}</b>` : '').filter(Boolean).join(', ') || '<span class="mini">No trips yet</span>';
+  }
+
+  function renderLive() {
+    if (!cls || !cls.meta || view !== 'dash') return;
+    const ids = teamIds();
+    const lb = document.getElementById('lb');
+    if (lb) {
+      const rows = ids.map((t) => ({ t, v: scoreValue(t) })).filter((r) => r.v !== null && r.v !== undefined).sort((a, b) => b.v - a.v);
+      const max = Math.max(1, ...rows.map((r) => Math.abs(r.v)));
+      lb.innerHTML = rows.length ? rows.map((r, i) => {
+        const b = cls.board[r.t];
+        const label = cls.meta.game === 'ss' ? lakh(r.v) : int(r.v) + (b.r3 ? '' : ` <span class="mini">R${b.r2 ? 2 : 1}</span>`);
+        return `<div class="bar"><span class="name">${i + 1}. ${esc(cls.teams[r.t].name)}${b.done ? ' <span class="mini">finished</span>' : ''}</span><span><span class="fill ${r.v < 0 ? 'neg' : ''}" style="width:${(Math.abs(r.v) / max) * 100}%"></span></span><span class="val">${label}</span></div>`;
+      }).join('') : '<p class="muted">Scores appear here as soon as teams start playing.</p>';
+    }
+    const tt = document.getElementById('teamsTable');
+    if (tt) {
+      tt.innerHTML = `<table class="small live"><thead><tr><th>Team</th><th>PIN</th><th>Online now</th><th>Progress</th><th>Score</th><th></th></tr></thead><tbody>
+        ${ids.map((t) => {
+          const team = cls.teams[t];
+          const mem = membersOnline(t);
+          const pin = showPins ? ONLINE.decodePin(team.pinEnc || '', cls.pw) : '••••';
+          return `<tr><td><b>${esc(team.name)}</b></td><td class="pin">${pin}</td>
+            <td>${mem.length ? mem.map((m) => `<span style="white-space:nowrap"><span class="dot" aria-hidden="true"></span>${esc(m.name)}</span>`).join(' ') : '<span class="mini">Nobody yet</span>'}</td>
+            <td>${esc(progressText(t))}</td><td>${scoreText(t)}</td>
+            <td class="r" style="white-space:nowrap">${confirm === 'reset-' + t ? `<span class="confirm">Restart this team&rsquo;s game?</span> <button class="btn small dark" data-act="reset-yes" data-t="${t}">Restart</button> <button class="btn small" data-act="cancel">Keep</button>`
+              : confirm === 'remove-' + t ? `<span class="confirm">Remove this team?</span> <button class="btn small dark" data-act="remove-yes" data-t="${t}">Remove</button> <button class="btn small" data-act="cancel">Keep</button>`
+              : `<button class="btn small" data-act="reset" data-t="${t}">Restart game</button> <button class="btn small ghost" data-act="remove" data-t="${t}">Remove</button>`}</td></tr>`;
+        }).join('')}</tbody></table>
+        ${showPins ? '<p class="tiny muted" style="margin-top:8px">Give each team only its own PIN, for example by message or on a slip of paper.</p>' : ''}`;
+    }
+  }
+
+  app.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-act]');
+    if (!b) return;
+    const act = b.dataset.act;
+    if (act === 'demo-on') { ONLINE.enableDemo(); location.reload(); return; }
+    if (act === 'demo-off') { ONLINE.disableDemo(); ls.set(LIST_KEY, myClasses().filter((c) => !c.demo)); location.reload(); return; }
+    if (act === 'open-saved') { const c = myClasses().find((x) => x.code === b.dataset.code); if (c) openClass(c.code, c.pw); return; }
+    if (act === 'forget') { ls.set(LIST_KEY, myClasses().filter((c) => c.code !== b.dataset.code)); renderHome(); return; }
+    if (act === 'home') { stopDash(); view = 'home'; renderHome(); return; }
+    if (act === 'projector') { projector = !projector; renderDash(); return; }
+    if (act === 'pins') { showPins = !showPins; renderDash(); return; }
+    if (act === 'cancel') { confirm = null; renderDash(); return; }
+    if (act === 'delete') { confirm = 'delete'; renderDash(); return; }
+    if (act === 'delete-yes') {
+      const code = cls.code;
+      stopDash();
+      await db.remove('classes/' + code);
+      ls.set(LIST_KEY, myClasses().filter((c) => c.code !== code));
+      view = 'home'; renderHome(); return;
+    }
+    if (act === 'reset') { confirm = 'reset-' + b.dataset.t; renderLive(); return; }
+    if (act === 'remove') { confirm = 'remove-' + b.dataset.t; renderLive(); return; }
+    if (act === 'reset-yes') {
+      const t = b.dataset.t; confirm = null;
+      await db.update('classes/' + cls.code, { ['play/' + t]: null, ['board/' + t]: null });
+      renderLive(); return;
+    }
+    if (act === 'remove-yes') {
+      const t = b.dataset.t; confirm = null;
+      await db.update('classes/' + cls.code, { ['teams/' + t]: null, ['play/' + t]: null, ['board/' + t]: null, ['presence/' + t]: null });
+      return;
+    }
+    if (act === 'addteam') {
+      const ids = teamIds();
+      const nextOrder = ids.reduce((a, t) => Math.max(a, cls.teams[t].order || 0), 0) + 1;
+      let id = 't' + nextOrder, k = nextOrder;
+      while (cls.teams[id]) { k++; id = 't' + k; }
+      const pin = ONLINE.newPin();
+      await db.set(ONLINE.P.teams(cls.code) + '/' + id, { name: 'Team ' + nextOrder, order: nextOrder, pinHash: ONLINE.pinHash(cls.code, pin), pinEnc: ONLINE.encodePin(pin, cls.pw) });
+      renderDash();
+      return;
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

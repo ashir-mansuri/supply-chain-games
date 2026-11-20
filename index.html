@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supply Chain Games</title>
+<meta name="description" content="Two free classroom games for supply chain and operations management: Supplier Showdown and Warehouse Rush.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1D2B36;
+  --ink-2: #33424D;
+  --muted: #56646E;
+  --concrete: #E3E5E1;
+  --concrete-2: #D5D8D3;
+  --sheet: #FBFBF9;
+  --line: #C3C8C2;
+  --yellow: #F2C200;
+  --yellow-soft: #FBEFB8;
+  --blue: #1F5FA8;
+  --blue-soft: #DCE7F4;
+  --red: #C8372D;
+  --red-soft: #F6DEDB;
+  --green: #2E7D4F;
+  --green-soft: #DCEEE3;
+  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
+h1 { font-size: clamp(44px, 8vw, 84px); }
+h2 { font-size: clamp(28px, 4.2vw, 40px); }
+h3 { font-size: 24px; }
+h4 { font-size: 19px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar {
+  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .spacer { flex: 1; }
+.lane {
+  height: 10px;
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
+  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
+  cursor: pointer; text-decoration: none; min-height: 46px;
+}
+.btn:hover { background: #fff; }
+.btn.primary { background: var(--yellow); }
+.btn.primary:hover { background: #FFD21F; }
+.btn.dark { background: var(--ink); color: #fff; }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+}
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 14px; color: var(--muted); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.hero { padding: 44px 0 26px; }
+.hero h1 { font-size: clamp(52px, 10vw, 112px); line-height: .92; margin-bottom: 18px; }
+.hero p { font-size: 21px; max-width: 32em; }
+.docks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin: 10px 0 26px; }
+@media (max-width: 820px) { .docks { grid-template-columns: 1fr; } }
+.dock { background: var(--sheet); border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.door {
+  height: 118px; position: relative; border-bottom: 2px solid var(--ink);
+  background: repeating-linear-gradient(180deg, #AEB5AE 0 9px, #98A098 9px 11px);
+}
+.door .no {
+  position: absolute; left: 20px; bottom: 14px; background: var(--yellow); color: var(--ink);
+  font-family: var(--display); font-weight: 700; font-size: 26px; padding: 2px 14px; border-radius: 4px; border: 2px solid var(--ink);
+}
+.door.blue .no { background: var(--blue); color: #fff; }
+.dock-body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
+.dock-body h2 { font-size: clamp(36px, 5vw, 50px); margin-bottom: 10px; }
+.dock-body .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 6px 0 18px; font-size: 15px; }
+.dock-body .facts dt { color: var(--muted); }
+.dock-body .facts dd { margin: 0; }
+.dock-body .btn { align-self: flex-start; margin-top: auto; }
+@media (prefers-reduced-motion: no-preference) {
+  .door { transition: background-position .5s ease; }
+  .dock:hover .door { background-position: 0 -22px; }
+}
+.teacher { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; }
+@media (max-width: 700px) { .teacher { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="spacer"></span><a href="teacher.html" style="font-size:16px">Teacher dashboard</a><a href="teacher-guide.html" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<div class="lane" aria-hidden="true"></div>
+<main class="wrap">
+  <section class="hero">
+    <h1>Supply Chain Games</h1>
+    <p>Two classroom games about the decisions that keep goods moving. Students play in teams, each on their own phone or laptop, in class or online. Nothing to install.</p>
+  </section>
+  <section class="docks" aria-label="Games">
+    <article class="dock">
+      <div class="door blue" aria-hidden="true"><span class="no">Dock 1</span></div>
+      <div class="dock-body">
+        <h2>Supplier Showdown</h2>
+        <p>Buy four parts for an electric scooter maker in Sanand from suppliers in China, Vietnam, India and Germany. Fires, floods, tariffs and chip shortages hit over eight months. Cheap or safe: which one wins?</p>
+        <dl class="facts">
+          <dt>Players</dt><dd>Teams of 3 to 5, each member on their own device</dd>
+          <dt>Time</dt><dd>About 30 minutes of play, plus debrief</dd>
+          <dt>Topics</dt><dd>Supplier selection, total cost of ownership, dual sourcing, buffer stock, supply risk</dd>
+        </dl>
+        <a class="btn primary" href="supplier-showdown.html">Play Supplier Showdown</a>
+      </div>
+    </article>
+    <article class="dock">
+      <div class="door" aria-hidden="true"><span class="no">Dock 2</span></div>
+      <div class="dock-body">
+        <h2>Warehouse Rush</h2>
+        <p>Pick customer orders on a warehouse map, then use last month&rsquo;s sales to move fast sellers next to dispatch, then try batch picking. The same six orders, three times, getting faster each time.</p>
+        <dl class="facts">
+          <dt>Players</dt><dd>Teams of 2 to 4, taking turns as the picker</dd>
+          <dt>Time</dt><dd>About 20 minutes of play, plus debrief</dd>
+          <dt>Topics</dt><dd>ABC analysis, Pareto principle, slotting, pick routes, batch picking, productivity</dd>
+        </dl>
+        <a class="btn primary" href="warehouse-rush.html">Play Warehouse Rush</a>
+      </div>
+    </article>
+  </section>
+  <section class="sheet teacher">
+    <div>
+      <h2 style="margin-bottom:6px">Teaching with these games</h2>
+      <p style="margin:0">Create a class with team PINs and follow every team live on the teacher dashboard. The guide has setup steps, lesson plans for a 60-minute class, debrief answers and follow-up work.</p>
+    </div>
+    <div class="row"><a class="btn primary" href="teacher.html">Teacher dashboard</a><a class="btn dark" href="teacher-guide.html">Teacher&rsquo;s guide</a></div>
+  </section>
+  <p class="footer">All companies, products, prices and events in these games are made up for teaching. Online classes store team results in the teacher&rsquo;s own Firebase project until the class is deleted.</p>
+</main>
+</body>
+</html>

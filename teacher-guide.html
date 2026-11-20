@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher&rsquo;s guide: Supply Chain Games</title>
+<meta name="description" content="Lesson plans, game rules, debrief answers and assignments for Supplier Showdown and Warehouse Rush.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1D2B36;
+  --ink-2: #33424D;
+  --muted: #56646E;
+  --concrete: #E3E5E1;
+  --concrete-2: #D5D8D3;
+  --sheet: #FBFBF9;
+  --line: #C3C8C2;
+  --yellow: #F2C200;
+  --yellow-soft: #FBEFB8;
+  --blue: #1F5FA8;
+  --blue-soft: #DCE7F4;
+  --red: #C8372D;
+  --red-soft: #F6DEDB;
+  --green: #2E7D4F;
+  --green-soft: #DCEEE3;
+  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
+h1 { font-size: clamp(44px, 8vw, 84px); }
+h2 { font-size: clamp(28px, 4.2vw, 40px); }
+h3 { font-size: 24px; }
+h4 { font-size: 19px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar {
+  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .spacer { flex: 1; }
+.lane {
+  height: 10px;
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
+  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
+  cursor: pointer; text-decoration: none; min-height: 46px;
+}
+.btn:hover { background: #fff; }
+.btn.primary { background: var(--yellow); }
+.btn.primary:hover { background: #FFD21F; }
+.btn.dark { background: var(--ink); color: #fff; }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+}
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 14px; color: var(--muted); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 36px; padding: 30px 0 60px; }
+@media (max-width: 880px) { .layout { grid-template-columns: 1fr; } .toc { position: static !important; } }
+.toc { position: sticky; top: 16px; align-self: start; font-size: 15px; }
+.toc ol { list-style: none; padding: 0; margin: 0; border-left: 3px solid var(--ink); }
+.toc li { padding: 4px 0 4px 12px; }
+.toc a { color: var(--ink); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+.toc .sub { padding-left: 26px; font-size: 14px; }
+article { max-width: 760px; }
+article h1 { font-size: clamp(42px, 7vw, 72px); }
+article > section { margin-bottom: 48px; }
+article h2 { margin-top: 34px; padding-top: 10px; border-top: 6px solid var(--ink); }
+article h2.game { border-top-color: var(--yellow); }
+article h3 { margin-top: 26px; }
+article p, article li { max-width: 68ch; }
+.plan { width: 100%; }
+.plan td:first-child { white-space: nowrap; font-family: var(--display); font-weight: 600; font-size: 18px; width: 90px; }
+.note { background: var(--yellow-soft); border-left: 5px solid var(--yellow); padding: 12px 16px; margin: 14px 0; }
+.formula { font-family: var(--display); font-size: 20px; background: var(--sheet); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 10px 0; }
+dl.answers dt { font-weight: 600; margin-top: 14px; }
+dl.answers dd { margin: 4px 0 0 0; }
+table.small tr.first td { border-top: 2px solid var(--ink); }
+ol.setup li { margin-bottom: 14px; }
+code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 15px; }
+.codebox { background: var(--ink); color: #fff; border-radius: 8px; padding: 12px 14px; margin: 10px 0; }
+.codebox pre { margin: 0 0 10px; font-size: 14px; overflow-x: auto; }
+.codebox .btn { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
+.codebox #copyMsg { margin-left: 10px; color: #FFE27A; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Teacher&rsquo;s guide</span></div></header>
+<div class="lane" aria-hidden="true"></div>
+<div class="wrap layout">
+  <nav class="toc" aria-label="Contents">
+    <ol>
+      <li><a href="#running">Running a session</a></li>
+      <li><a href="#online">Online team play</a></li>
+      <li class="sub"><a href="#setup">One-time setup</a></li>
+      <li class="sub"><a href="#online-class">Running an online class</a></li>
+      <li><a href="#supplier-showdown">Supplier Showdown</a></li>
+      <li class="sub"><a href="#ss-plan">Lesson plan</a></li>
+      <li class="sub"><a href="#ss-rules">How it works</a></li>
+      <li class="sub"><a href="#ss-debrief">Debrief answers</a></li>
+      <li class="sub"><a href="#ss-follow">Follow-up work</a></li>
+      <li><a href="#warehouse-rush">Warehouse Rush</a></li>
+      <li class="sub"><a href="#wr-plan">Lesson plan</a></li>
+      <li class="sub"><a href="#wr-rules">How it works</a></li>
+      <li class="sub"><a href="#wr-debrief">Debrief answers</a></li>
+      <li class="sub"><a href="#wr-follow">Follow-up work</a></li>
+    </ol>
+  </nav>
+  <article>
+    <h1>Teacher&rsquo;s guide</h1>
+    <p style="font-size:20px">Two games, each built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
+
+    <section id="running">
+      <h2>Running a session</h2>
+      <p>Each game can be played in two ways:</p>
+      <ul>
+        <li><b>Online team play.</b> Every student uses their own phone or laptop. Team members log in with the same team name and PIN, and their screens stay in sync. In Supplier Showdown each member manages some of the four parts, and orders go out only when every member taps Ready. In Warehouse Rush members take turns as the picker while the others help plan the route. Your <a href="teacher.html">teacher dashboard</a> shows every team&rsquo;s progress and score live. This works in a classroom and in an online class on Google Meet or Zoom (put teams in breakout rooms so they can talk). It needs the <a href="#setup">one-time setup</a> below.</li>
+        <li><b>Practice on one device.</b> A team gathers round one phone or laptop. No setup or class code is needed, and it works even if online play isn&rsquo;t switched on. You type each team&rsquo;s result into the practice scoreboard on your projector.</li>
+      </ul>
+      <ul>
+        <li><b>Devices.</b> Any phone, tablet or laptop with an up-to-date browser (Chrome, Safari, Edge or Firefox). Nothing to install. Laptops and tablets show the warehouse map larger.</li>
+        <li><b>Teams.</b> 3 to 5 students for Supplier Showdown (it rewards discussion); 2 to 4 for Warehouse Rush.</li>
+        <li><b>Same events for everyone.</b> All teams in one online class face the same news (Supplier Showdown) or the same warehouse and orders (Warehouse Rush), so results compare fairly. For practice games, write one game code on the board instead.</li>
+        <li><b>Don&rsquo;t use private or incognito windows.</b> The game remembers a student&rsquo;s team in the browser, so they can rejoin after a refresh.</li>
+        <li><b>Privacy.</b> Online, the only personal detail stored is the first name a student types, in your own Firebase project, until you delete the class. Practice games store nothing outside the device.</li>
+      </ul>
+      <p class="note">All companies, products, prices and events are made up for teaching. They are realistic in direction (Chinese parts are cheaper but further away and riskier; local parts cost more but arrive faster) but not real market data.</p>
+    </section>
+
+
+    <section id="online">
+      <h2>Online team play</h2>
+      <p>Online play needs a small free database so that phones can share a game. The site uses Google Firebase, which is free for a class of this size: up to 100 devices connected at once (enough for about 90 students plus your dashboard), with no payment card. You set it up once, in about 15 minutes, and it then works for every class.</p>
+
+      <h3 id="setup">One-time setup</h3>
+      <ol class="setup">
+        <li><b>Create a Firebase project.</b> Go to <a href="https://console.firebase.google.com">console.firebase.google.com</a> and sign in with your Google account. Choose <b>Create a project</b>, name it <b>supply-chain-games</b>, turn off Google Analytics (not needed) and create the project.</li>
+        <li><b>Create the database.</b> In the left menu open <b>Build &gt; Realtime Database</b> and choose <b>Create database</b>. Pick the location <b>Singapore (asia-southeast1)</b>, the closest to India. Choose <b>Start in locked mode</b> and click <b>Enable</b>.</li>
+        <li><b>Set the rules.</b> Still in Realtime Database, open the <b>Rules</b> tab. Delete everything in the box, paste the rules below, and click <b>Publish</b>.
+          <div class="codebox"><pre id="rules">{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "classes": {
+      "$classCode": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    }
+  }
+}</pre><button class="btn small" type="button" id="copyRules">Copy rules</button><span id="copyMsg" class="small" role="status"></span></div>
+        </li>
+        <li><b>Switch on anonymous sign-in.</b> Open <b>Build &gt; Authentication</b>, click <b>Get started</b>, go to the <b>Sign-in method</b> tab, choose <b>Anonymous</b>, switch it on and click <b>Save</b>. Students never see a login screen; this just lets the game talk to your database.</li>
+        <li><b>Register the website.</b> Click the gear next to <b>Project Overview</b> and open <b>Project settings</b>. Under <b>Your apps</b>, click the web icon (<b>&lt;/&gt;</b>), type a nickname such as <b>games</b>, leave Firebase Hosting unticked and click <b>Register app</b>. Firebase shows a block of code that starts with <code>const firebaseConfig = {</code>. Copy that block, from <code>const firebaseConfig</code> down to <code>};</code>. Check that it has a line starting with <code>databaseURL</code>. If it doesn&rsquo;t, copy the address shown at the top of the Realtime Database <b>Data</b> tab and add it as <code>databaseURL: "https://&hellip;",</code>.</li>
+        <li><b>Paste it into the site.</b> On GitHub, open your <b>supply-chain-games</b> repository and click <b>firebase-config.js</b>, then the pencil icon (<b>Edit</b>). Replace the line <code>const firebaseConfig = null;</code> with the block you copied. Click <b>Commit changes</b>. GitHub updates the site within a minute or two.</li>
+        <li><b>Check it.</b> Open the <a href="teacher.html">teacher dashboard</a>. It should say <b>Online play is switched on</b>. Create a test class, join it from your phone, then delete it.</li>
+      </ol>
+      <p class="note">The firebaseConfig block is not a password. It only tells the games where your database is, and the rules decide what anyone can do. Students can only reach a class if they know its code, and only join a team with its PIN.</p>
+      <p><b>If the dashboard says it can&rsquo;t connect:</b> check that the rules were published, that anonymous sign-in is switched on, and that firebase-config.js has a <code>databaseURL</code> line. In Firebase, <b>Authentication &gt; Settings &gt; Authorized domains</b> should list your GitHub Pages address (for example <code>ashir-mansuri.github.io</code>); add it if it&rsquo;s missing.</p>
+      <p><b>Want to try it first?</b> On the teacher dashboard, choose <b>Try demo mode</b>. Online play then works inside your own browser only: open the game in two or three tabs and join the same team to see how teammates play together.</p>
+
+      <h3 id="online-class">Running an online class</h3>
+      <ol>
+        <li><b>Before class:</b> open the <a href="teacher.html">teacher dashboard</a>, choose <b>Create a class</b>, pick the game and the number of teams, and set a teacher password. You get a class code and a 4-digit PIN for each team. Rename teams if you like.</li>
+        <li><b>Start of class:</b> put the class code on the board or in the meeting chat, with the game&rsquo;s web address. Give each team only its own PIN, for example on a slip of paper or by message.</li>
+        <li><b>Students join:</b> each student opens the game, chooses <b>Join your team</b>, enters the class code, picks their team, types the PIN and their first name.</li>
+        <li><b>During play:</b> keep the dashboard open. It shows who is online in each team, where each team has got to, and live scores. <b>Projector view</b> shows just the class code and the leaderboard.</li>
+        <li><b>If a team gets stuck:</b> <b>Restart game</b> on the dashboard starts that team again from the beginning. If a student drops out, their parts or picking turns pass to teammates automatically.</li>
+        <li><b>After class:</b> discuss the results on the projector, then <b>Delete this class</b> to remove the students&rsquo; names and results.</li>
+      </ol>
+    </section>
+
+    <section id="supplier-showdown">
+      <h2 class="game">Supplier Showdown</h2>
+      <p>Teams run purchasing for Sabar Scooters, an electric scooter maker in Sanand. Each scooter needs four parts: a battery pack, a hub motor, a controller chip and a tyre set. Each can come from four suppliers: Shenzhen (China), Hanoi (Vietnam), Pune (India) and Stuttgart (Germany). The game runs from April to November. Every month teams split their orders between suppliers and choose a buffer stock level, and then a news card is drawn. The previous manager sourced everything from Shenzhen because it was cheapest, so every team starts there.</p>
+      <h3>Learning outcomes</h3>
+      <p>By the end of the class, students should be able to:</p>
+      <ol>
+        <li>Tell apart quoted price, landed cost and total cost of ownership, and calculate each one.</li>
+        <li>Compare single sourcing with dual or multiple sourcing in terms of cost and risk.</li>
+        <li>Explain what buffer (safety) stock does and what it costs.</li>
+        <li>Explain why the scarcest component limits output when a product needs several parts.</li>
+        <li>Argue a position on the trade-off between efficiency and resilience, using evidence from the game.</li>
+      </ol>
+
+      <h3 id="ss-plan">60-minute lesson plan</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;8</td><td><b>Hook and rules.</b> Ask: &ldquo;If one supplier is 25% cheaper, why would anyone buy from the other?&rdquo; Take a quick show of hands. Project the start screen and go through the four rules in the box. Write the game code on the board.</td></tr>
+        <tr><td>8&ndash;10</td><td><b>Teams start.</b> Online: students join their team with the class code and PIN. Practice: each team opens the game on one device and types the game code.</td></tr>
+        <tr><td>10&ndash;40</td><td><b>Play eight months</b>, about 3 to 4 minutes per month. Keep the class roughly together: call &ldquo;two minutes to place orders&rdquo;. Walk around and ask teams to explain their split. Don&rsquo;t give away what is coming.</td></tr>
+        <tr><td>40&ndash;52</td><td><b>Results and debrief.</b> Show the leaderboard (online, it is already on your dashboard; for practice games, type each team&rsquo;s result into the practice scoreboard). Ask two contrasting teams to explain their strategy. Then work through the discussion questions on the final report (answers below).</td></tr>
+        <tr><td>52&ndash;60</td><td><b>Theory wrap-up.</b> Put the total-cost formula on the board, connect dual sourcing and buffer stock to the risk the class just lived through, and set the follow-up task.</td></tr>
+      </tbody></table>
+      <p class="note">Short on time? Give about 2 minutes per month after the first two. Teams speed up once they know the screens. The final report, with its comparison against three fixed strategies, appears after all eight months.</p>
+
+      <h3 id="ss-rules">How the game works</h3>
+      <p><b>Demand.</b> The planning screen shows the dealers&rsquo; forecast (950 in April, rising to 1,400 in October&rsquo;s festive season). Actual orders land within 6% of the forecast, plus any news effect.</p>
+      <p><b>Online teamwork.</b> The four parts are shared out among the team members who are online (with two members, each manages two parts). A member can change only their own parts; anyone can change the buffer stock, which asks everyone to confirm again. The month is played when every member online has tapped Ready.</p>
+      <p><b>Ordering.</b> Teams don&rsquo;t type quantities. The game orders forecast + buffer target &minus; stock in hand, for each part, and splits that order by the percentages the team chose. This keeps the focus on the sourcing decision. Orders arrive within the month; lead time shows up as the cost of money tied up in transit and as how long a disruption lasts.</p>
+      <p><b>Production.</b> Scooters built = the smallest of (dealer orders, and stock plus good arrivals for each of the four parts). One missing part stops the line, however much of the others is in the store.</p>
+      <p><b>New suppliers.</b> Approving a supplier for a part costs ₹5 lakh once, and it ships only half its share in its first month. Switching after a crisis is slow and costly; diversifying before one is cheaper.</p>
+      <p><b>Capacity.</b> Pune can supply at most 60% of battery packs and 40% of chips, so a fully local strategy isn&rsquo;t possible.</p>
+      <p><b>Reliability and quality.</b> Each month a supplier may ship slightly short (on average about 7% for Shenzhen, 5% Hanoi, 3% Pune, 1% Stuttgart). Faulty parts, at around each supplier&rsquo;s defect rate, are paid for and scrapped.</p>
+      <p><b>Money.</b></p>
+      <table class="small"><tbody>
+        <tr><td>Selling price to dealers</td><td class="r">₹75,000 per scooter</td></tr>
+        <tr><td>Assembly and other variable cost</td><td class="r">₹12,000 per scooter built</td></tr>
+        <tr><td>Fixed costs</td><td class="r">₹1.5 crore per month</td></tr>
+        <tr><td>Dealer penalty</td><td class="r">₹5,000 per scooter not delivered (plus the lost sale)</td></tr>
+        <tr><td>Storing stock</td><td class="r">2% of part price per month</td></tr>
+        <tr><td>Money tied up in transit</td><td class="r">1.5% of part price per month of lead time</td></tr>
+        <tr><td>Approving a new supplier</td><td class="r">₹5 lakh per supplier per part, once</td></tr>
+      </tbody></table>
+      <p>Monthly profit counts the parts actually used (at average cost), not the cash spent on restocking, so building a buffer doesn&rsquo;t show up as a loss in the month you buy it.</p>
+      <h4 style="margin-top:20px">Supplier costs at the start of the game</h4>
+      <div class="formula">Landed cost = quoted price &times; (1 + import duty + freight)</div>
+      <div class="formula">True cost per good part = (landed cost + transit cost) &divide; (1 &minus; defect rate)</div>
+      <div class="tablewrap"><table class="small"><thead><tr><th>Part</th><th>Supplier</th><th class="r">Quoted price</th><th class="r">Duty</th><th class="r">Freight</th><th class="r">Landed cost</th><th class="r">Lead time</th><th class="r">Defects</th><th class="r">True cost per good part</th></tr></thead><tbody><tr class="first"><td><b>Battery pack</b></td><td>Shenzhen</td><td class="r">₹20,720</td><td class="r">15%</td><td class="r">4%</td><td class="r">₹24,657</td><td class="r">6 wk</td><td class="r">3.0%</td><td class="r"><b>₹25,900</b></td></tr><tr><td></td><td>Hanoi</td><td class="r">₹24,640</td><td class="r">10%</td><td class="r">3.5%</td><td class="r">₹27,966</td><td class="r">4 wk</td><td class="r">2.0%</td><td class="r">₹28,914</td></tr><tr><td></td><td>Pune (max 60%)</td><td class="r">₹28,000</td><td class="r">0%</td><td class="r">1%</td><td class="r">₹28,280</td><td class="r">1 wk</td><td class="r">1.5%</td><td class="r">₹28,817</td></tr><tr><td></td><td>Stuttgart</td><td class="r">₹35,840</td><td class="r">10%</td><td class="r">6%</td><td class="r">₹41,574</td><td class="r">3 wk</td><td class="r">0.4%</td><td class="r">₹42,146</td></tr><tr class="first"><td><b>Hub motor</b></td><td>Shenzhen</td><td class="r">₹7,200</td><td class="r">15%</td><td class="r">4%</td><td class="r">₹8,568</td><td class="r">6 wk</td><td class="r">3.0%</td><td class="r">₹9,000</td></tr><tr><td></td><td>Hanoi</td><td class="r">₹8,100</td><td class="r">10%</td><td class="r">3.5%</td><td class="r">₹9,194</td><td class="r">4 wk</td><td class="r">2.0%</td><td class="r">₹9,505</td></tr><tr><td></td><td>Pune</td><td class="r">₹8,640</td><td class="r">0%</td><td class="r">1%</td><td class="r">₹8,726</td><td class="r">1 wk</td><td class="r">1.5%</td><td class="r"><b>₹8,892</b></td></tr><tr><td></td><td>Stuttgart</td><td class="r">₹10,980</td><td class="r">10%</td><td class="r">6%</td><td class="r">₹12,737</td><td class="r">3 wk</td><td class="r">0.4%</td><td class="r">₹12,912</td></tr><tr class="first"><td><b>Controller chip</b></td><td>Shenzhen</td><td class="r">₹3,120</td><td class="r">15%</td><td class="r">4%</td><td class="r">₹3,713</td><td class="r">6 wk</td><td class="r">3.0%</td><td class="r"><b>₹3,900</b></td></tr><tr><td></td><td>Hanoi</td><td class="r">₹3,440</td><td class="r">10%</td><td class="r">3.5%</td><td class="r">₹3,904</td><td class="r">4 wk</td><td class="r">2.0%</td><td class="r">₹4,037</td></tr><tr><td></td><td>Pune (max 40%)</td><td class="r">₹4,480</td><td class="r">0%</td><td class="r">1%</td><td class="r">₹4,525</td><td class="r">1 wk</td><td class="r">1.5%</td><td class="r">₹4,611</td></tr><tr><td></td><td>Stuttgart</td><td class="r">₹4,800</td><td class="r">10%</td><td class="r">6%</td><td class="r">₹5,568</td><td class="r">3 wk</td><td class="r">0.4%</td><td class="r">₹5,645</td></tr><tr class="first"><td><b>Tyre set</b></td><td>Shenzhen</td><td class="r">₹1,640</td><td class="r">15%</td><td class="r">12%</td><td class="r">₹2,083</td><td class="r">6 wk</td><td class="r">3.0%</td><td class="r">₹2,185</td></tr><tr><td></td><td>Hanoi</td><td class="r">₹1,800</td><td class="r">10%</td><td class="r">9%</td><td class="r">₹2,142</td><td class="r">4 wk</td><td class="r">2.0%</td><td class="r">₹2,213</td></tr><tr><td></td><td>Pune</td><td class="r">₹1,880</td><td class="r">0%</td><td class="r">1%</td><td class="r">₹1,899</td><td class="r">1 wk</td><td class="r">1.5%</td><td class="r"><b>₹1,935</b></td></tr><tr><td></td><td>Stuttgart</td><td class="r">₹2,500</td><td class="r">10%</td><td class="r">10%</td><td class="r">₹3,000</td><td class="r">3 wk</td><td class="r">0.4%</td><td class="r">₹3,040</td></tr></tbody></table></div>
+      <p class="small muted">Bold marks the lowest true cost for each part. Shenzhen&rsquo;s quoted prices are 13&ndash;30% below Pune&rsquo;s. On true cost, Pune is already cheaper for motors and tyres, and the battery gap shrinks to about 10%. None of this includes the risk of disruption, which is where the real difference lies.</p>
+      <h4 style="margin-top:20px">News cards</h4>
+      <p>Every game has the same pattern: a quiet April, a major China disruption in June or July, a Pune disruption in August or September (with a warning on the planning screen that month), one global shock, one quality problem and the October festive rush. Which card, and in which month, depends on the game code.</p>
+      <div class="tablewrap"><table class="small"><thead><tr><th>News card</th><th>What it does</th><th>When it can appear</th></tr></thead><tbody><tr><td><b>Fire at the Shenzhen battery plant</b></td><td>Your Shenzhen battery supplier has shut down after a fire. No batteries will come from China this month or next month.</td><td>June or July</td></tr><tr><td><b>Shipping lane blocked</b></td><td>Container ships from East Asia are being sent the long way round Africa. Only 30% of this month’s shipments from China and Vietnam arrive on time. The rest arrive next month.</td><td>June or July</td></tr><tr><td><b>Lockdown in Shenzhen</b></td><td>Factories in Shenzhen are closed for three weeks. Chinese suppliers deliver 25% of orders this month and 60% next month.</td><td>June or July</td></tr><tr><td><b>Monsoon floods in Pune</b></td><td>Heavy rain has flooded roads and factories around Pune. Pune suppliers deliver only 40% of orders this month.</td><td>August or September, with a warning on the planning screen</td></tr><tr><td><b>Truckers’ strike in Maharashtra</b></td><td>A transport strike stops trucks leaving Pune for two weeks. Pune suppliers deliver half of this month’s orders.</td><td>August or September, with a warning on the planning screen</td></tr><tr><td><b>Global chip shortage</b></td><td>Car makers are buying every chip they can find. Chip suppliers deliver 60% of orders this month and next month. Stuttgart has long-term contracts and delivers 90%.</td><td>Any spare month</td></tr><tr><td><b>Rupee falls 8%</b></td><td>The rupee has dropped against the dollar and the euro. Every imported part costs 8% more from this month, for the rest of the year.</td><td>Any spare month</td></tr><tr><td><b>New tariff on Chinese EV parts</b></td><td>The government has added 20% import duty on electric vehicle parts from China, starting this month.</td><td>Any spare month</td></tr><tr><td><b>Faulty motors from Hanoi</b></td><td>A batch of hub motors from Hanoi has faulty wiring. 25% of this month’s Vietnamese motors fail inspection and are scrapped.</td><td>Any spare month</td></tr><tr><td><b>Faulty chips from Shenzhen</b></td><td>A batch of controller chips from Shenzhen fails testing. 20% of this month’s Chinese chips are scrapped.</td><td>Any spare month</td></tr><tr><td><b>Make in India incentive</b></td><td>A new government incentive supports local part makers. Pune suppliers cut their prices by 6% from this month.</td><td>A spare month</td></tr><tr><td><b>Rival scooter recalled</b></td><td>A competitor has recalled its scooters. Dealers want 10% more of yours this month.</td><td>A spare month</td></tr><tr><td><b>Festive rush</b></td><td>Navratri and Diwali bookings are 15% above forecast this month. Can you build enough scooters?</td><td>October (always)</td></tr><tr><td><b>A quiet month</b></td><td>No surprises this month. Suppliers deliver as normal.</td><td>April (always), or a spare month</td></tr></tbody></table></div>
+      <h4 style="margin-top:20px">The three fixed strategies on the final report</h4>
+      <p>The final report replays the same game code with three strategies that never change their decisions. Across 300 test games:</p>
+      <div class="tablewrap"><table class="small"><thead><tr><th>Strategy</th><th>What it does</th><th class="r">Average profit</th><th class="r">Orders delivered</th><th class="r">Best of the three in</th></tr></thead><tbody><tr><td><b>Cheapest only</b></td><td>Everything from Shenzhen, 1 week of buffer stock, never changed.</td><td class="r">₹226 lakh</td><td class="r">84%</td><td class="r">2% of games</td></tr><tr><td><b>Local first</b></td><td>As much as possible from Pune, the rest from Hanoi, 1 week of buffer stock.</td><td class="r">₹331 lakh</td><td class="r">90%</td><td class="r">10% of games</td></tr><tr><td><b>Two suppliers + buffer</b></td><td>Every part split between Shenzhen and a second supplier, 2 weeks of buffer stock.</td><td class="r">₹487 lakh</td><td class="r">96%</td><td class="r">88% of games</td></tr></tbody></table></div>
+      <p>A thoughtful team that reacts to the news can beat all three. &ldquo;Cheapest only&rdquo; usually leads for the first two or three months, which is exactly why it is tempting.</p>
+
+      <h3 id="ss-debrief">Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>1. Which month hurt you most? What could you have done before it happened?</dt>
+        <dd>Usually the China disruption month. Teams that had already approved a second supplier and held some buffer lost far less. Reacting after the event is too late: new suppliers ship only half in month one and cost ₹5 lakh each. Point: resilience must be bought in advance, like insurance.</dd>
+        <dt>2. Compare quoted price with landed cost. What else did cheap parts cost you?</dt>
+        <dd>Duty and freight shrink the price gap; transit time ties up money; higher defect rates mean paying for scrap; and the long, risky supply line caused lost sales and dealer penalties. This is total cost of ownership: the cheapest quote is rarely the cheapest supplier.</dd>
+        <dt>3. A new supplier ships only half in its first month. What does that mean for switching after a crisis?</dt>
+        <dd>Qualifying a supplier takes time (audits, samples, ramp-up). In a crisis every buyer is switching at once, so capacity is scarce too. Keep a second supplier active, even at a small share, so it can be scaled up.</dd>
+        <dt>4. When was buffer stock worth what it cost?</dt>
+        <dd>When it covered a short disruption or the festive demand spike. It was wasted when nothing went wrong, and it can&rsquo;t cover a long outage like a two-month fire. Buffer stock handles short, uncertain gaps; dual sourcing handles long ones.</dd>
+        <dt>5. Which part was your weakest link?</dt>
+        <dd>Often the battery pack (biggest cost, Pune capacity cap) or the chip (shortage event, Pune capped at 40%). In assembly, output is set by the scarcest part, so risk must be managed part by part, not just for the most expensive one.</dd>
+        <dt>6. What would you tell the board about cheap versus safe?</dt>
+        <dd>A good answer weighs both: a modest cost premium for a second source and a small buffer protects revenue worth far more. Strong answers use numbers from their own game, such as profit lost in the worst month compared with the cost of diversifying.</dd>
+      </dl>
+
+      <h3 id="ss-follow">Follow-up work</h3>
+      <ol>
+        <li><b>Total cost worksheet.</b> Using the supplier table above, calculate landed cost and true cost per good part for each battery supplier. Which supplier wins on quoted price, and which on true cost?</li>
+        <li><b>Weighted supplier scorecard.</b> Score the four motor suppliers out of 10 on cost, quality, delivery and risk. Weight them 40/20/20/20, then 25/25/25/25. Does the winner change?</li>
+        <li><b>Memo to the board.</b> One page: recommend a sourcing strategy for next year, with evidence from the game and one real-world example of a supply disruption.</li>
+      </ol>
+    </section>
+
+    <section id="warehouse-rush">
+      <h2 class="game">Warehouse Rush</h2>
+      <p>Teams are pickers at a fulfilment centre near Ahmedabad during the festive sale. The warehouse has four aisles (A to D), each with eight bays on both sides: 64 slots holding 36 products. Teams pick the same six customer orders three times. In round 1 the layout is random. In round 2 they first study last month&rsquo;s sales and re-slot the warehouse. In round 3 they batch-pick two orders per trip. After every trip the game shows the shortest possible route for the same shelves.</p>
+      <h3>Learning outcomes</h3>
+      <ol>
+        <li>Carry out an ABC analysis on sales data and explain the Pareto pattern.</li>
+        <li>Explain how slotting fast movers near dispatch cuts travel time.</li>
+        <li>Compare single-order picking with batch picking, including the trade-offs.</li>
+        <li>Measure picking productivity in lines per hour and break picker time into its parts.</li>
+      </ol>
+
+      <h3 id="wr-plan">60-minute lesson plan</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;8</td><td><b>Hook.</b> Ask: &ldquo;What does a picker spend most of their shift doing?&rdquo; (Usually walking.) Show the start page and how picker time is counted. Write the code on the board.</td></tr>
+        <tr><td>8&ndash;18</td><td><b>Round 1: Day one.</b> Six orders on a random layout. Let teams notice how far apart the shelves are. Online, team members take turns as the picker, one trip each, while the others call out the route.</td></tr>
+        <tr><td>18&ndash;28</td><td><b>ABC analysis.</b> Everyone pauses at the sales chart. Ask: what share of picks do the top 7 products make? (67%.) Teams then re-slot by tapping shelves. &ldquo;Do it for me&rdquo; shows the ideal layout if a team is stuck.</td></tr>
+        <tr><td>28&ndash;36</td><td><b>Round 2: ABC slotting.</b> The same six orders on the new layout.</td></tr>
+        <tr><td>36&ndash;44</td><td><b>Round 3: Batch picking.</b> Three trips of two orders each.</td></tr>
+        <tr><td>44&ndash;56</td><td><b>Debrief.</b> Leaderboard first (round 1 and round 3 lines per hour; online it is on your dashboard), then the discussion questions on the results screen.</td></tr>
+        <tr><td>56&ndash;60</td><td><b>Wrap-up.</b> Connect to real warehouse practice and set the follow-up task.</td></tr>
+      </tbody></table>
+
+      <h3 id="wr-rules">How it works</h3>
+      <ul>
+        <li><b>Picker time per trip</b> = 20 seconds setup + 10 seconds per line + walking distance &divide; 1.2 metres per second.</li>
+        <li><b>Lines per hour</b> = lines picked &divide; total picker time &times; 3,600.</li>
+        <li><b>Walking</b> follows the aisles: up and down an aisle, and between aisles only along the front or back cross-aisle. Every trip starts and ends at dispatch.</li>
+        <li><b>Shortest route</b> is calculated exactly for each trip, so route efficiency (shortest &divide; yours) is a fair measure of route planning.</li>
+        <li><b>ABC classes:</b> A = top 7 products (20% of products, 67% of picks); B = next 11 (19% of picks); C = last 18 (14% of picks).</li>
+        <li><b>Fast-pick zone:</b> the 8 slots nearest dispatch, outlined in gold on the re-slotting map.</li>
+        <li><b>Walk per pick</b> on the re-slotting screen is the average round trip from dispatch to a product, weighted by how often it sells. It drops from about 38 m on a random layout to 20 m on the best layout.</li>
+      </ul>
+      <p>With perfect routes, the same orders run at about 112 lines per hour in round 1, 143 in round 2 and 186 in round 3 (average across test games). Students&rsquo; round 1 is usually lower, because routes are harder to plan when shelves are scattered.</p>
+
+      <h3 id="wr-debrief">Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>1. How much of the gain came from slotting, and how much from batch picking?</dt>
+        <dd>Compare rounds 1&ndash;2 (slotting only) with rounds 2&ndash;3 (batching only). Slotting cuts metres per line; batching cuts trips, so it saves setup time and walks back to dispatch.</dd>
+        <dt>2. Why does the Pareto pattern make ABC slotting so powerful?</dt>
+        <dd>Because a few products make most of the picks. Moving 7 products close to dispatch affects two-thirds of all picks, while moving the 18 C products barely matters.</dd>
+        <dt>3. Was your route close to the shortest one? When was it hardest to plan?</dt>
+        <dd>Hardest with many stops spread over several aisles, which is why real warehouses use routing rules (such as the S-shape route) or software. A good layout also makes routes easier, not just shorter.</dd>
+        <dt>4. When would batch picking not be worth it?</dt>
+        <dd>When orders must be sorted afterwards (extra time and errors), when orders are urgent and can&rsquo;t wait to be grouped, or when orders are large enough to fill a trolley alone.</dd>
+        <dt>5. How often should a warehouse re-slot?</dt>
+        <dd>Demand changes with seasons and promotions (festive gifting, monsoon goods). Re-slotting costs labour and can disrupt picking, so warehouses re-slot the few products whose class has changed, often seasonally.</dd>
+        <dt>6. Where else could you save time?</dt>
+        <dd>Setup and pick time per line (scanners, pick-to-light), zone picking, better racking heights (the &ldquo;golden zone&rdquo; at waist height) and the building layout itself, such as dispatch placement.</dd>
+      </dl>
+
+      <h3 id="wr-follow">Follow-up work</h3>
+      <ol>
+        <li><b>ABC in a spreadsheet.</b> Give students a list of 50 products with monthly sales. They sort, calculate the running share and draw the Pareto chart, then propose A, B and C cut-offs.</li>
+        <li><b>Productivity sum.</b> A picker does 140 lines an hour on an 8-hour shift with 1 hour of breaks. How many pickers are needed for 6,000 lines a day? What if batch picking raises the rate to 185?</li>
+        <li><b>Site visit or video reflection.</b> Watch a warehouse tour video and identify the picking method, the slotting logic and one improvement.</li>
+      </ol>
+    </section>
+    <p class="footer">Supply Chain Games. All content is fictional and for teaching.</p>
+  </article>
+</div>
+<script>
+document.getElementById('copyRules').addEventListener('click', function () {
+  var t = document.getElementById('rules').textContent, m = document.getElementById('copyMsg');
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { m.textContent = 'Copied.'; }, function () { m.textContent = 'Select the rules and copy them by hand.'; });
+  else m.textContent = 'Select the rules and copy them by hand.';
+});
+</script>
+</body>
+</html>
