@@ -1,6 +1,6 @@
 # Supply Chain Games
 
-Five free classroom games for supply chain and operations management. There are three team games, played in a classroom or an online class with each student on their own phone or laptop, and two solo games for practice or homework. Nothing to install.
+Seven free classroom games for supply chain and operations management. There are three team games, played in a classroom or an online class with each student on their own phone or laptop, and four solo games for practice or homework, two of them about doing business across borders. Nothing to install.
 
 **Play:** https://ashir-mansuri.github.io/supply-chain-games/
 
@@ -11,6 +11,32 @@ Five free classroom games for supply chain and operations management. There are 
 | **Coffee Chain** | About 25 minutes | Bullwhip effect, lead times, information sharing, stock versus backlog costs (modelled on the beer game) |
 | **Boundary Bakes** (solo) | About 15 minutes | Perishable stock, uncertain demand, cost of too many versus too few, critical ratio |
 | **Season Planner** (solo) | About 20 minutes | Aggregate planning, level versus chase strategy, overtime, subcontracting, building stock |
+| **Export Desk** (solo) | About 15 minutes | International shipping, transit time versus cost, currency risk and forward contracts, cargo insurance |
+| **Go Global** (solo) | About 20 minutes | Choosing foreign markets, entry modes (online, distributor, joint venture, subsidiary), step-by-step expansion, country risk |
+
+---
+
+## Contents
+
+- [How to play](#how-to-play)
+  - [Step 1: Get into a game](#step-1-get-into-a-game)
+    - [Option A: Online with your team](#option-a-online-with-your-team-each-player-on-their-own-device)
+    - [Option B: Practise on one device](#option-b-practise-on-one-device-team-round-one-screen-or-solo)
+  - Team games
+    - [Supplier Showdown](#supplier-showdown)
+    - [Warehouse Rush](#warehouse-rush)
+    - [Coffee Chain](#coffee-chain)
+  - Solo games
+    - [Boundary Bakes](#boundary-bakes-solo)
+    - [Season Planner](#season-planner-solo)
+    - [Export Desk](#export-desk-solo)
+    - [Go Global](#go-global-solo)
+  - [For teachers](#for-teachers)
+    - [Running an online class](#running-an-online-class)
+    - [Solo games](#solo-games-boundary-bakes-season-planner-export-desk-and-go-global)
+    - [Practice games and solo play in the team games](#practice-games-and-solo-play-in-the-team-games)
+    - [Trying it out](#trying-it-out)
+- [Files](#files)
 
 ---
 
@@ -262,6 +288,69 @@ The final report shows your total cost and cost per set. A chart shows orders, p
 
 ---
 
+### Export Desk (solo)
+
+**Your job:** You run the export desk at a pump maker in Rajkot. Eight orders arrive from customers in Hamburg (Germany), New York (USA), Dubai (UAE) and Mombasa (Kenya). Each order is priced in euros or US dollars and has a delivery deadline.
+
+**Goal:** The highest total profit, in rupees, across all eight orders.
+
+**Your three decisions for each order:**
+1. **How to ship it:** by sea (via the Suez Canal or the longer route round the Cape of Good Hope), sea to Dubai then air, or air. Faster costs more. Each option shows the cost, the usual number of days, the chance of damage, and whether it should arrive on time.
+2. **How to handle the currency:** **wait** and convert at whatever the rate is on payment day, or **lock the rate now** with a forward contract (today's rate, less 0.6%).
+3. **Whether to insure the cargo:** insurance costs 0.4% of the order value and pays for any damage on the way.
+
+**What can go wrong:** a ship stuck in the Suez Canal, a dock strike in Hamburg, a sudden move in the euro or dollar, damaged cargo, or a shortage of air cargo space that makes air freight 80% dearer. Late delivery costs 1% of the order value for every day late, up to 15%. Some trouble is announced in the **Shipping news** before you book; some isn't.
+
+#### How to play
+1. Open **Export Desk**, type your name and the game code your teacher gives you, then tap **Start the game**.
+2. **Read the order:** the destination, the value in euros or dollars, what it's worth in rupees today, what the pumps cost to make, and the deadline.
+3. **Read the Shipping news** on the right (below on a phone).
+4. **Choose a route.** The green or red tag on each route shows how many days to spare, or how late it is likely to be.
+5. **Choose how to handle the currency**, and tick **Buy cargo insurance** if you want it.
+6. Tap **Ship order [number]**. You then see when the goods arrived, the exchange rate on payment day, whether the cargo was damaged, and the profit on the order.
+7. Tap **Next order** and repeat for all eight orders.
+
+#### At the end
+The final report shows your total profit, how much went on freight, late penalties and insurance, how many orders arrived on time, and how much you gained or lost on currency. Your results are compared with **Cheapest every time**, **Fastest and safest every time** and **Match the route to the deadline**. Tap **Copy my result** and send the line to your teacher.
+
+**Tip:** Check the deadline before the price. A late penalty can cost more than flying the goods.
+
+---
+
+### Go Global (solo)
+
+**Your job:** You lead international growth at Sona Herbals, an Ayurvedic skincare brand from Ahmedabad. You have ₹10 crore to take the brand into five markets: the UAE, the UK, the USA, Germany and Kenya.
+
+**Goal:** The highest **company worth** after three years: your cash at the end plus two years of profit at your final rate.
+
+**Four ways into a market:**
+
+| Way in | Buyers reached | Your share of sales | Cost |
+| --- | --- | --- | --- |
+| Online store | 20% | 32% | Cheap to set up and run |
+| Distributor | 50% | 15% | Cheap to set up, no running cost |
+| Joint venture with a local partner | 70% | 18% | Bigger set-up and running cost; costs money to leave |
+| Own subsidiary | 90% | 36% | The most expensive to set up, run and leave |
+
+Set-up costs are higher in markets far from India. A joint venture or subsidiary works best once you know the market: opened with no experience there, it starts slowly and has a 50% chance the product needs reworking. After at least one round in the market (as an online store or with a distributor, say) that chance drops to 10%.
+
+**What can go wrong (or right):** currency falls in Kenya and the UK, a US tariff on imports (a subsidiary that makes locally avoids it), stricter rules on herbal products in Germany, a quarrel with a joint-venture partner, a spending slump in the USA, and a social media trend that boosts sales.
+
+#### How to play
+1. Open **Go Global**, type your name and the game code your teacher gives you, then tap **Start the game**.
+2. Each round is six months. For **each market**, look at the market size, its growth, and your profit there last round.
+3. **Choose how to be in each market:** Not present, Online store, Distributor, Joint venture or Own subsidiary. Each choice shows what it costs to make the change now and about how much profit it earns when fully running.
+4. **Check the dark bar at the bottom:** your cash now, what this round's changes cost, and your cash after the changes. You can't spend more than you have.
+5. Tap **Run [half-year]**. You then see the world news for those six months, and your sales and profit in each market.
+6. Tap **Plan [next half-year]** and repeat for all six rounds.
+
+#### At the end
+The final report shows your company worth, a chart of your cash after each round, your path in each market and the world news for your game code. Your result is compared with **Distributors everywhere**, **All in from day one** and **Step by step**. Tap **Copy my result** and send the line to your teacher.
+
+**Tip:** Test a market cheaply before you commit big money to it.
+
+---
+
 ### For teachers
 
 #### Running an online class
@@ -274,8 +363,8 @@ The final report shows your total cost and cost per set. A chart shows orders, p
 
 To open the same class on another device, use **Open a class from another device** with the class code and your teacher password.
 
-#### Solo games (Boundary Bakes and Season Planner)
-- Give the class one game code, so everyone faces the same demand.
+#### Solo games (Boundary Bakes, Season Planner, Export Desk and Go Global)
+- Give the class one game code, so everyone faces the same demand and the same events.
 - Students play on their own and tap **Copy my result** at the end. They paste the line into the class group or a form for you.
 
 #### Practice games and solo play in the team games
@@ -300,7 +389,8 @@ The **teacher's guide** (`teacher-guide.html`) has 60-minute lesson plans, the r
 | `coffee-chain.html` | Coffee Chain game |
 | `boundary-bakes.html` | Boundary Bakes solo game |
 | `season-planner.html` | Season Planner solo game |
+| `export-desk.html` | Export Desk solo game |
+| `go-global.html` | Go Global solo game |
 | `teacher.html` | Teacher dashboard |
 | `teacher-guide.html` | Teacher's guide |
 | `firebase-config.js` | Online play settings (paste your Firebase config here) |
-

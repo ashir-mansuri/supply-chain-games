@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Go Global</title>
+<meta name="description" content="A solo decision game about taking an Indian brand abroad: which markets to enter, how to enter them, and when to commit more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1D2B36;
+  --ink-2: #33424D;
+  --muted: #56646E;
+  --concrete: #E3E5E1;
+  --concrete-2: #D5D8D3;
+  --sheet: #FBFBF9;
+  --line: #C3C8C2;
+  --yellow: #F2C200;
+  --yellow-soft: #FBEFB8;
+  --blue: #1F5FA8;
+  --blue-soft: #DCE7F4;
+  --red: #C8372D;
+  --red-soft: #F6DEDB;
+  --green: #2E7D4F;
+  --green-soft: #DCEEE3;
+  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
+h1 { font-size: clamp(44px, 8vw, 84px); }
+h2 { font-size: clamp(28px, 4.2vw, 40px); }
+h3 { font-size: 24px; }
+h4 { font-size: 19px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar {
+  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .spacer { flex: 1; }
+.lane {
+  height: 10px;
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
+  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
+  cursor: pointer; text-decoration: none; min-height: 46px;
+}
+.btn:hover { background: #fff; }
+.btn.primary { background: var(--yellow); }
+.btn.primary:hover { background: #FFD21F; }
+.btn.dark { background: var(--ink); color: #fff; }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+}
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 14px; color: var(--muted); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.steps6 { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; flex: 1 1 340px; }
+.steps6 span { font-size: 12px; text-align: center; padding: 3px 0 4px; border-bottom: 5px solid var(--concrete-2); color: var(--muted); }
+.steps6 span.now { border-bottom-color: var(--yellow); color: var(--ink); font-weight: 600; }
+.steps6 span.up { border-bottom-color: var(--green); }
+.steps6 span.down { border-bottom-color: var(--red); }
+.score { font-family: var(--display); font-weight: 600; font-size: 22px; }
+.mkts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin: 18px 0; }
+.mkt { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.mkt-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); border-top: 6px solid var(--ink-2); }
+.mkt-head h3 { margin: 0; font-size: 28px; }
+.mkt-body { padding: 12px 16px 14px; }
+.mfacts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+.mfacts div { background: var(--concrete); border-radius: 8px; padding: 6px 8px; }
+.mfacts b { display: block; font-family: var(--display); font-size: 22px; line-height: 1.05; }
+.mfacts span { font-size: 12px; color: var(--muted); }
+.modes { display: grid; gap: 6px; }
+.mode { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; border: 2px solid var(--line); border-radius: 8px; padding: 7px 10px; background: #fff; cursor: pointer; font-size: 15px; }
+.mode:has(input:checked) { border-color: var(--ink); background: var(--yellow-soft); }
+.mode input { width: 18px; height: 18px; margin: 0; }
+.mode .cost { font-family: var(--display); font-weight: 600; font-size: 17px; text-align: right; }
+.mode .cost small { display: block; font-family: var(--body); font-weight: 400; font-size: 12px; color: var(--muted); }
+.mode.disabled { opacity: .45; cursor: not-allowed; }
+.cur { font-size: 13px; font-weight: 600; background: var(--green-soft); color: var(--green); padding: 1px 6px; border-radius: 4px; }
+.warn { font-size: 13px; color: #6B5200; background: var(--yellow-soft); padding: 6px 8px; border-radius: 6px; margin-top: 8px; }
+.newsbox { list-style: none; padding: 0; margin: 0; }
+.newsbox li { padding: 10px 12px; border-left: 5px solid var(--blue); background: var(--blue-soft); margin-bottom: 8px; }
+.newsbox li.bad { border-left-color: var(--red); background: var(--red-soft); }
+.newsbox li.good { border-left-color: var(--green); background: var(--green-soft); }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.actionbar .muted { color: #C9D2D8; }
+.actionbar .neg { color: #FFB4AA; font-weight: 600; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 38px; line-height: 1; }
+.kpi.bad .bignum { color: var(--red); }
+.kpi.good .bignum { color: var(--green); }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
+.legend span::before { content: ''; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); vertical-align: middle; margin-right: 6px; }
+.legend span.dash::before { border-top-style: dashed; }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+td.r { white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Go Global</span><span class="spacer"></span><a href="teacher-guide.html#go-global" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<div class="lane" aria-hidden="true"></div>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Go Global engine: choosing markets and entry modes for an Indian brand going abroad */
+const GG = (() => {
+  const ROUNDS = 6;
+  const ROUND_LABELS = ['Year 1, Jan–Jun', 'Year 1, Jul–Dec', 'Year 2, Jan–Jun', 'Year 2, Jul–Dec', 'Year 3, Jan–Jun', 'Year 3, Jul–Dec'];
+  const START_CASH = 10;    // ₹ crore
+  const MISFIT_COLD = 0.5;  // chance a joint venture or subsidiary opened with no market experience needs its product reworked
+  const MISFIT_WARM = 0.1;  // the same chance after at least one round in the market
+  const MISFIT_COST = 1.0;  // ₹ crore to rework the product
+  const OVERDRAFT = 0.12;   // interest per round on negative cash
+  const MARKETS = [
+    { id: 'ae', name: 'UAE', pot: 5, growth: 0.06, dist: 1.0, note: 'Close to India, large Indian community, stable currency.' },
+    { id: 'uk', name: 'United Kingdom', pot: 7, growth: 0.03, dist: 1.2, note: 'Strong interest in Ayurveda, pound can move.' },
+    { id: 'us', name: 'USA', pot: 16, growth: 0.04, dist: 1.6, note: 'The biggest market, but far away and costly to enter.' },
+    { id: 'de', name: 'Germany', pot: 9, growth: 0.02, dist: 1.4, note: 'Wealthy buyers, strict product rules.' },
+    { id: 'ke', name: 'Kenya', pot: 3, growth: 0.12, dist: 1.3, note: 'Small but growing fast, shilling can be volatile.' }
+  ];
+  const MODES = [
+    { id: 'none', name: 'Not present', setup: 0, run: 0, reach: 0, margin: 0, ramp: [0], exit: 0, local: false },
+    { id: 'online', name: 'Online store', setup: 0.2, run: 0.1, reach: 0.2, margin: 0.32, ramp: [0.6, 1], exit: 0, local: false,
+      about: 'Sell through a cross-border online marketplace. Cheap to start, reaches few buyers.' },
+    { id: 'dist', name: 'Distributor', setup: 0.3, run: 0, reach: 0.5, margin: 0.15, ramp: [0.7, 1], exit: 0, local: false,
+      about: 'A local company buys from you and sells. Low cost and risk, but they keep most of the margin.' },
+    { id: 'jv', name: 'Joint venture', setup: 1.2, run: 0.3, reach: 0.7, margin: 0.18, ramp: [0.5, 0.85, 1], exit: 0.4, local: true,
+      about: 'Set up a company with a local partner and share profits 50:50. Partner knows the market.' },
+    { id: 'sub', name: 'Own subsidiary', setup: 2.5, run: 0.7, reach: 0.9, margin: 0.36, ramp: [0.3, 0.7, 1], exit: 1.0, local: true,
+      about: 'Your own company and local production. Full control and profit, highest cost and risk.' }
+  ];
+  const modeById = (id) => MODES.find((m) => m.id === id);
+  const marketById = (id) => MARKETS.find((m) => m.id === id);
+  const setupCost = (mk, mo) => Math.round(mo.setup * (mo.id === 'online' ? 1 : mk.dist) * 100) / 100;
+  const exitCost = (mk, mo) => Math.round(mo.exit * mk.dist * 100) / 100;
+
+  function hash(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  }
+  function rand(seed) {
+    let a = hash(seed);
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'PRACTICE';
+  const pick = (code, tag, arr) => arr[Math.floor(rand(code + '|' + tag) * arr.length)];
+
+  /* the news, the same for everyone with the same code */
+  function schedule(code) {
+    const c = normCode(code);
+    return [
+      { id: 'kecrash', round: pick(c, 'ke', [1, 2, 3]), market: 'ke', title: 'Kenyan shilling falls 25%', text: 'Sales in Kenya are now worth a quarter less in rupees, for the rest of the game.' },
+      { id: 'ustariff', round: pick(c, 'us', [2, 3, 4]), market: 'us', title: 'USA adds a 20% tariff on imported cosmetics', text: 'Online, distributor and joint-venture sales in the USA lose 20% of their margin from now on. Local production (own subsidiary) avoids it.' },
+      { id: 'derule', round: pick(c, 'de', [1, 2, 3, 4]), market: 'de', title: 'Germany tightens rules on herbal cosmetics', text: 'Imported products are held for testing for six months: no online or distributor sales in Germany this round. Joint ventures and subsidiaries with local labs carry on.' },
+      { id: 'dispute', round: pick(c, 'dp', [2, 3, 4, 5]), market: pick(c, 'dpm', ['ae', 'uk', 'us', 'de', 'ke']), title: 'Joint-venture partner dispute', text: 'If you have a joint venture in this market, it earns nothing this round while the partners argue.' },
+      { id: 'gbp', round: pick(c, 'gbp', [1, 2, 3, 4, 5]), market: 'uk', title: 'Pound falls 10%', text: 'UK sales are worth 10% less in rupees from now on.' },
+      { id: 'usslump', round: pick(c, 'usl', [2, 3, 4]), market: 'us', title: 'Spending slump in the USA', text: 'US shoppers cut back: sales in the USA fall 35% this round and next. Fixed costs stay the same.' },
+      { id: 'viral', round: pick(c, 'viral', [1, 2, 3, 4, 5]), market: pick(c, 'vm', ['ae', 'uk', 'us']), title: 'Your brand goes viral', text: 'A social media trend lifts sales by 30% in this market this round.' }
+    ];
+  }
+
+  function newGame(code, name) {
+    const markets = {};
+    MARKETS.forEach((m) => { markets[m.id] = { mode: 'none', age: 0, exp: 0, misfit: 0 }; });
+    return { v: 1, code: normCode(code), name: name || 'Player', round: 0, cash: START_CASH, markets, history: [], done: false };
+  }
+
+  /* cost of changing to the chosen modes this round */
+  function changeCost(s, choice) {
+    let setup = 0, exit = 0;
+    MARKETS.forEach((mk) => {
+      const cur = s.markets[mk.id].mode, nxt = choice[mk.id] || cur;
+      if (nxt !== cur) {
+        exit += exitCost(mk, modeById(cur));
+        setup += setupCost(mk, modeById(nxt));
+      }
+    });
+    return { setup: Math.round(setup * 100) / 100, exit: Math.round(exit * 100) / 100, total: Math.round((setup + exit) * 100) / 100 };
+  }
+
+  function playRound(s0, choice) {
+    const s = JSON.parse(JSON.stringify(s0));
+    const r = s.round;
+    const sched = schedule(s.code);
+    const cc = changeCost(s, choice);
+    s.cash = Math.round((s.cash - cc.total) * 100) / 100;
+    const res = { round: r, events: sched.filter((e) => e.round === r).map((e) => e.id), markets: {}, setup: cc.setup, exit: cc.exit, operating: 0 };
+    MARKETS.forEach((mk) => {
+      const st = s.markets[mk.id];
+      const nxt = choice[mk.id] || st.mode;
+      let misfitNow = false;
+      if (nxt !== st.mode) {
+        st.mode = nxt; st.age = 0; st.misfit = 0;
+        const m2 = modeById(nxt);
+        if (m2.local) {
+          const chance = st.exp === 0 ? MISFIT_COLD : MISFIT_WARM;
+          if (rand(s.code + '|misfit|' + mk.id + '|' + nxt + '|' + r) < chance) { st.misfit = 2; misfitNow = true; res.misfitCost = (res.misfitCost || 0) + MISFIT_COST; }
+        }
+      }
+      const mo = modeById(st.mode);
+      if (mo.id === 'none') { res.markets[mk.id] = { mode: 'none', sales: 0, profit: 0 }; return; }
+      const pot = mk.pot * Math.pow(1 + mk.growth, r);
+      const ramp = mo.ramp[Math.min(st.age, mo.ramp.length - 1)];
+      const learn = mo.local ? Math.min(1, 0.4 + 0.3 * st.exp) : 1;
+      let fx = 1, margin = mo.margin, extra = 1;
+      const notes = [];
+      if (st.misfit > 0) { extra *= 0.4; notes.push(misfitNow ? 'Product doesn\u2019t suit local buyers: reworking it costs \u20B9' + MISFIT_COST + ' crore and cuts sales by 60% for two rounds' : 'Still reworking the product: sales down 60%'); st.misfit -= 1; }
+      sched.forEach((e) => {
+        if (e.market !== mk.id || e.round > r) return;
+        if (e.id === 'kecrash') { fx *= 0.75; if (e.round === r) notes.push(e.title); }
+        if (e.id === 'gbp') { fx *= 0.9; if (e.round === r) notes.push(e.title); }
+        if (e.id === 'ustariff' && mo.id !== 'sub') { margin = margin * 0.8; if (e.round === r) notes.push(e.title); }
+        if (e.id === 'derule' && e.round === r && !mo.local) { extra = 0; notes.push(e.title); }
+        if (e.id === 'dispute' && e.round === r && mo.id === 'jv') { extra = 0; notes.push(e.title); }
+        if (e.id === 'viral' && e.round === r) { extra *= 1.3; notes.push(e.title); }
+        if (e.id === 'usslump' && (e.round === r || e.round === r - 1)) { extra *= 0.65; notes.push(e.round === r ? e.title : 'US spending slump continues'); }
+      });
+      const sales = pot * mo.reach * ramp * learn * extra;
+      const profit = sales * margin * fx - mo.run;
+      res.markets[mk.id] = { mode: mo.id, sales: Math.round(sales * 100) / 100, profit: Math.round(profit * 100) / 100, ramp, learn, notes };
+      res.operating += profit;
+      st.age += 1;
+      st.exp += 1;
+    });
+    res.operating = Math.round(res.operating * 100) / 100;
+    res.misfitCost = res.misfitCost || 0;
+    s.cash = s.cash + res.operating - res.misfitCost;
+    res.interest = s.cash < 0 ? Math.round(-s.cash * OVERDRAFT * 100) / 100 : 0;
+    s.cash = Math.round((s.cash - res.interest) * 100) / 100;
+    res.cash = s.cash;
+    s.history.push(res);
+    s.round = r + 1;
+    if (s.round >= ROUNDS) s.done = true;
+    return s;
+  }
+
+  function summary(s) {
+    const last = s.history[s.history.length - 1];
+    const runRate = last ? Math.max(0, last.operating) * 2 : 0;
+    const worth = Math.round((s.cash + runRate * 2) * 100) / 100;  // cash plus two years of current profit
+    const totalSales = s.history.reduce((a, h) => a + Object.values(h.markets).reduce((b, m) => b + m.sales, 0), 0);
+    const markets = MARKETS.filter((m) => s.markets[m.id].mode !== 'none').length;
+    return { cash: s.cash, runRate: Math.round(runRate * 100) / 100, worth, totalSales: Math.round(totalSales * 10) / 10, markets };
+  }
+
+  const STRATEGIES = [
+    { id: 'dist', name: 'Distributors everywhere', desc: 'A distributor in all five markets from the start. Never changes.',
+      plan: () => [{ ae: 'dist', uk: 'dist', us: 'dist', de: 'dist', ke: 'dist' }] },
+    { id: 'allin', name: 'All in from day one', desc: 'Own subsidiaries in the USA and UK at once, a distributor in the UAE.',
+      plan: () => [{ us: 'sub', uk: 'sub', ae: 'dist' }] },
+    { id: 'steps', name: 'Step by step', desc: 'Tests markets with distributors and an online store first, then opens subsidiaries in the biggest proven markets and a joint venture in the UAE.',
+      plan: () => [
+        { ae: 'dist', uk: 'dist', us: 'dist', ke: 'online' },
+        { us: 'sub', uk: 'sub', de: 'dist' },
+        {},
+        { ae: 'jv' },
+        {},
+        {}
+      ] }
+  ];
+  function runStrategy(code, st) {
+    let s = newGame(code, st.name);
+    const plan = st.plan();
+    for (let r = 0; r < ROUNDS; r++) {
+      const ch = Object.assign({}, plan[r] || {});
+      const cost = changeCost(s, ch).total;
+      s = playRound(s, cost <= s.cash ? ch : {});
+    }
+    return s;
+  }
+  function randomCode() {
+    const w = ['GLOBE', 'ATLAS', 'VOYAGE', 'BRIDGE', 'HORIZON', 'PASSPORT', 'MERIDIAN', 'EMBASSY'];
+    return w[Math.floor(Math.random() * w.length)] + (10 + Math.floor(Math.random() * 90));
+  }
+  return { MISFIT_COLD, MISFIT_WARM, MISFIT_COST, OVERDRAFT, ROUNDS, ROUND_LABELS, START_CASH, MARKETS, MODES, modeById, marketById, setupCost, exitCost, schedule, newGame, changeCost, playRound, summary, STRATEGIES, runStrategy, normCode, randomCode };
+})();
+if (typeof module !== 'undefined') module.exports = GG;
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'gg-game-v1';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const cr = (n) => (n < 0 ? '−' : '') + '₹' + Math.abs(n).toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' cr';
+  const cr2 = (n) => (n < 0 ? '−' : '') + '₹' + Math.abs(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' cr';
+  const L = GG.ROUND_LABELS;
+
+  let view = 'start', S = null, choice = {}, formError = '', confirmRestart = false;
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+  function save() { if (S) store.set(SAVE_KEY, S); }
+  function resetChoice() { choice = {}; GG.MARKETS.forEach((m) => { choice[m.id] = S.markets[m.id].mode; }); }
+
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'round') return renderRound();
+    if (view === 'result') return renderResult();
+    if (view === 'final') return renderFinal();
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && !saved.done && saved.history && saved.history.length > 0;
+    app.innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <p class="kicker">A solo decision game about going international, 3 years</p>
+          <h1>Go Global</h1>
+          <p style="font-size:20px;max-width:34em">You lead international growth at Sona Herbals, an Ayurvedic skincare brand from Ahmedabad. With &#8377;10 crore you can enter five markets: the UAE, the UK, the USA, Germany and Kenya. Every six months you decide where to be and how: online, through a distributor, in a joint venture, or with your own subsidiary. Build the most valuable international business in three years.</p>
+        </div>
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Start a game</h3>
+          <label for="name">Your name</label>
+          <input type="text" id="name" maxlength="24" autocomplete="off" placeholder="For example, Riya">
+          <div style="height:12px"></div>
+          <label for="code">Game code</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(GG.randomCode())}" style="text-transform:uppercase">
+            <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">New code</button>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">Players with the same code face the same world events, so results can be compared.</p>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start the game</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">Continue ${esc(saved.name)} (${esc(L[saved.round])})</button>` : ''}
+        </form>
+      </section>
+      <section class="sheet tablewrap" style="margin-top:12px"><h3>Four ways to enter a market</h3>
+        <table class="small"><thead><tr><th>Way in</th><th>What it means</th><th class="r">Set-up cost</th><th class="r">Running cost per round</th><th class="r">Buyers reached</th><th class="r">Your share of sales</th></tr></thead>
+        <tbody>${GG.MODES.slice(1).map((m) => `<tr><td><b>${m.name}</b></td><td>${esc(m.about)}</td><td class="r">from ${cr2(m.setup)}</td><td class="r">${m.run ? cr2(m.run) : 'none'}</td><td class="r">${Math.round(m.reach * 100)}%</td><td class="r">${Math.round(m.margin * 100)}%</td></tr>`).join('')}</tbody></table>
+        <p class="small" style="margin-top:10px">Set-up costs are higher in distant markets. A joint venture or subsidiary works best once you know the market: without experience there it starts slowly, and there&rsquo;s a ${Math.round(GG.MISFIT_COLD * 100)}% chance the product needs reworking (${Math.round(GG.MISFIT_WARM * 100)}% once you have been there at least one round). Leaving a joint venture or subsidiary costs money too. Your score is <b>company worth</b>: cash at the end plus two years of profit at your final rate.</p></section>
+      <p class="footer">The company, markets, figures and events in this game are made up for teaching.</p>
+    </div>`;
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) { formError = 'Enter your name to start.'; renderStart(); document.getElementById('name').focus(); return; }
+      formError = '';
+      S = GG.newGame(document.getElementById('code').value, name);
+      resetChoice(); save(); go('round');
+    });
+    document.getElementById('name').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar(now) {
+    const n = now === undefined ? S.round : now;
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.name)}</span><span class="small muted">Code ${esc(S.code)}</span>
+      <div class="steps6" aria-label="Rounds">${L.map((l, i) => { const h = S.history[i]; return `<span class="${i === n ? 'now' : h ? (h.operating >= 0 ? 'up' : 'down') : ''}" title="${esc(l)}">${i < 2 ? 'Y1' : i < 4 ? 'Y2' : 'Y3'} ${i % 2 ? 'H2' : 'H1'}</span>`; }).join('')}</div>
+      <span class="score" title="Cash">${cr(S.cash)}</span></div></div>`;
+  }
+
+  function lastingNews() {
+    const out = [];
+    GG.schedule(S.code).forEach((e) => {
+      if (e.round >= S.round) return;
+      if (['kecrash', 'ustariff', 'gbp'].includes(e.id)) out.push({ kind: 'bad', text: e.title + ': ' + e.text });
+      if (e.id === 'usslump' && e.round === S.round - 1) out.push({ kind: 'bad', text: 'The US spending slump continues this round.' });
+    });
+    return out;
+  }
+
+  function renderRound() {
+    const r = S.round;
+    const cc = GG.changeCost(S, choice);
+    const after = Math.round((S.cash - cc.total) * 100) / 100;
+    const last = S.history[S.history.length - 1];
+    const news = lastingNews();
+    const cards = GG.MARKETS.map((mk) => {
+      const st = S.markets[mk.id];
+      const pot = mk.pot * Math.pow(1 + mk.growth, r);
+      const lp = last && last.markets[mk.id];
+      const modes = GG.MODES.map((mo) => {
+        const isCur = mo.id === st.mode;
+        const cost = isCur ? 0 : GG.setupCost(mk, mo) + GG.exitCost(mk, GG.modeById(st.mode));
+        const full = mo.id === 'none' ? 0 : pot * mo.reach * mo.margin - mo.run;
+        return `<label class="mode"><input type="radio" name="m-${mk.id}" value="${mo.id}" ${choice[mk.id] === mo.id ? 'checked' : ''}>
+          <span><b>${mo.name}</b>${isCur && mo.id !== 'none' ? ' <span class="cur">now</span>' : ''}${mo.id !== 'none' ? `<br><span class="tiny muted">When fully running: about ${cr(full)} profit a round</span>` : ''}</span>
+          <span class="cost">${isCur ? 'no change' : cost ? cr2(cost) : 'free'}${!isCur && GG.exitCost(mk, GG.modeById(st.mode)) && mo.id !== st.mode ? '<small>includes exit cost</small>' : ''}</span></label>`;
+      }).join('');
+      const chosen = GG.modeById(choice[mk.id]);
+      const warn = chosen.local && choice[mk.id] !== st.mode
+        ? `<p class="warn">${st.exp === 0 ? `No experience in ${mk.name} yet: a ${chosen.name.toLowerCase()} would start slowly, with a ${Math.round(GG.MISFIT_COLD * 100)}% chance the product needs reworking.` : `You have ${st.exp} round${st.exp > 1 ? 's' : ''} of experience here. ${Math.round(GG.MISFIT_WARM * 100)}% chance the product needs reworking.`}</p>` : '';
+      return `<section class="mkt" aria-labelledby="mh-${mk.id}">
+        <div class="mkt-head"><h3 id="mh-${mk.id}">${mk.name}</h3><span class="small muted">${esc(mk.note)}</span></div>
+        <div class="mkt-body">
+          <div class="mfacts">
+            <div><b>${cr(pot)}</b><span>Market size this round</span></div>
+            <div><b>${Math.round(mk.growth * 200)}%</b><span>Growth a year</span></div>
+            <div><b>${lp && lp.mode !== 'none' ? cr2(lp.profit) : '&ndash;'}</b><span>Your profit last round</span></div>
+          </div>
+          <p class="tiny muted" style="margin:-4px 0 8px">${st.exp ? `Experience here: ${st.exp} round${st.exp > 1 ? 's' : ''}.` : 'No experience here yet.'} Market size means sales if every possible buyer bought from you.</p>
+          <div class="modes" role="radiogroup" aria-label="How to be in ${mk.name}">${modes}</div>
+          ${warn}
+        </div>
+      </section>`;
+    }).join('');
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        <h2 style="margin-top:22px">${esc(L[r])}</h2>
+        <p class="muted">Round ${r + 1} of ${GG.ROUNDS}. Choose how to be in each market. News arrives after you decide.</p>
+        ${news.length ? `<section class="sheet" style="margin-top:12px"><h3>Still in effect</h3><ul class="newsbox">${news.map((n) => `<li class="${n.kind}">${esc(n.text)}</li>`).join('')}</ul></section>` : ''}
+        <div class="mkts">${cards}</div>
+      </div>
+      <div class="actionbar"><div class="wrap">
+        <div><b>Cash now:</b> ${cr2(S.cash)}. <b>Changes this round:</b> ${cr2(cc.total)}${cc.exit ? ` (including ${cr2(cc.exit)} to exit)` : ''}. <span class="${after < 0 ? 'neg' : ''}"><b>Cash after changes:</b> ${cr2(after)}</span></div>
+        <div class="row">${after < 0 ? '<span class="neg small">Not enough cash for these changes</span>' : ''}<button class="btn primary" data-act="run" ${after < 0 ? 'disabled' : ''}>Run ${esc(L[r])}</button></div>
+      </div></div>
+      <div class="wrap footer">${confirmRestart ? `<span style="color:var(--red)">This deletes the game on this device.</span> <button class="btn small dark" data-act="restart-yes">Delete and start over</button> <button class="btn small" data-act="restart-no">Keep playing</button>` : `<button class="btn ghost small" data-act="restart">Start over</button>`}</div>`;
+  }
+
+  function renderResult() {
+    const h = S.history[S.history.length - 1];
+    const sched = GG.schedule(S.code).filter((e) => e.round === h.round);
+    const evHtml = sched.map((e) => `<li class="${e.id === 'viral' ? 'good' : 'bad'}"><b>${esc(e.title)}${e.id === 'dispute' || e.id === 'viral' ? ' (' + esc(GG.marketById(e.market).name) + ')' : ''}.</b> ${esc(e.text)}</li>`).join('');
+    const rows = GG.MARKETS.map((mk) => {
+      const m = h.markets[mk.id];
+      if (m.mode === 'none') return `<tr><td>${mk.name}</td><td class="muted">Not present</td><td class="r">&ndash;</td><td class="r">&ndash;</td><td></td></tr>`;
+      return `<tr><td>${mk.name}</td><td>${GG.modeById(m.mode).name}</td><td class="r">${cr2(m.sales)}</td><td class="r"><b>${cr2(m.profit)}</b></td><td class="small">${esc((m.notes || []).join('. '))}</td></tr>`;
+    }).join('');
+    app.innerHTML = bar(h.round) + `
+      <div class="wrap" style="padding-bottom:40px">
+        <h2 style="margin-top:22px">${esc(L[h.round])}: results</h2>
+        ${evHtml ? `<section class="sheet"><h3>World news this round</h3><ul class="newsbox">${evHtml}</ul></section>` : '<p class="muted">A quiet six months: no major news.</p>'}
+        <div class="kpis">
+          <div class="kpi"><div class="small muted">Spent on changes</div><div class="bignum">${cr2(h.setup + h.exit)}</div></div>
+          <div class="kpi ${h.operating < 0 ? 'bad' : 'good'}"><div class="small muted">Profit from markets</div><div class="bignum">${cr2(h.operating)}</div></div>
+          <div class="kpi ${h.misfitCost || h.interest ? 'bad' : ''}"><div class="small muted">Product rework and interest</div><div class="bignum">${cr2((h.misfitCost || 0) + (h.interest || 0))}</div></div>
+          <div class="kpi"><div class="small muted">Cash now</div><div class="bignum">${cr2(h.cash)}</div></div>
+        </div>
+        <section class="sheet tablewrap"><table class="small"><thead><tr><th>Market</th><th>How you&rsquo;re there</th><th class="r">Sales</th><th class="r">Your profit</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></section>
+        <div class="row" style="margin-top:20px"><button class="btn primary" data-act="${S.done ? 'final' : 'next'}">${S.done ? 'See the final report' : 'Plan ' + esc(L[S.round])}</button></div>
+      </div>`;
+    app.querySelector('[data-act=next],[data-act=final]')?.focus({ preventScroll: true });
+  }
+
+  function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = (raw || 1) / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function cashChart(series) {
+    const W = 680, H = 280, Lm = 52, R = 110, T = 14, B = 30;
+    const all = series.flatMap((s) => s.values);
+    let lo = Math.min(0, ...all), hi = Math.max(1, ...all) * 1.08;
+    const n = series[0].values.length;
+    const x = (i) => Lm + (i * (W - Lm - R)) / (n - 1);
+    const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
+    const step = niceStep((hi - lo) / 5);
+    let g = '';
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1D2B36' : '#C3C8C2'}"/><text x="${Lm - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#56646E">${v}</text>`;
+    const xl = ['Start'].concat(L.map((l, i) => (i < 2 ? 'Y1' : i < 4 ? 'Y2' : 'Y3') + (i % 2 ? ' H2' : ' H1'))).map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#56646E">${l}</text>`).join('');
+    const ends = [];
+    const lines = series.map((s) => { ends.push({ y: y(s.values[n - 1]), x: x(n - 1), name: s.short, c: s.color }); return `<path d="${s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.5}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`; }).join('');
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cash in crore rupees after each round">${g}${xl}${lines}${ends.map((e) => `<text x="${e.x + 8}" y="${e.y + 4}" font-size="13" font-weight="600" fill="${e.c}">${esc(e.name)}</text>`).join('')}</svg>`;
+  }
+
+  function renderFinal() {
+    const you = GG.summary(S);
+    const bench = GG.STRATEGIES.map((st) => { const run = GG.runStrategy(S.code, st); return { st, run, s: GG.summary(run) }; });
+    const rank = [{ n: 'you', w: you.worth }].concat(bench.map((b) => ({ n: b.st.id, w: b.s.worth }))).sort((a, b) => b.w - a.w);
+    const pos = rank.findIndex((r) => r.n === 'you') + 1;
+    const cash = (st) => [GG.START_CASH].concat(st.history.map((h) => h.cash));
+    const colors = { dist: '#2E7D4F', allin: '#C8372D', steps: '#33424D' };
+    const dashes = { dist: '2 5', allin: '7 5', steps: '12 4 2 4' };
+    const shorts = { dist: 'Distributors', allin: 'All in', steps: 'Step by step' };
+    const series = [{ name: S.name, short: 'You', values: cash(S), color: '#1F5FA8', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cash(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
+    const pathOf = (st, id) => { const modes = st.history.map((h) => h.markets[id].mode); const out = []; modes.forEach((m, i) => { if (i === 0 || m !== modes[i - 1]) out.push((m === 'none' ? 'Out' : GG.modeById(m).name) + (i ? ' (Y' + (Math.floor(i / 2) + 1) + (i % 2 ? ' H2' : ' H1') + ')' : '')); }); return out.join(' → '); };
+    const mktRows = GG.MARKETS.map((mk) => {
+      const profit = S.history.reduce((a, h) => a + (h.markets[mk.id].profit || 0), 0);
+      return `<tr><td><b>${mk.name}</b></td><td>${esc(pathOf(S, mk.id))}</td><td class="r">${cr2(profit)}</td></tr>`;
+    }).join('');
+    const benchRows = [{ name: S.name + ' (you)', desc: 'Your decisions', s: you }].concat(bench.map((b) => ({ name: b.st.name, desc: b.st.desc, s: b.s })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td class="r"><b>${cr(r.s.worth)}</b></td><td class="r">${cr(r.s.cash)}</td><td class="r">${cr(r.s.runRate)}</td><td class="r">${r.s.markets}</td></tr>`).join('');
+    const result = `Go Global | ${S.name} | code ${S.code} | company worth ${cr(you.worth)} | cash ${cr(you.cash)}`;
+    app.innerHTML = bar(GG.ROUNDS) + `
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 6px">
+        <p class="kicker">Final report for ${esc(S.name)}, game code ${esc(S.code)}</p>
+        <h1 style="font-size:clamp(40px,7vw,72px)">${cr(you.worth)}</h1>
+        <p style="font-size:20px;max-width:40em">Company worth after three years: ${cr(you.cash)} in cash plus two years of profit at your final rate of ${cr(you.runRate)} a year. You started with ${cr(GG.START_CASH)}. Against the three standard strategies below, you placed ${pos} of 4.</p>
+      </section>
+      <section class="sheet chart"><h3>Cash after each round</h3>
+        ${cashChart(series)}
+        <div class="legend">${series.map((s) => `<span class="${s.dash ? 'dash' : ''}" style="--c:${s.color}">${esc(s.name)}</span>`).join('')}</div>
+        <p class="tiny muted">Figures in &#8377; crore. Every strategy faced the same world events.</p></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet tablewrap"><h3>Your path in each market</h3>
+          <table class="small"><thead><tr><th>Market</th><th>How you were there</th><th class="r">Total profit</th></tr></thead><tbody>${mktRows}</tbody></table></section>
+        <section class="sheet"><h3>This game&rsquo;s world news</h3>
+          <table class="small"><tbody>${GG.schedule(S.code).sort((a, b) => a.round - b.round).map((e) => `<tr><td style="white-space:nowrap">${esc(L[e.round])}</td><td>${esc(e.title)}${e.id === 'dispute' || e.id === 'viral' ? ' (' + esc(GG.marketById(e.market).name) + ')' : ''}</td></tr>`).join('')}</tbody></table></section>
+      </div>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>How the strategies compare</h3>
+        <table class="small"><thead><tr><th>Strategy</th><th class="r">Company worth</th><th class="r">Cash</th><th class="r">Profit a year at the end</th><th class="r">Markets at the end</th></tr></thead><tbody>${benchRows}</tbody></table></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Talk it over</h3>
+          <ol class="questions small">
+            <li>Which market did you enter first, and why? Was it the biggest, the closest, or the safest?</li>
+            <li>Starting with a distributor or online store earns little. What did it give you besides profit?</li>
+            <li>When was a joint venture a better choice than your own subsidiary, and when was it worse?</li>
+            <li>Which world event hurt you most? Would a different way of entering have protected you?</li>
+            <li>Big companies often enter step by step: export first, then local partners, then their own operations. Did your game support that idea?</li>
+          </ol></section>
+        <section class="sheet"><h3>Send your result</h3>
+          <p class="small">Copy this line and send it to your teacher.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Play again</button></section>
+      </div>
+      <p class="footer">The company, markets, figures and events in this game are made up for teaching.</p>
+    </div>`;
+  }
+
+  app.addEventListener('change', (e) => {
+    const t = e.target;
+    if (view !== 'round' || !t.name || !t.name.startsWith('m-')) return;
+    choice[t.name.slice(2)] = t.value;
+    const name = t.name, val = t.value;
+    keepScroll(renderRound);
+    app.querySelector(`input[name="${name}"][value="${val}"]`)?.focus({ preventScroll: true });
+  });
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t) return;
+    const act = t.dataset.act;
+    if (act === 'newcode') { document.getElementById('code').value = GG.randomCode(); return; }
+    if (act === 'resume') { S = store.get(SAVE_KEY); resetChoice(); go('round'); return; }
+    if (act === 'run') { if (GG.changeCost(S, choice).total > S.cash + 1e-9) return; S = GG.playRound(S, choice); save(); go('result'); return; }
+    if (act === 'next') { resetChoice(); go('round'); return; }
+    if (act === 'final') { go('final'); return; }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderRound); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderRound); return; }
+    if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied. Paste it into your message to your teacher.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -150,15 +150,17 @@ code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4
       <li class="sub"><a href="#cc-follow">Follow-up work</a></li>
       <li><a href="#boundary-bakes">Boundary Bakes (solo)</a></li>
       <li><a href="#season-planner">Season Planner (solo)</a></li>
+      <li><a href="#export-desk">Export Desk (solo)</a></li>
+      <li><a href="#go-global">Go Global (solo)</a></li>
     </ol>
   </nav>
   <article>
     <h1>Teacher&rsquo;s guide</h1>
-    <p style="font-size:20px">Three team games and two solo games. Each team game is built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
+    <p style="font-size:20px">Three team games and four solo games. Each team game is built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
 
     <section id="running">
       <h2>Running a session</h2>
-      <p><b>Solo games.</b> Boundary Bakes and Season Planner are played alone, in class or as homework. There is no class code or login: students type their name and the game code you give them, play, and use <b>Copy my result</b> on the final report to send you a one-line result. Everyone with the same game code faces the same demand, so results can be compared.</p>
+      <p><b>Solo games.</b> Boundary Bakes, Season Planner, Export Desk and Go Global are played alone, in class or as homework. There is no class code or login: students type their name and the game code you give them, play, and use <b>Copy my result</b> on the final report to send you a one-line result. Everyone with the same game code faces the same demand and the same events, so results can be compared.</p>
       <p>Each team game can be played in two ways:</p>
       <ul>
         <li><b>Online team play.</b> Every student uses their own phone or laptop. Team members log in with the same team name and PIN, and their screens stay in sync. In Supplier Showdown each member manages some of the four parts, and orders go out only when every member taps Ready. In Warehouse Rush members take turns as the picker while the others help plan the route. In Coffee Chain each member runs one stage of the supply chain and sees only that stage. Your <a href="teacher.html">teacher dashboard</a> shows every team&rsquo;s progress and score live. This works in a classroom and in an online class on Google Meet or Zoom (put teams in breakout rooms so they can talk). It needs the <a href="#setup">one-time setup</a> below.</li>
@@ -494,6 +496,88 @@ code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4
       <ol>
         <li>Build the level and chase plans in a spreadsheet and check the game&rsquo;s costs.</li>
         <li>Redo the plan if the layoff cost doubled, or if overtime was capped at 10%.</li>
+      </ol>
+    </section>
+
+    <section id="export-desk">
+      <h2 class="game">Export Desk (solo)</h2>
+      <p>Students run the export desk at a pump maker in Rajkot. Eight orders arrive from customers in Hamburg, New York, Dubai and Mombasa, each with a value in euros or US dollars and a delivery deadline. For each order they choose a shipping route, decide whether to lock the exchange rate with a forward contract, and decide whether to insure the cargo. Delays, damage and currency moves are revealed after shipping.</p>
+      <h3>Learning outcomes</h3>
+      <ol>
+        <li>Choose a transport mode by weighing freight cost against transit time, deadlines and risk.</li>
+        <li>Explain exchange-rate risk and how a forward contract removes it, at a small cost.</li>
+        <li>Explain why exporters insure cargo even though most shipments arrive safely.</li>
+        <li>Use market news (route disruptions, strikes, price spikes) in logistics decisions.</li>
+      </ol>
+      <h3>Lesson plan (about 30 minutes)</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;5</td><td>Introduce the three decisions and the costs on the start page. Give the class one game code.</td></tr>
+        <tr><td>5&ndash;20</td><td>Students ship all eight orders.</td></tr>
+        <tr><td>20&ndash;30</td><td>Collect result lines. Compare the cheapest student with the most cautious one, then use the final report&rsquo;s strategy table to discuss matching the route to the deadline.</td></tr>
+      </tbody></table>
+      <h3>How it works</h3>
+      <ul>
+        <li><b>Money:</b> the customer pays in euros (&#8377;92 per &euro; today) or dollars (&#8377;84 per $) when the goods arrive. Making the pumps costs 72% of the order value. Late delivery costs 1% of the order value per day, up to 15%.</li>
+        <li><b>Routes:</b> to Hamburg, sea via Suez takes 26 days (&#8377;2.0 lakh), via the Cape of Good Hope 36 days (&#8377;2.6 lakh), sea to Dubai then air 12 days (&#8377;5.2 lakh), air 4 days (&#8377;9 lakh). New York is similar but slower and dearer. Dubai and Mombasa have sea or air only.</li>
+        <li><b>Currency:</b> the rupee drifts up to 3% either way while goods travel, and once per game (on order 2, 3, 5, 6 or 7) the foreign currency jumps: down 7% or up 6% against the rupee. A forward contract locks today&rsquo;s rate, less 0.6%.</li>
+        <li><b>Damage:</b> the chance of damage is 7% by sea, 5% by sea-air and 2% by air. Damaged cargo loses 35% of its value. Insurance costs 0.4% of the order value and pays the full loss.</li>
+        <li><b>Events:</b> one Suez blockage adds 14 days to Suez sailings for one order (orders 3, 4, 6 or 7), usually with a warning. A Hamburg dock strike adds 7 days to one sea shipment to Germany, sometimes with a warning. In 60% of games, one order (4, 6 or 8) comes during an air cargo squeeze that raises air and sea-air prices by 80%, shown before booking.</li>
+      </ul>
+      <p>Across 300 test games: <b>Cheapest every time</b> averaged &#8377;91.7 lakh profit but ranged from a loss of &#8377;18 lakh to a profit of &#8377;120 lakh. <b>Fastest and safest every time</b> averaged &#8377;72.7 lakh, with almost no variation. <b>Match the route to the deadline</b> (cheapest route expected to arrive with 3 days to spare, rate locked, cargo insured) averaged &#8377;110 lakh and was best in 89% of games. Students who also react to the shipping news can beat it.</p>
+      <h3>Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>When was air worth it?</dt>
+        <dd>Only when a deadline couldn&rsquo;t be met by sea, as with the short Dubai and Hamburg orders. Late penalties of up to 15% cost far more than the extra freight. When there was plenty of time, air just threw money away.</dd>
+        <dt>Why hedge if the rate might move in your favour?</dt>
+        <dd>The exporter&rsquo;s business is making pumps, not betting on currencies. The forward contract costs 0.6% and turns an uncertain amount into a known one, so prices and profits can be planned.</dd>
+        <dt>Why insure when damage is rare?</dt>
+        <dd>The premium is small (0.4%), but a single uninsured damaged shipment can lose 35% of a large order and wipe out the profit on several others.</dd>
+      </dl>
+      <h3>Follow-up work</h3>
+      <ol>
+        <li>Explain the difference between FOB and CIF Incoterms, and who would have paid the freight and insurance in this game under each.</li>
+        <li>Compare the landed cost of one order shipped by sea and by air, including the money tied up while the goods travel.</li>
+      </ol>
+    </section>
+
+    <section id="go-global">
+      <h2 class="game">Go Global (solo)</h2>
+      <p>Students lead international expansion for Sona Herbals, an Ayurvedic skincare brand from Ahmedabad, with &#8377;10 crore to invest. Over six rounds (three years in half-year steps) they choose how to be present in five markets: the UAE, the UK, the USA, Germany and Kenya. In each market they can be absent or use an online store, a distributor, a joint venture or their own subsidiary. World news arrives after each round&rsquo;s decisions.</p>
+      <h3>Learning outcomes</h3>
+      <ol>
+        <li>Compare entry modes on cost, control, risk and profit share.</li>
+        <li>Explain the case for entering step by step: learning about a market before committing.</li>
+        <li>Weigh market size and growth against distance and country risk.</li>
+        <li>Explain how local production protects against tariffs, and how fixed costs raise risk in a downturn.</li>
+      </ol>
+      <h3>Lesson plan (about 40 minutes)</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;8</td><td>Walk through the entry-mode table on the start page: who reaches how many buyers, who keeps how much of the margin, and what each costs. Give one game code.</td></tr>
+        <tr><td>8&ndash;28</td><td>Students play the six rounds.</td></tr>
+        <tr><td>28&ndash;40</td><td>Collect results. Ask the highest and lowest scorers to describe their path in each market, then compare &ldquo;All in from day one&rdquo; with &ldquo;Step by step&rdquo;.</td></tr>
+      </tbody></table>
+      <h3>How it works</h3>
+      <ul>
+        <li><b>Markets</b> (market size per half-year, growth a year): UAE &#8377;5 crore, 12%; UK &#8377;7 crore, 6%; USA &#8377;16 crore, 8%; Germany &#8377;9 crore, 4%; Kenya &#8377;3 crore, 24%. Set-up costs rise with distance (USA 1.6&times;, Germany 1.4&times;, Kenya 1.3&times;, UK 1.2&times;).</li>
+        <li><b>Entry modes:</b> online store (reaches 20% of buyers, keeps 32% of sales, &#8377;0.2 crore set-up, &#8377;0.1 crore a round); distributor (50%, 15%, &#8377;0.3 crore); joint venture (70%, 18% after a 50:50 split, &#8377;1.2 crore, &#8377;0.3 crore a round); own subsidiary (90%, 36%, &#8377;2.5 crore, &#8377;0.7 crore a round). New operations ramp up over two or three rounds. Leaving a joint venture or subsidiary costs money.</li>
+        <li><b>Learning:</b> a joint venture or subsidiary reaches 40% of its normal buyers with no experience in the market, 70% after one round there, and 100% after two. Opened with no experience, there is a 50% chance the product needs reworking (&#8377;1 crore, and sales down 60% for two rounds); with experience, 10%.</li>
+        <li><b>World news</b> (same for everyone with the same code): Kenyan shilling falls 25%; a 20% US tariff hits all modes except a subsidiary, which produces locally; German rules stop imported products for one round; a joint-venture partner dispute in one market; the pound falls 10%; a spending slump cuts US sales by 35% for two rounds; and a viral boost lifts sales by 30% in one market.</li>
+        <li><b>Cash and score:</b> changes are paid up front and can&rsquo;t exceed cash. If cash falls below zero, interest is charged at 12% a round. Company worth = cash at the end plus two years of profit at the final rate.</li>
+      </ul>
+      <p>Across 300 test games: <b>Distributors everywhere</b> averaged &#8377;37.2 crore, <b>All in from day one</b> &#8377;57.6 crore (ranging from &#8377;47.6 to &#8377;71.2 crore) and <b>Step by step</b> &#8377;60.4 crore, best in 89% of games. All in wins only when its gamble on untested markets pays off.</p>
+      <h3>Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>Why not open subsidiaries everywhere straight away?</dt>
+        <dd>They are expensive, take time to ramp up and often misread an unfamiliar market. A cheap first step (distributor or online) builds knowledge, shows which markets are worth it, and cuts the risk of a costly mistake. This is the logic of gradual internationalisation.</dd>
+        <dt>When is a joint venture better than a subsidiary?</dt>
+        <dd>When the market is smaller or less familiar: the partner brings local knowledge, and set-up costs are lower. The price is sharing profit and the risk of partner disputes.</dd>
+        <dt>How did local production help?</dt>
+        <dd>A subsidiary avoided the US tariff and the German import rule. Its higher fixed costs, however, hurt more in the US spending slump.</dd>
+      </dl>
+      <h3>Follow-up work</h3>
+      <ol>
+        <li>Rank the five markets for a real Indian brand of the student&rsquo;s choice using size, growth, distance and risk.</li>
+        <li>Write a one-page entry plan for one market: which mode first, what would make you commit more, and when.</li>
       </ol>
     </section>
     <p class="footer">Supply Chain Games. All content is fictional and for teaching.</p>
