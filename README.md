@@ -1,6 +1,6 @@
 # Supply Chain Games
 
-Three free classroom games for supply chain and operations management. Students play in teams, each on their own phone or laptop, in a classroom or an online class. They can also play solo. Nothing to install.
+Five free classroom games for supply chain and operations management. There are three team games, played in a classroom or an online class with each student on their own phone or laptop, and two solo games for practice or homework. Nothing to install.
 
 **Play:** https://ashir-mansuri.github.io/supply-chain-games/
 
@@ -9,6 +9,8 @@ Three free classroom games for supply chain and operations management. Students 
 | **Supplier Showdown** | About 30 minutes | Supplier selection, total cost of ownership, dual sourcing, buffer stock, supply risk |
 | **Warehouse Rush** | About 20 minutes | Pareto principle, ABC analysis, slotting, pick routes, batch picking, picking productivity |
 | **Coffee Chain** | About 25 minutes | Bullwhip effect, lead times, information sharing, stock versus backlog costs (modelled on the beer game) |
+| **Boundary Bakes** (solo) | About 15 minutes | Perishable stock, uncertain demand, cost of too many versus too few, critical ratio |
+| **Season Planner** (solo) | About 20 minutes | Aggregate planning, level versus chase strategy, overtime, subcontracting, building stock |
 
 ---
 
@@ -205,6 +207,61 @@ The final report shows:
 
 ---
 
+### Boundary Bakes (solo)
+
+**Your job:** You run a bakery stall outside a cricket stadium in Ahmedabad during a 10-day T20 tournament. Every morning, before the gates open, you decide how many **brownie boxes** and **fresh sandwiches** to make.
+
+**Goal:** The highest total profit by the end of the final.
+
+| Product | Costs you | You sell it for | If it doesn't sell that day |
+| --- | --- | --- | --- |
+| Brownie box | ₹120 | ₹260 | Sold next morning to a café for ₹60 |
+| Fresh sandwich | ₹80 | ₹100 | Thrown away (worth ₹0) |
+
+#### How to play
+1. Open **Boundary Bakes**, type your name and the game code your teacher gives you, then tap **Start the game**.
+2. **Read today's forecast** for each product. It shows the expected number of customers and the range they usually fall in ("on two days out of three, between … and …"). Crowds grow as the tournament heads for the final.
+3. **Decide how many to make** of each product. Type a number or use **−5** and **+5**. The cost of making them is shown beside the number.
+4. Tap **Open the stall**.
+5. **Read the results:** how many fans wanted each product, how many you sold, how many were left over, how many fans you turned away, and your profit for the day.
+6. Tap **Next day** and repeat for all 10 days.
+
+#### At the end
+The final report shows your profit and the best possible profit. It compares you with **Make the forecast**, **Critical ratio** and **Perfect foresight**, charts what you made against what fans wanted, and explains the critical ratio. Tap **Copy my result** and send the line to your teacher.
+
+**Tip:** Compare what one too few costs you with what one too many costs you, separately for each product.
+
+---
+
+### Season Planner (solo)
+
+**Your job:** You run production at a garment unit in Surat that makes school uniform sets. Orders from shops grow from January to a big peak in May, before schools reopen, then drop in June.
+
+**Goal:** Meet the orders at the **lowest total cost** for the season.
+
+**Your levers each month:**
+- **Workers:** each makes 400 sets a month and costs ₹16,000 a month. Hiring costs ₹10,000 per worker (up to 20 a month); a layoff costs ₹15,000.
+- **Overtime:** none, +10%, +20% or +25% extra output, at ₹60 per set.
+- **Subcontracting:** up to 5,000 sets a month from another factory, at ₹90 per set.
+- **Stock:** sets made early wait in the store at ₹8 per set per month.
+
+**What can go wrong:** orders you can't fill are lost at ₹150 per set. Actual orders can be up to 8% above or below the forecast. Sets left after June are cleared at a loss of ₹50 each.
+
+#### How to play
+1. Open **Season Planner**, type your name and the game code, then tap **Start the game**.
+2. **Look at the forecast chart** for all six months before you decide. The yellow bar is this month. You start with 20 workers and 2,000 sets in stock.
+3. **Set this month's plan:** workers (**−5**, **−1**, **+1**, **+5**), overtime, and subcontracting (in steps of 250 or 1,000).
+4. **Check the preview.** It shows what you'll make, the stock you'll have left (or how many you'll be short) if orders match the forecast, and the expected cost for the month.
+5. Tap **Run [month]**. You then see the actual orders, sets made, orders lost, stock at month end and the month's costs.
+6. Tap **Plan [next month]** and repeat until June.
+
+#### At the end
+The final report shows your total cost and cost per set. A chart shows orders, production and stock. Your plan is compared with a **Level plan**, a **Chase plan** and the **Best mixed plan**, and a table shows where the money went. Tap **Copy my result** and send the line to your teacher.
+
+**Tip:** Build some stock before the peak, but count what storing it costs.
+
+---
+
 ### For teachers
 
 #### Running an online class
@@ -217,7 +274,11 @@ The final report shows:
 
 To open the same class on another device, use **Open a class from another device** with the class code and your teacher password.
 
-#### Practice games and solo play
+#### Solo games (Boundary Bakes and Season Planner)
+- Give the class one game code, so everyone faces the same demand.
+- Students play on their own and tap **Copy my result** at the end. They paste the line into the class group or a form for you.
+
+#### Practice games and solo play in the team games
 - Teams or individual students choose **Practise on one device** on the game's start page.
 - To compare results, open **Open the practice scoreboard** on your own device and type in each team's final result.
 - For an individual graded activity with live scores, create an online class with one team per student and rename each team to the student's name.
@@ -237,8 +298,23 @@ The **teacher's guide** (`teacher-guide.html`) has 60-minute lesson plans, the r
 | `supplier-showdown.html` | Supplier Showdown game |
 | `warehouse-rush.html` | Warehouse Rush game |
 | `coffee-chain.html` | Coffee Chain game |
+| `boundary-bakes.html` | Boundary Bakes solo game |
+| `season-planner.html` | Season Planner solo game |
 | `teacher.html` | Teacher dashboard |
 | `teacher-guide.html` | Teacher's guide |
 | `firebase-config.js` | Online play settings (paste your Firebase config here) |
 
 There are no folders to upload.
+
+## Publishing on GitHub Pages
+
+1. Upload the files above and this README to the root of the repository.
+2. Go to **Settings > Pages**.
+3. Under **Build and deployment**, set **Source** to **Deploy from a branch**, choose **main** and **/ (root)**, then **Save**.
+4. After a minute or two, the site is live at `https://<your-username>.github.io/supply-chain-games/`.
+
+## Switching on online team play
+
+Online play uses a free Google Firebase Realtime Database: up to 100 devices connected at once, no payment card. The click-by-click steps and the database rules to copy are in the teacher's guide, under **Online team play > One-time setup**. Without it, both games still work in **Practise on one device** mode.
+
+All companies, products, prices and events in the games are made up for teaching.

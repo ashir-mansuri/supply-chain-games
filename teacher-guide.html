@@ -148,15 +148,18 @@ code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4
       <li class="sub"><a href="#cc-rules">How it works</a></li>
       <li class="sub"><a href="#cc-debrief">Debrief answers</a></li>
       <li class="sub"><a href="#cc-follow">Follow-up work</a></li>
+      <li><a href="#boundary-bakes">Boundary Bakes (solo)</a></li>
+      <li><a href="#season-planner">Season Planner (solo)</a></li>
     </ol>
   </nav>
   <article>
     <h1>Teacher&rsquo;s guide</h1>
-    <p style="font-size:20px">Three games, each built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
+    <p style="font-size:20px">Three team games and two solo games. Each team game is built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
 
     <section id="running">
       <h2>Running a session</h2>
-      <p>Each game can be played in two ways:</p>
+      <p><b>Solo games.</b> Boundary Bakes and Season Planner are played alone, in class or as homework. There is no class code or login: students type their name and the game code you give them, play, and use <b>Copy my result</b> on the final report to send you a one-line result. Everyone with the same game code faces the same demand, so results can be compared.</p>
+      <p>Each team game can be played in two ways:</p>
       <ul>
         <li><b>Online team play.</b> Every student uses their own phone or laptop. Team members log in with the same team name and PIN, and their screens stay in sync. In Supplier Showdown each member manages some of the four parts, and orders go out only when every member taps Ready. In Warehouse Rush members take turns as the picker while the others help plan the route. In Coffee Chain each member runs one stage of the supply chain and sees only that stage. Your <a href="teacher.html">teacher dashboard</a> shows every team&rsquo;s progress and score live. This works in a classroom and in an online class on Google Meet or Zoom (put teams in breakout rooms so they can talk). It needs the <a href="#setup">one-time setup</a> below.</li>
         <li><b>Practice on one device.</b> A team gathers round one phone or laptop. No setup or class code is needed, and it works even if online play isn&rsquo;t switched on. You type each team&rsquo;s result into the practice scoreboard on your projector.</li>
@@ -413,6 +416,84 @@ code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4
         <li><b>Draw the chain.</b> Students sketch their own stage&rsquo;s orders and stock from the final report, then explain each turning point.</li>
         <li><b>Bullwhip ratio.</b> Using the order swing figures, rank the stages and explain the ranking in one paragraph.</li>
         <li><b>Remedy proposal.</b> Recommend two changes to the chain (for example sharing sales data, or cutting shipping time to one week) and predict their effect.</li>
+      </ol>
+    </section>
+
+    <section id="boundary-bakes">
+      <h2 class="game">Boundary Bakes (solo)</h2>
+      <p>Students run a bakery stall outside a cricket stadium in Ahmedabad during a 10-day T20 tournament. Each morning they decide how many <b>brownie boxes</b> and <b>fresh sandwiches</b> to make, before they know how many fans will come. Unsold brownies can be sold to a caf&eacute; the next morning for part of their cost; unsold sandwiches are thrown away. This is the classic newsvendor (single-period stock) problem.</p>
+      <h3>Learning outcomes</h3>
+      <ol>
+        <li>Explain the trade-off between the cost of having too much and the cost of having too little.</li>
+        <li>Calculate the critical ratio and use it to choose a stock level above or below the forecast.</li>
+        <li>Explain why the best service level differs between products.</li>
+      </ol>
+      <h3>Lesson plan (about 30 minutes)</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;3</td><td>Give the class one game code. Students open Boundary Bakes on their own devices.</td></tr>
+        <tr><td>3&ndash;18</td><td>Students play the 10 days. Don&rsquo;t mention the critical ratio yet.</td></tr>
+        <tr><td>18&ndash;30</td><td>Collect results (students paste their copied result line in the class group). Ask who made more than the forecast, and of which product. Then walk through the critical ratio box on the final report.</td></tr>
+      </tbody></table>
+      <h3>How it works</h3>
+      <table class="small"><thead><tr><th>Product</th><th class="r">Cost</th><th class="r">Price</th><th class="r">Leftover value</th><th class="r">One too few costs</th><th class="r">One too many costs</th><th class="r">Critical ratio</th></tr></thead><tbody>
+        <tr><td>Brownie box</td><td class="r">&#8377;120</td><td class="r">&#8377;260</td><td class="r">&#8377;60</td><td class="r">&#8377;140</td><td class="r">&#8377;60</td><td class="r">0.70</td></tr>
+        <tr><td>Fresh sandwich</td><td class="r">&#8377;80</td><td class="r">&#8377;100</td><td class="r">&#8377;0</td><td class="r">&#8377;20</td><td class="r">&#8377;80</td><td class="r">0.20</td></tr>
+      </tbody></table>
+      <p>Each day&rsquo;s forecast rises as the tournament reaches the final (brownies from 30 to 85, sandwiches from 50 to 70). Actual demand varies around the forecast with a spread of 30%, and the screen tells students the range they can expect on two days out of three. The best amount to make is the forecast plus <i>z</i> spreads, where <i>z</i> comes from the critical ratio: about +0.5 for brownies and &minus;0.8 for sandwiches.</p>
+      <p>Across 300 test games: <b>Make the forecast</b> averaged &#8377;61,777 profit, <b>Critical ratio</b> &#8377;65,789 (better in 93% of games) and <b>Perfect foresight</b> &#8377;80,702. Making 20% extra of both products, a common &ldquo;play safe&rdquo; instinct, does worse than simply making the forecast.</p>
+      <h3>Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>Why make more brownies than the forecast but fewer sandwiches?</dt>
+        <dd>A missed brownie sale loses &#8377;140, but a leftover brownie loses only &#8377;60, so it pays to over-make. A missed sandwich sale loses only &#8377;20, but a leftover sandwich loses &#8377;80, so it pays to under-make and accept some sold-out days.</dd>
+        <dt>Isn&rsquo;t turning customers away bad service?</dt>
+        <dd>It is a cost, and the critical ratio weighs it against waste. If goodwill matters, add it to the cost of one too few; the ratio rises and you make more.</dd>
+        <dt>What if leftover sandwiches could be sold for &#8377;40?</dt>
+        <dd>One too many would then cost &#8377;40, the ratio becomes 20 &divide; 60 = 0.33, and the best amount moves up towards the forecast.</dd>
+      </dl>
+      <h3>Follow-up work</h3>
+      <ol>
+        <li>Calculate the critical ratio and best amount for a flower seller, a newspaper vendor or a bakery of the student&rsquo;s choice.</li>
+        <li>Explain in one paragraph why a fashion retailer orders less of a risky new style than its forecast.</li>
+      </ol>
+    </section>
+
+    <section id="season-planner">
+      <h2 class="game">Season Planner (solo)</h2>
+      <p>Students run production at a garment unit in Surat that makes school uniform sets. Orders build from January to a peak of about 18,000 sets in May, before schools reopen, then fall in June. Each month students set the number of workers, the overtime level and the amount sent to a subcontractor. Stock can be built ahead of the peak. This is aggregate (sales and operations) planning.</p>
+      <h3>Learning outcomes</h3>
+      <ol>
+        <li>Compare level, chase and mixed strategies for seasonal demand.</li>
+        <li>Weigh the costs of hiring, layoffs, overtime, subcontracting, storage and lost sales.</li>
+        <li>Build and defend a six-month production plan.</li>
+      </ol>
+      <h3>Lesson plan (about 40 minutes)</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;5</td><td>Show the start page and the levers. Give one game code to the class.</td></tr>
+        <tr><td>5&ndash;25</td><td>Students plan and run the six months. Encourage them to look at the whole forecast before deciding January.</td></tr>
+        <tr><td>25&ndash;40</td><td>Collect results. Compare a student who used a level plan with one who chased demand. Use the &ldquo;Where the money went&rdquo; table to discuss each cost.</td></tr>
+      </tbody></table>
+      <h3>How it works</h3>
+      <ul>
+        <li>Forecast: January 7,000; February 8,000; March 10,000; April 14,000; May 18,000; June 9,000 sets. Actual orders are within 8% of the forecast.</li>
+        <li>Each worker makes 400 sets a month and costs &#8377;16,000 a month. Hiring costs &#8377;10,000 per worker (up to 20 a month); a layoff costs &#8377;15,000.</li>
+        <li>Overtime adds up to 25% of regular output at &#8377;60 per set. Subcontracting supplies up to 5,000 sets a month at &#8377;90 per set.</li>
+        <li>Stock costs &#8377;8 per set per month. Lost orders cost &#8377;150 per set. Sets left after June are cleared at a loss of &#8377;50 each.</li>
+        <li>The game starts with 20 workers and 2,000 sets in stock.</li>
+      </ul>
+      <p>Across 200 test games: the <b>Level plan</b> (27 workers all season) averaged &#8377;31.9 lakh, the <b>Chase plan</b> &#8377;35.0 lakh and the <b>Best mixed plan</b> &#8377;30.7 lakh. The best mixed plan was found by the computer searching every combination for the forecast: it builds a modest stock, uses overtime in April and May, and never subcontracts.</p>
+      <h3>Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>Why does chasing demand cost so much here?</dt>
+        <dd>The peak is high and short, so a chase plan hires many workers for one or two months and then pays to lay them off. Hiring and layoff costs outweigh the storage it saves.</dd>
+        <dt>Why does the best plan use overtime but not subcontracting?</dt>
+        <dd>Overtime costs &#8377;60 a set and subcontracting &#8377;90, while a regular set costs &#8377;40 in wages plus storage while it waits. Overtime is a cheap way to add short-term capacity; subcontracting is the most expensive option and is only worth it to avoid lost sales.</dd>
+        <dt>What about the people being laid off?</dt>
+        <dd>Real companies weigh morale, skills and reputation, which this game doesn&rsquo;t charge for. That is one reason many firms prefer level or mixed plans even when chase looks cheaper on paper.</dd>
+      </dl>
+      <h3>Follow-up work</h3>
+      <ol>
+        <li>Build the level and chase plans in a spreadsheet and check the game&rsquo;s costs.</li>
+        <li>Redo the plan if the layoff cost doubled, or if overtime was capped at 10%.</li>
       </ol>
     </section>
     <p class="footer">Supply Chain Games. All content is fictional and for teaching.</p>

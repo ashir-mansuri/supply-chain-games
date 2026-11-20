@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Supply Chain Games</title>
-<meta name="description" content="Free classroom games for supply chain and operations management: Supplier Showdown, Warehouse Rush and Coffee Chain.">
+<meta name="description" content="Free classroom games for supply chain and operations management: Supplier Showdown, Warehouse Rush, Coffee Chain, Boundary Bakes and Season Planner.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -108,6 +108,9 @@ td.r, th.r { text-align: right; }
 }
 .door.blue .no { background: var(--blue); color: #fff; }
 .door.brown .no { background: #6B4226; color: #fff; }
+.door.green .no { background: var(--green); color: #fff; }
+.door.red .no { background: var(--red); color: #fff; }
+.solo-tag { display: inline-block; font-size: 13px; font-weight: 600; background: var(--concrete); padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
 .dock-body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
 .dock-body h2 { font-size: clamp(36px, 5vw, 50px); margin-bottom: 10px; }
 .dock-body .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 6px 0 18px; font-size: 15px; }
@@ -128,7 +131,7 @@ td.r, th.r { text-align: right; }
 <main class="wrap">
   <section class="hero">
     <h1>Supply Chain Games</h1>
-    <p>Three classroom games about the decisions that keep goods moving. Students play in teams, each on their own phone or laptop, in class or online. Nothing to install.</p>
+    <p>Five classroom games about the decisions that keep goods moving. Three team games, played in class or online with each student on their own phone or laptop, and two solo games for practice or homework. Nothing to install.</p>
   </section>
   <section class="docks" aria-label="Games">
     <article class="dock">
@@ -168,6 +171,32 @@ td.r, th.r { text-align: right; }
           <dt>Topics</dt><dd>Bullwhip effect, lead times, information sharing, stock versus backlog costs</dd>
         </dl>
         <a class="btn primary" href="coffee-chain.html">Play Coffee Chain</a>
+      </div>
+    </article>
+    <article class="dock">
+      <div class="door green" aria-hidden="true"><span class="no">Dock 4</span></div>
+      <div class="dock-body">
+        <h2>Boundary Bakes <span class="solo-tag">Solo</span></h2>
+        <p>Run a bakery stall outside a cricket stadium during a 10-day tournament. Each morning, decide how many brownies and sandwiches to make. Too few and fans walk away; too many and the leftovers lose money.</p>
+        <dl class="facts">
+          <dt>Players</dt><dd>One student, on any phone or laptop</dd>
+          <dt>Time</dt><dd>About 15 minutes, plus debrief</dd>
+          <dt>Topics</dt><dd>Perishable stock, uncertain demand, cost of too many versus too few, critical ratio</dd>
+        </dl>
+        <a class="btn primary" href="boundary-bakes.html">Play Boundary Bakes</a>
+      </div>
+    </article>
+    <article class="dock">
+      <div class="door red" aria-hidden="true"><span class="no">Dock 5</span></div>
+      <div class="dock-body">
+        <h2>Season Planner <span class="solo-tag">Solo</span></h2>
+        <p>Plan six months of production at a school uniform factory in Surat, with a big peak before schools reopen. Hire, run overtime, subcontract or build stock early, and meet the orders at the lowest cost.</p>
+        <dl class="facts">
+          <dt>Players</dt><dd>One student, on any phone or laptop</dd>
+          <dt>Time</dt><dd>About 20 minutes, plus debrief</dd>
+          <dt>Topics</dt><dd>Aggregate planning, level versus chase strategy, capacity, overtime, subcontracting</dd>
+        </dl>
+        <a class="btn primary" href="season-planner.html">Play Season Planner</a>
       </div>
     </article>
   </section>
