@@ -120,6 +120,8 @@ td.r, th.r { text-align: right; }
 .confirm { color: var(--red); font-weight: 600; }
 .classlist li { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .classlist { list-style: none; padding: 0; margin: 0; }
+label.share { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; margin-top: 10px; font-size: 15px; }
+label.share input { width: 18px; height: 18px; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -221,13 +223,15 @@ const ONLINE = (() => {
       if (v === null || v === undefined) delete o[last]; else o[last] = clone(v);
     }
     window.addEventListener('storage', (e) => { if (e.key === KEY) notify(); });
+    // tabs take turns writing, so one tab never overwrites another's change
+    const withLock = (fn) => (navigator.locks && navigator.locks.request ? navigator.locks.request('scg-demo-db', () => fn()) : Promise.resolve(fn()));
     const api = {
       mode: 'demo',
       async init() {},
       async get(p) { const v = getAt(load(), p); return v === undefined ? null : clone(v); },
-      async set(p, v) { const t = load(); setAt(t, p, v); save(t); },
-      async update(p, obj) { const t = load(); Object.keys(obj).forEach((k) => setAt(t, p + '/' + k, obj[k])); save(t); },
-      async remove(p) { const t = load(); setAt(t, p, null); save(t); },
+      set(p, v) { return withLock(() => { const t = load(); setAt(t, p, v); save(t); }); },
+      update(p, obj) { return withLock(() => { const t = load(); Object.keys(obj).forEach((k) => setAt(t, p + '/' + k, obj[k])); save(t); }); },
+      remove(p) { return withLock(() => { const t = load(); setAt(t, p, null); save(t); }); },
       on(p, cb) {
         let last;
         const l = { check() { const v = getAt(load(), p); const s = JSON.stringify(v === undefined ? null : v); if (s !== last) { last = s; cb(JSON.parse(s)); } } };
@@ -235,13 +239,15 @@ const ONLINE = (() => {
         setTimeout(() => l.check(), 0);
         return () => listeners.delete(l);
       },
-      async transaction(p, fn) {
-        const t = load();
-        const cur = getAt(t, p);
-        const out = fn(cur === undefined ? null : clone(cur));
-        if (out === undefined) return { committed: false, value: cur === undefined ? null : cur };
-        setAt(t, p, out); save(t);
-        return { committed: true, value: out };
+      transaction(p, fn) {
+        return withLock(() => {
+          const t = load();
+          const cur = getAt(t, p);
+          const out = fn(cur === undefined ? null : clone(cur));
+          if (out === undefined) return { committed: false, value: cur === undefined ? null : cur };
+          setAt(t, p, out); save(t);
+          return { committed: true, value: out };
+        });
       },
       presence(p, info) {
         const beat = () => api.update(p, Object.assign({}, info, { online: true, seen: Date.now() }));
@@ -326,8 +332,8 @@ const ONLINE = (() => {
     return { code, meta, teams };
   }
 
-  const GAME_NAMES = { ss: 'Supplier Showdown', wr: 'Warehouse Rush' };
-  const GAME_PAGES = { ss: 'supplier-showdown.html', wr: 'warehouse-rush.html' };
+  const GAME_NAMES = { ss: 'Supplier Showdown', wr: 'Warehouse Rush', cc: 'Coffee Chain' };
+  const GAME_PAGES = { ss: 'supplier-showdown.html', wr: 'warehouse-rush.html', cc: 'coffee-chain.html' };
 
   /* the join screen, shared by both games */
   function joinUI(el, game, onJoined) {
@@ -474,7 +480,9 @@ const ONLINE = (() => {
           <div class="radio" role="radiogroup">
             <label><input type="radio" name="cGame" value="ss" checked> Supplier Showdown</label>
             <label><input type="radio" name="cGame" value="wr"> Warehouse Rush</label>
+            <label><input type="radio" name="cGame" value="cc"> Coffee Chain</label>
           </div>
+          <label class="share"><input type="checkbox" id="cShare"> <span>Coffee Chain only: every stage can see the caf&eacute;&rsquo;s customer sales (information sharing)</span></label>
           <div style="height:12px"></div>
           <div class="grid2" style="gap:12px">
             <div><label for="cTeams">Number of teams</label>
@@ -520,6 +528,7 @@ const ONLINE = (() => {
     const game = (document.querySelector('input[name=cGame]:checked') || {}).value || 'ss';
     const n = Number(document.getElementById('cTeams').value);
     const pw = document.getElementById('cPw').value;
+    const share = game === 'cc' && document.getElementById('cShare').checked;
     if (!name) { err = 'Enter a class name.'; return renderHome(); }
     if (pw.length < 4) { err = 'The teacher password needs at least 4 characters.'; return renderHome(); }
     busy = true; renderHome();
@@ -533,7 +542,7 @@ const ONLINE = (() => {
         teams['t' + i] = { name: 'Team ' + i, order: i, pinHash: ONLINE.pinHash(code, pin), pinEnc: ONLINE.encodePin(pin, pw) };
       }
       const created = Date.now();
-      await db.set('classes/' + code, { meta: { name, game, created, teacherHash: ONLINE.teacherHash(code, pw) }, teams });
+      await db.set('classes/' + code, { meta: { name, game, created, share, teacherHash: ONLINE.teacherHash(code, pw) }, teams });
       remember({ code, name, game, created, pw });
       busy = false;
       startDash(code, pw);
@@ -582,7 +591,7 @@ const ONLINE = (() => {
       <div class="${projector ? 'projector' : ''}">
       <section class="dash-head">
         <div>
-          <p class="kicker" style="margin:0">${esc(ONLINE.GAME_NAMES[g])}</p>
+          <p class="kicker" style="margin:0">${esc(ONLINE.GAME_NAMES[g])}${g === 'cc' ? (cls.meta.share ? ', customer sales shared' : ', classic rules (customer sales hidden)') : ''}</p>
           <h1 style="font-size:clamp(36px,6vw,60px);margin-bottom:6px">${esc(cls.meta.name)}</h1>
           <p style="font-size:19px;margin:0">Students open <b>${esc(siteBase() + gamePage())}</b>, choose <b>Join your team</b> and enter the class code.</p>
         </div>
@@ -594,7 +603,7 @@ const ONLINE = (() => {
         <button class="btn" data-act="addteam">Add a team</button>
         <button class="btn ghost" data-act="home">All my classes</button>`}
       </div>
-      <section class="sheet"><h2 style="margin-bottom:12px">${g === 'ss' ? 'Profit so far' : 'Lines picked per hour'}</h2><div id="lb" class="lb"></div></section>
+      <section class="sheet"><h2 style="margin-bottom:12px">${g === 'ss' ? 'Profit so far' : g === 'cc' ? 'Team cost so far (lowest first)' : 'Lines picked per hour'}</h2><div id="lb" class="lb"></div></section>
       ${projector ? '' : `
       <section class="sheet tablewrap" style="margin-top:16px"><h3>Teams</h3><div id="teamsTable"></div></section>
       <div class="grid2" style="margin-top:16px">
@@ -639,6 +648,7 @@ const ONLINE = (() => {
     const b = cls.board[t];
     if (!b) return 'Not started';
     if (cls.meta.game === 'ss') return b.done ? 'Finished' : 'Planning ' + MONTHS[b.month];
+    if (cls.meta.game === 'cc') return b.done ? 'Finished' : 'Week ' + b.week;
     if (b.done) return 'Finished';
     if (b.view === 'abc') return 'Re-slotting the warehouse';
     return 'Round ' + b.round + ': ' + ROUND_NAMES[b.round] + (b.view === 'play' ? ', trip ' + ((b.tripIdx || 0) + 1) : '');
@@ -647,12 +657,14 @@ const ONLINE = (() => {
     const b = cls.board[t];
     if (!b) return null;
     if (cls.meta.game === 'ss') return b.profit;
+    if (cls.meta.game === 'cc') return b.cost;
     return b.r3 || b.r2 || b.r1 || null;
   }
   function scoreText(t) {
     const b = cls.board[t];
     if (!b) return '';
     if (cls.meta.game === 'ss') return `${lakh(b.profit)}<br><span class="mini">${b.fill}% of orders delivered</span>`;
+    if (cls.meta.game === 'cc') return `\u20B9${int(b.cost)}<br><span class="mini">total cost, lower is better</span>`;
     return ['r1', 'r2', 'r3'].map((k, i) => b[k] ? `R${i + 1}: <b>${int(b[k])}</b>` : '').filter(Boolean).join(', ') || '<span class="mini">No trips yet</span>';
   }
 
@@ -661,11 +673,12 @@ const ONLINE = (() => {
     const ids = teamIds();
     const lb = document.getElementById('lb');
     if (lb) {
-      const rows = ids.map((t) => ({ t, v: scoreValue(t) })).filter((r) => r.v !== null && r.v !== undefined).sort((a, b) => b.v - a.v);
+      const low = cls.meta.game === 'cc';
+      const rows = ids.map((t) => ({ t, v: scoreValue(t) })).filter((r) => r.v !== null && r.v !== undefined).sort((a, b) => (low ? a.v - b.v : b.v - a.v));
       const max = Math.max(1, ...rows.map((r) => Math.abs(r.v)));
       lb.innerHTML = rows.length ? rows.map((r, i) => {
         const b = cls.board[r.t];
-        const label = cls.meta.game === 'ss' ? lakh(r.v) : int(r.v) + (b.r3 ? '' : ` <span class="mini">R${b.r2 ? 2 : 1}</span>`);
+        const label = cls.meta.game === 'ss' ? lakh(r.v) : cls.meta.game === 'cc' ? '\u20B9' + int(r.v) + (b.done ? '' : ` <span class="mini">wk ${b.week}</span>`) : int(r.v) + (b.r3 ? '' : ` <span class="mini">R${b.r2 ? 2 : 1}</span>`);
         return `<div class="bar"><span class="name">${i + 1}. ${esc(cls.teams[r.t].name)}${b.done ? ' <span class="mini">finished</span>' : ''}</span><span><span class="fill ${r.v < 0 ? 'neg' : ''}" style="width:${(Math.abs(r.v) / max) * 100}%"></span></span><span class="val">${label}</span></div>`;
       }).join('') : '<p class="muted">Scores appear here as soon as teams start playing.</p>';
     }

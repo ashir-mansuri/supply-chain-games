@@ -143,22 +143,27 @@ code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4
       <li class="sub"><a href="#wr-rules">How it works</a></li>
       <li class="sub"><a href="#wr-debrief">Debrief answers</a></li>
       <li class="sub"><a href="#wr-follow">Follow-up work</a></li>
+      <li><a href="#coffee-chain">Coffee Chain</a></li>
+      <li class="sub"><a href="#cc-plan">Lesson plan</a></li>
+      <li class="sub"><a href="#cc-rules">How it works</a></li>
+      <li class="sub"><a href="#cc-debrief">Debrief answers</a></li>
+      <li class="sub"><a href="#cc-follow">Follow-up work</a></li>
     </ol>
   </nav>
   <article>
     <h1>Teacher&rsquo;s guide</h1>
-    <p style="font-size:20px">Two games, each built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
+    <p style="font-size:20px">Three games, each built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
 
     <section id="running">
       <h2>Running a session</h2>
       <p>Each game can be played in two ways:</p>
       <ul>
-        <li><b>Online team play.</b> Every student uses their own phone or laptop. Team members log in with the same team name and PIN, and their screens stay in sync. In Supplier Showdown each member manages some of the four parts, and orders go out only when every member taps Ready. In Warehouse Rush members take turns as the picker while the others help plan the route. Your <a href="teacher.html">teacher dashboard</a> shows every team&rsquo;s progress and score live. This works in a classroom and in an online class on Google Meet or Zoom (put teams in breakout rooms so they can talk). It needs the <a href="#setup">one-time setup</a> below.</li>
+        <li><b>Online team play.</b> Every student uses their own phone or laptop. Team members log in with the same team name and PIN, and their screens stay in sync. In Supplier Showdown each member manages some of the four parts, and orders go out only when every member taps Ready. In Warehouse Rush members take turns as the picker while the others help plan the route. In Coffee Chain each member runs one stage of the supply chain and sees only that stage. Your <a href="teacher.html">teacher dashboard</a> shows every team&rsquo;s progress and score live. This works in a classroom and in an online class on Google Meet or Zoom (put teams in breakout rooms so they can talk). It needs the <a href="#setup">one-time setup</a> below.</li>
         <li><b>Practice on one device.</b> A team gathers round one phone or laptop. No setup or class code is needed, and it works even if online play isn&rsquo;t switched on. You type each team&rsquo;s result into the practice scoreboard on your projector.</li>
       </ul>
       <ul>
         <li><b>Devices.</b> Any phone, tablet or laptop with an up-to-date browser (Chrome, Safari, Edge or Firefox). Nothing to install. Laptops and tablets show the warehouse map larger.</li>
-        <li><b>Teams.</b> 3 to 5 students for Supplier Showdown (it rewards discussion); 2 to 4 for Warehouse Rush.</li>
+        <li><b>Teams.</b> 3 to 5 students for Supplier Showdown (it rewards discussion); 2 to 4 for Warehouse Rush; exactly 4 for Coffee Chain if you can (one per stage).</li>
         <li><b>Same events for everyone.</b> All teams in one online class face the same news (Supplier Showdown) or the same warehouse and orders (Warehouse Rush), so results compare fairly. For practice games, write one game code on the board instead.</li>
         <li><b>Don&rsquo;t use private or incognito windows.</b> The game remembers a student&rsquo;s team in the browser, so they can rejoin after a refresh.</li>
         <li><b>Privacy.</b> Online, the only personal detail stored is the first name a student types, in your own Firebase project, until you delete the class. Practice games store nothing outside the device.</li>
@@ -343,6 +348,71 @@ code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4
         <li><b>ABC in a spreadsheet.</b> Give students a list of 50 products with monthly sales. They sort, calculate the running share and draw the Pareto chart, then propose A, B and C cut-offs.</li>
         <li><b>Productivity sum.</b> A picker does 140 lines an hour on an 8-hour shift with 1 hour of breaks. How many pickers are needed for 6,000 lines a day? What if batch picking raises the rate to 185?</li>
         <li><b>Site visit or video reflection.</b> Watch a warehouse tour video and identify the picking method, the slotting logic and one improvement.</li>
+      </ol>
+    </section>
+
+    <section id="coffee-chain">
+      <h2 class="game">Coffee Chain</h2>
+      <p>Coffee Chain is modelled on the beer game, developed at MIT in the 1960s. Roasted coffee moves through four stages: a <b>coffee roaster</b> in Bengaluru, a <b>wholesaler</b> in Ahmedabad, a <b>distributor</b> in Vadodara and a <b>caf&eacute;</b> in Vadodara that sells to customers. Each stage holds stock, receives orders from the stage below, sends what it can, and orders from the stage above. Players see only their own stage. Customer demand changes once, early on, by a modest amount, and the swings that follow up the chain are entirely made by the players.</p>
+      <h3>Learning outcomes</h3>
+      <ol>
+        <li>Describe the bullwhip effect and recognise it in data.</li>
+        <li>Explain how delays and local information lead sensible people to over-order.</li>
+        <li>Explain why counting the supply line (stock already on the way) matters.</li>
+        <li>Evaluate remedies: information sharing, shorter lead times, steadier ordering.</li>
+      </ol>
+
+      <h3 id="cc-plan">60-minute lesson plan</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;8</td><td><b>Set-up.</b> Show the chain on the start page. Explain the four steps of a week and the costs (&#8377;10 per bag in stock, &#8377;20 per bag owed, per week). Say the goal is the lowest total cost <i>for the team</i>. Don&rsquo;t reveal the demand pattern or how many weeks the game lasts.</td></tr>
+        <tr><td>8&ndash;10</td><td><b>Teams join.</b> Online: teams of four join with the class code and PIN, and each student gets one stage automatically. Solo: each student plays one stage against the computer.</td></tr>
+        <tr><td>10&ndash;35</td><td><b>Play.</b> 24 weeks, about one minute each. No talking between stages about numbers (in a real chain they can&rsquo;t). Walk round and ask the wholesalers and roasters what they think customers are doing.</td></tr>
+        <tr><td>35&ndash;50</td><td><b>The reveal.</b> Before showing the final report, ask each stage to sketch what they think customer demand looked like. Then show the report: demand rose once, from 40 to 80 bags a week. Walk through the orders chart and the stock chart.</td></tr>
+        <tr><td>50&ndash;60</td><td><b>Theory.</b> The four classic causes of the bullwhip effect (demand forecast updating, order batching, price fluctuation, rationing and shortage gaming) and remedies such as shared sales data, vendor-managed inventory and shorter lead times.</td></tr>
+      </tbody></table>
+      <p class="note">For a powerful comparison, run two classes (or two halves of a class) as separate online classes: one with classic rules and one with <b>information sharing</b> switched on when you create the class. Compare the teams&rsquo; costs on the dashboard.</p>
+
+      <h3 id="cc-rules">How it works</h3>
+      <ul>
+        <li><b>Each week:</b> goods ordered earlier arrive; an order arrives from the stage below (at the caf&eacute;, from customers); the stage sends as much as it can, and anything it can&rsquo;t send is owed (backlog) and must be sent later; then the stage orders from the stage above.</li>
+        <li><b>Delays:</b> an order takes 1 week to reach the stage above. Goods take 2 weeks to travel down each step. The coffee estates always supply the roaster in full, with the same delays.</li>
+        <li><b>Costs:</b> &#8377;10 per bag in stock and &#8377;20 per bag owed, every week, for every stage. The team score is the total for all four stages.</li>
+        <li><b>Start:</b> each stage has 120 bags in stock, 40 bags arriving in each of the next two weeks, and orders of 40 a week flowing. Everything is in balance.</li>
+        <li><b>Demand (keep this from students):</b> customers buy 40 bags a week in weeks 1 to 4, then 80 bags a week from week 5 to the end. That is the only change.</li>
+        <li><b>Length:</b> 24 weeks. The game doesn&rsquo;t show how many weeks are left, so students don&rsquo;t run their stock down at the end.</li>
+        <li><b>Online roles:</b> with 4 members, each runs one stage. With 2 or 3, some members run two stages. With 5 or more, members share stages. The week moves on when all four stages have ordered.</li>
+        <li><b>Information sharing:</b> an option you choose when creating the class. Every stage then sees the caf&eacute;&rsquo;s customer sales each week.</li>
+        <li><b>Solo play:</b> the student runs one stage and the computer runs the other three, ordering the way typical players do.</li>
+      </ul>
+      <p>The final report compares each team with three computer teams playing the same 24 weeks:</p>
+      <table class="small"><thead><tr><th>Strategy</th><th>What it does</th><th class="r">Total cost</th></tr></thead><tbody>
+        <tr><td><b>Typical players</b></td><td>Orders the way most people do in the beer game: reacts to recent orders and largely ignores goods already on the way.</td><td class="r">&#8377;1,39,560</td></tr>
+        <tr><td><b>Pass the order on</b></td><td>Every stage orders exactly what it was asked for that week.</td><td class="r">&#8377;31,200</td></tr>
+        <tr><td><b>Plan from customer sales</b></td><td>Every stage sees the caf&eacute;&rsquo;s sales, plans from them and counts the goods already on the way.</td><td class="r">&#8377;45,730</td></tr>
+      </tbody></table>
+      <p>In the typical-players team, order swings grow from 1.3&times; customer demand at the caf&eacute; to 4.1&times; at the roaster. In the original beer game, most student teams end up with costs several times higher than the best possible, so expect many teams to land near or above the typical-players cost.</p>
+
+      <h3 id="cc-debrief">Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>1. Why did orders swing so much more at the roaster than at the caf&eacute;?</dt>
+        <dd>Each stage sees only the orders from the stage below, not real demand. When orders rise, each stage reads it as a trend, orders extra to rebuild stock and cover the delay, and passes a bigger jump upstream. Delays make each stage over-correct, so the swings grow at every step.</dd>
+        <dt>2. When orders to you jumped, what did you guess was happening to demand?</dt>
+        <dd>Most players guess that customer demand rose sharply or kept rising. In fact it rose once. Their own orders upstream created the &ldquo;surge&rdquo; they reacted to.</dd>
+        <dt>3. Did you count the coffee already on the way?</dt>
+        <dd>Most players ignore the supply line: they keep ordering while their stock is low, even though plenty is already on its way. When it all arrives, they are flooded. Counting the supply line is the single biggest improvement a player can make.</dd>
+        <dt>4. Why does &ldquo;pass the order on&rdquo; work so well here?</dt>
+        <dd>It adds no extra swing, so every stage sees exactly the real demand change. It isn&rsquo;t a perfect policy (it lets stock run down), but it shows that over-reacting costs far more than under-reacting.</dd>
+        <dt>5. How does sharing customer sales help?</dt>
+        <dd>Every stage can plan from real demand instead of guessing from distorted orders. This is the logic behind sharing point-of-sale data, vendor-managed inventory and collaborative planning between partners.</dd>
+        <dt>6. Real-life examples</dt>
+        <dd>Panic buying (staples and sanitiser in 2020), festive season stock, chip shortages in the car industry, and promotions that cause buy-ahead spikes.</dd>
+      </dl>
+
+      <h3 id="cc-follow">Follow-up work</h3>
+      <ol>
+        <li><b>Draw the chain.</b> Students sketch their own stage&rsquo;s orders and stock from the final report, then explain each turning point.</li>
+        <li><b>Bullwhip ratio.</b> Using the order swing figures, rank the stages and explain the ranking in one paragraph.</li>
+        <li><b>Remedy proposal.</b> Recommend two changes to the chain (for example sharing sales data, or cutting shipping time to one week) and predict their effect.</li>
       </ol>
     </section>
     <p class="footer">Supply Chain Games. All content is fictional and for teaching.</p>

@@ -746,13 +746,15 @@ const ONLINE = (() => {
       if (v === null || v === undefined) delete o[last]; else o[last] = clone(v);
     }
     window.addEventListener('storage', (e) => { if (e.key === KEY) notify(); });
+    // tabs take turns writing, so one tab never overwrites another's change
+    const withLock = (fn) => (navigator.locks && navigator.locks.request ? navigator.locks.request('scg-demo-db', () => fn()) : Promise.resolve(fn()));
     const api = {
       mode: 'demo',
       async init() {},
       async get(p) { const v = getAt(load(), p); return v === undefined ? null : clone(v); },
-      async set(p, v) { const t = load(); setAt(t, p, v); save(t); },
-      async update(p, obj) { const t = load(); Object.keys(obj).forEach((k) => setAt(t, p + '/' + k, obj[k])); save(t); },
-      async remove(p) { const t = load(); setAt(t, p, null); save(t); },
+      set(p, v) { return withLock(() => { const t = load(); setAt(t, p, v); save(t); }); },
+      update(p, obj) { return withLock(() => { const t = load(); Object.keys(obj).forEach((k) => setAt(t, p + '/' + k, obj[k])); save(t); }); },
+      remove(p) { return withLock(() => { const t = load(); setAt(t, p, null); save(t); }); },
       on(p, cb) {
         let last;
         const l = { check() { const v = getAt(load(), p); const s = JSON.stringify(v === undefined ? null : v); if (s !== last) { last = s; cb(JSON.parse(s)); } } };
@@ -760,13 +762,15 @@ const ONLINE = (() => {
         setTimeout(() => l.check(), 0);
         return () => listeners.delete(l);
       },
-      async transaction(p, fn) {
-        const t = load();
-        const cur = getAt(t, p);
-        const out = fn(cur === undefined ? null : clone(cur));
-        if (out === undefined) return { committed: false, value: cur === undefined ? null : cur };
-        setAt(t, p, out); save(t);
-        return { committed: true, value: out };
+      transaction(p, fn) {
+        return withLock(() => {
+          const t = load();
+          const cur = getAt(t, p);
+          const out = fn(cur === undefined ? null : clone(cur));
+          if (out === undefined) return { committed: false, value: cur === undefined ? null : cur };
+          setAt(t, p, out); save(t);
+          return { committed: true, value: out };
+        });
       },
       presence(p, info) {
         const beat = () => api.update(p, Object.assign({}, info, { online: true, seen: Date.now() }));
@@ -851,8 +855,8 @@ const ONLINE = (() => {
     return { code, meta, teams };
   }
 
-  const GAME_NAMES = { ss: 'Supplier Showdown', wr: 'Warehouse Rush' };
-  const GAME_PAGES = { ss: 'supplier-showdown.html', wr: 'warehouse-rush.html' };
+  const GAME_NAMES = { ss: 'Supplier Showdown', wr: 'Warehouse Rush', cc: 'Coffee Chain' };
+  const GAME_PAGES = { ss: 'supplier-showdown.html', wr: 'warehouse-rush.html', cc: 'coffee-chain.html' };
 
   /* the join screen, shared by both games */
   function joinUI(el, game, onJoined) {
@@ -1052,6 +1056,11 @@ const ONLINE = (() => {
     const len = game.history.length;
     if (on.seen === null) { on.seen = len; sstore.set(on.seenKey, String(len)); }
     if (firstLoad) writeBoard(game);
+    // keep this device's Ready in place until the month is played, unless the buffer changed
+    if (on.myReady !== null && on.myReady !== undefined) {
+      if (on.myReady !== game.month || draft.buffer !== on.myReadyBuffer) on.myReady = null;
+      else if (on.ready[on.me] !== game.month) { on.ready = Object.assign({}, on.ready, { [on.me]: game.month }); on.db.set(on.base + '/ready/' + on.me, game.month); }
+    }
     if (len > on.seen) {
       if (view !== 'event' && view !== 'results') go('event');
       return;
@@ -1644,12 +1653,13 @@ const ONLINE = (() => {
     if (act === 'buffer') {
       if (mode === 'online' && isReady(on.me)) return;
       draft.buffer = Number(t.dataset.w);
-      if (mode === 'online') on.db.update(on.base, { 'draft/buffer': draft.buffer, ready: null });
+      if (mode === 'online') { on.myReady = null; on.db.update(on.base, { 'draft/buffer': draft.buffer, ready: null }); }
       keepScroll(renderPlan);
       app.querySelector(`[data-act=buffer][data-w="${draft.buffer}"]`)?.focus({ preventScroll: true });
       return;
     }
     if (act === 'ready') {
+      on.myReady = game.month; on.myReadyBuffer = draft.buffer;
       on.ready = Object.assign({}, on.ready, { [on.me]: game.month });
       on.db.set(on.base + '/ready/' + on.me, game.month);
       keepScroll(renderPlan);
@@ -1657,6 +1667,7 @@ const ONLINE = (() => {
       return;
     }
     if (act === 'unready') {
+      on.myReady = null;
       on.ready = Object.assign({}, on.ready); delete on.ready[on.me];
       on.db.remove(on.base + '/ready/' + on.me);
       keepScroll(renderPlan);

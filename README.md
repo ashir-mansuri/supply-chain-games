@@ -1,6 +1,6 @@
 # Supply Chain Games
 
-Two free classroom games for supply chain and operations management. Students play in teams, each on their own phone or laptop, in a classroom or an online class. They can also play solo. Nothing to install.
+Three free classroom games for supply chain and operations management. Students play in teams, each on their own phone or laptop, in a classroom or an online class. They can also play solo. Nothing to install.
 
 **Play:** https://ashir-mansuri.github.io/supply-chain-games/
 
@@ -8,6 +8,7 @@ Two free classroom games for supply chain and operations management. Students pl
 | --- | --- | --- |
 | **Supplier Showdown** | About 30 minutes | Supplier selection, total cost of ownership, dual sourcing, buffer stock, supply risk |
 | **Warehouse Rush** | About 20 minutes | Pareto principle, ABC analysis, slotting, pick routes, batch picking, picking productivity |
+| **Coffee Chain** | About 25 minutes | Bullwhip effect, lead times, information sharing, stock versus backlog costs (modelled on the beer game) |
 
 ---
 
@@ -21,7 +22,7 @@ There are two ways to play. Choose one on the game's start page.
 
 Use this when your teacher has created a class. You need the **class code** and your **team PIN** from your teacher.
 
-1. Open the game link your teacher shares (Supplier Showdown or Warehouse Rush).
+1. Open the game link your teacher shares (Supplier Showdown, Warehouse Rush or Coffee Chain).
 2. In the **Join your team** box, type the class code and tap **Find my class**.
 3. Choose your team from the list, type the 4-digit team PIN and your first name, then tap **Join team**.
 4. Your teammates do the same on their own phones or laptops. The dark **Online now** bar at the top shows who has joined.
@@ -38,7 +39,9 @@ No class code or setup needed.
 1. In the **Practise on one device** box, type a team name. To play alone, type your own name.
 2. Keep the game code shown, or type the code your teacher gives you. The same code gives the same events, so results can be compared.
 3. Tap **Start practice game**.
-4. Supplier Showdown saves your progress on the device. If you leave, tap **Continue** on the start page to carry on.
+4. Supplier Showdown and Coffee Chain save your progress on the device. If you leave, tap **Continue** on the start page to carry on.
+
+In Coffee Chain this box is called **Play solo or on one device**. There you choose to play one stage against the computer, or all four stages on one screen.
 
 ---
 
@@ -152,11 +155,61 @@ Tap **See the final results**. You see how much faster you got, your lines per h
 
 ---
 
+### Coffee Chain
+
+**Your job:** You run one stage of a coffee supply chain. Roasted coffee travels down the chain, and orders travel up it:
+
+**Coffee estates → Coffee roaster (Bengaluru) → Wholesaler (Ahmedabad) → Distributor (Vadodara) → Café (Vadodara) → Customers**
+
+**Goal:** The lowest **total cost for the whole team** (all four stages added together) by the end of the game.
+
+**Costs, for every stage, every week:**
+- **₹10** for each bag in stock.
+- **₹20** for each bag you owe the stage below you (backlog).
+
+**Delays:**
+- An order takes **1 week** to reach the stage above you.
+- Coffee takes **2 weeks** to travel down one step.
+
+#### Each week
+1. **Read your stage's screen.** It shows:
+   - *Bags in stock*, *Owed to* the stage below you, and *Your cost so far*.
+   - *Arrived* this week from the stage above you.
+   - *New order* this week from the stage below you. At the café, this is what customers want.
+   - *Sent* this week. If you didn't have enough, the rest is added to what you owe and goes out when stock arrives.
+   - *On the way to you:* bags arriving next week and in two weeks, and how much the stage above still owes you.
+   - A table of your last five weeks.
+2. **Decide your order.** Type how many bags to order from the stage above, or use **−10** and **+10**.
+3. **Send it.**
+   - *Solo:* tap **Send my order**. The computer orders for the other three stages.
+   - *All four stages on one device:* set all four orders, then tap **Send all four orders**.
+   - *Online:* tap **Send order** for your stage. You can tap **Update order** to change it until the week moves on. The week moves on when all four stages have ordered. The dark bar at the top shows who has ordered.
+4. The next week starts automatically. The game doesn't say how many weeks are left.
+
+**Online:** each team member runs one stage and sees **only their own stage**, just like a real supply chain. With fewer than four members, some members run two stages. Don't tell other stages your numbers; that's the challenge.
+
+**Information sharing:** if your teacher switches this on (or you tick it in solo play), every stage also sees the café's customer sales each week.
+
+#### At the end
+The final report shows:
+- Your team's total cost, and how it compares with three computer teams: **Typical players**, **Pass the order on** and **Plan from customer sales**.
+- **The secret:** what customers really bought each week.
+- A chart of every stage's orders, week by week, against real customer sales. This shows the bullwhip effect.
+- A chart of each stage's stock, and what it owed.
+- Each stage's cost, its order swing, its biggest order and the number of weeks it owed bags.
+- Questions to talk over.
+
+#### Tips
+- Before you order, add up what is already on the way to you.
+- A big order from the stage below doesn't always mean customers are buying more.
+
+---
+
 ### For teachers
 
 #### Running an online class
 1. Open **teacher.html** (the **Teacher dashboard** link on the home page). The first time, set up Firebase; see below.
-2. Under **Create a class**, enter a class name, choose the game and the number of teams, and set a teacher password. Tap **Create class**.
+2. Under **Create a class**, enter a class name, choose the game and the number of teams, and set a teacher password. For Coffee Chain, you can also tick **information sharing**, so every stage sees the café's customer sales. Tap **Create class**.
 3. Share the **class code** and the game link with the class. Tap **Show PINs** and give each team only its own PIN.
 4. While teams play, the dashboard shows who is online, how far each team has got and live scores. **Projector view** shows only the class code and the ranking.
 5. If a team gets stuck, use **Restart game** for that team. Use **Add a team** or **Rename a team** as needed.
@@ -183,7 +236,22 @@ The **teacher's guide** (`teacher-guide.html`) has 60-minute lesson plans, the r
 | `index.html` | Home page |
 | `supplier-showdown.html` | Supplier Showdown game |
 | `warehouse-rush.html` | Warehouse Rush game |
+| `coffee-chain.html` | Coffee Chain game |
 | `teacher.html` | Teacher dashboard |
 | `teacher-guide.html` | Teacher's guide |
 | `firebase-config.js` | Online play settings (paste your Firebase config here) |
 
+There are no folders to upload.
+
+## Publishing on GitHub Pages
+
+1. Upload the files above and this README to the root of the repository.
+2. Go to **Settings > Pages**.
+3. Under **Build and deployment**, set **Source** to **Deploy from a branch**, choose **main** and **/ (root)**, then **Save**.
+4. After a minute or two, the site is live at `https://<your-username>.github.io/supply-chain-games/`.
+
+## Switching on online team play
+
+Online play uses a free Google Firebase Realtime Database: up to 100 devices connected at once, no payment card. The click-by-click steps and the database rules to copy are in the teacher's guide, under **Online team play > One-time setup**. Without it, both games still work in **Practise on one device** mode.
+
+All companies, products, prices and events in the games are made up for teaching.

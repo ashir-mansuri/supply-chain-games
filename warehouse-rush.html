@@ -455,13 +455,15 @@ const ONLINE = (() => {
       if (v === null || v === undefined) delete o[last]; else o[last] = clone(v);
     }
     window.addEventListener('storage', (e) => { if (e.key === KEY) notify(); });
+    // tabs take turns writing, so one tab never overwrites another's change
+    const withLock = (fn) => (navigator.locks && navigator.locks.request ? navigator.locks.request('scg-demo-db', () => fn()) : Promise.resolve(fn()));
     const api = {
       mode: 'demo',
       async init() {},
       async get(p) { const v = getAt(load(), p); return v === undefined ? null : clone(v); },
-      async set(p, v) { const t = load(); setAt(t, p, v); save(t); },
-      async update(p, obj) { const t = load(); Object.keys(obj).forEach((k) => setAt(t, p + '/' + k, obj[k])); save(t); },
-      async remove(p) { const t = load(); setAt(t, p, null); save(t); },
+      set(p, v) { return withLock(() => { const t = load(); setAt(t, p, v); save(t); }); },
+      update(p, obj) { return withLock(() => { const t = load(); Object.keys(obj).forEach((k) => setAt(t, p + '/' + k, obj[k])); save(t); }); },
+      remove(p) { return withLock(() => { const t = load(); setAt(t, p, null); save(t); }); },
       on(p, cb) {
         let last;
         const l = { check() { const v = getAt(load(), p); const s = JSON.stringify(v === undefined ? null : v); if (s !== last) { last = s; cb(JSON.parse(s)); } } };
@@ -469,13 +471,15 @@ const ONLINE = (() => {
         setTimeout(() => l.check(), 0);
         return () => listeners.delete(l);
       },
-      async transaction(p, fn) {
-        const t = load();
-        const cur = getAt(t, p);
-        const out = fn(cur === undefined ? null : clone(cur));
-        if (out === undefined) return { committed: false, value: cur === undefined ? null : cur };
-        setAt(t, p, out); save(t);
-        return { committed: true, value: out };
+      transaction(p, fn) {
+        return withLock(() => {
+          const t = load();
+          const cur = getAt(t, p);
+          const out = fn(cur === undefined ? null : clone(cur));
+          if (out === undefined) return { committed: false, value: cur === undefined ? null : cur };
+          setAt(t, p, out); save(t);
+          return { committed: true, value: out };
+        });
       },
       presence(p, info) {
         const beat = () => api.update(p, Object.assign({}, info, { online: true, seen: Date.now() }));
@@ -560,8 +564,8 @@ const ONLINE = (() => {
     return { code, meta, teams };
   }
 
-  const GAME_NAMES = { ss: 'Supplier Showdown', wr: 'Warehouse Rush' };
-  const GAME_PAGES = { ss: 'supplier-showdown.html', wr: 'warehouse-rush.html' };
+  const GAME_NAMES = { ss: 'Supplier Showdown', wr: 'Warehouse Rush', cc: 'Coffee Chain' };
+  const GAME_PAGES = { ss: 'supplier-showdown.html', wr: 'warehouse-rush.html', cc: 'coffee-chain.html' };
 
   /* the join screen, shared by both games */
   function joinUI(el, game, onJoined) {

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Supply Chain Games</title>
-<meta name="description" content="Two free classroom games for supply chain and operations management: Supplier Showdown and Warehouse Rush.">
+<meta name="description" content="Free classroom games for supply chain and operations management: Supplier Showdown, Warehouse Rush and Coffee Chain.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -96,8 +96,7 @@ td.r, th.r { text-align: right; }
 .hero { padding: 44px 0 26px; }
 .hero h1 { font-size: clamp(52px, 10vw, 112px); line-height: .92; margin-bottom: 18px; }
 .hero p { font-size: 21px; max-width: 32em; }
-.docks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin: 10px 0 26px; }
-@media (max-width: 820px) { .docks { grid-template-columns: 1fr; } }
+.docks { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin: 10px 0 26px; }
 .dock { background: var(--sheet); border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
 .door {
   height: 118px; position: relative; border-bottom: 2px solid var(--ink);
@@ -108,6 +107,7 @@ td.r, th.r { text-align: right; }
   font-family: var(--display); font-weight: 700; font-size: 26px; padding: 2px 14px; border-radius: 4px; border: 2px solid var(--ink);
 }
 .door.blue .no { background: var(--blue); color: #fff; }
+.door.brown .no { background: #6B4226; color: #fff; }
 .dock-body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
 .dock-body h2 { font-size: clamp(36px, 5vw, 50px); margin-bottom: 10px; }
 .dock-body .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 6px 0 18px; font-size: 15px; }
@@ -128,7 +128,7 @@ td.r, th.r { text-align: right; }
 <main class="wrap">
   <section class="hero">
     <h1>Supply Chain Games</h1>
-    <p>Two classroom games about the decisions that keep goods moving. Students play in teams, each on their own phone or laptop, in class or online. Nothing to install.</p>
+    <p>Three classroom games about the decisions that keep goods moving. Students play in teams, each on their own phone or laptop, in class or online. Nothing to install.</p>
   </section>
   <section class="docks" aria-label="Games">
     <article class="dock">
@@ -155,6 +155,19 @@ td.r, th.r { text-align: right; }
           <dt>Topics</dt><dd>ABC analysis, Pareto principle, slotting, pick routes, batch picking, productivity</dd>
         </dl>
         <a class="btn primary" href="warehouse-rush.html">Play Warehouse Rush</a>
+      </div>
+    </article>
+    <article class="dock">
+      <div class="door brown" aria-hidden="true"><span class="no">Dock 3</span></div>
+      <div class="dock-body">
+        <h2>Coffee Chain</h2>
+        <p>Run one stage of a coffee supply chain, from a roaster in Bengaluru to a caf&eacute; in Vadodara. Order week by week, see only your own stage, and find out what one small change in demand does further up the chain. Modelled on the beer game.</p>
+        <dl class="facts">
+          <dt>Players</dt><dd>Teams of 4, one stage each, or solo against the computer</dd>
+          <dt>Time</dt><dd>About 25 minutes of play, plus debrief</dd>
+          <dt>Topics</dt><dd>Bullwhip effect, lead times, information sharing, stock versus backlog costs</dd>
+        </dl>
+        <a class="btn primary" href="coffee-chain.html">Play Coffee Chain</a>
       </div>
     </article>
   </section>
