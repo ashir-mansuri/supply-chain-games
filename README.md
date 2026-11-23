@@ -440,4 +440,3 @@ Anyone may use, share and adapt the games, including in courses and workshops, a
 
 > "Supply Chain Games" by Ashir Mansuri, https://ashir-mansuri.github.io/supply-chain-games/, licensed under CC BY 4.0.
 
-If you change a game, say so in the credit, for example "adapted from".
