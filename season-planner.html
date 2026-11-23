@@ -156,7 +156,7 @@ td.r, th.r { text-align: right; }
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Season Planner</span><span class="spacer"></span><a href="teacher-guide.html#season-planner" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Season Planner</span></div></header>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Season Planner engine: aggregate production planning for a school uniform maker */
@@ -548,8 +548,8 @@ if (typeof module !== 'undefined') module.exports = FP;
             <li>Laying off workers after the peak saves wages but hurts people and the company&rsquo;s name. How would that change your plan in real life?</li>
             <li>Orders were up to 8% away from the forecast. How did you protect yourself against that?</li>
           </ol></section>
-        <section class="sheet"><h3>Send your result</h3>
-          <p class="small">Copy this line and send it to your teacher.</p>
+        <section class="sheet"><h3>Share your result</h3>
+          <p class="small">Copy this line to share your result.</p>
           <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
           <p class="small" id="copymsg" role="status"></p>
           <button class="btn" data-act="again" style="margin-top:8px">Play again</button></section>
@@ -577,7 +577,7 @@ if (typeof module !== 'undefined') module.exports = FP;
     if (act === 'copy') {
       const inp = document.getElementById('resultLine');
       const msg = document.getElementById('copymsg');
-      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied. Paste it into your message to your teacher.'; }
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
       catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
     }
   });

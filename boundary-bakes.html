@@ -146,7 +146,7 @@ td.r, th.r { text-align: right; }
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Boundary Bakes</span><span class="spacer"></span><a href="teacher-guide.html#boundary-bakes" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Boundary Bakes</span></div></header>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Boundary Bakes engine: how much fresh stock to make each day (the newsvendor problem) */
@@ -306,7 +306,7 @@ if (typeof module !== 'undefined') module.exports = FS;
             <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(FS.randomCode())}" style="text-transform:uppercase">
             <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">New code</button>
           </div>
-          <p class="tiny muted" style="margin-top:6px">Players with the same code get the same crowds, so results can be compared. Use the code your teacher gives you.</p>
+          <p class="tiny muted" style="margin-top:6px">Players with the same code get the same crowds, so results can be compared.</p>
           ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
           <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start the game</button>
           ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">Continue ${esc(saved.name)} (${esc(FS.DAY_LABELS[saved.day])})</button>` : ''}
@@ -474,8 +474,8 @@ if (typeof module !== 'undefined') module.exports = FS;
             <li>What would change if leftover sandwiches could be sold the next morning for ${inr(40)}?</li>
             <li>Where else does this problem appear? Think of newspapers, flowers, fashion, airline seats, vaccines.</li>
           </ol></section>
-        <section class="sheet"><h3>Send your result</h3>
-          <p class="small">Copy this line and send it to your teacher.</p>
+        <section class="sheet"><h3>Share your result</h3>
+          <p class="small">Copy this line to share your result.</p>
           <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
           <p class="small" id="copymsg" role="status"></p>
           <button class="btn" data-act="again" style="margin-top:8px">Play again</button></section>
@@ -528,7 +528,7 @@ if (typeof module !== 'undefined') module.exports = FS;
     if (act === 'copy') {
       const inp = document.getElementById('resultLine');
       const msg = document.getElementById('copymsg');
-      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied. Paste it into your message to your teacher.'; }
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
       catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
     }
   });

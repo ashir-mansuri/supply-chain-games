@@ -150,7 +150,7 @@ td.r { white-space: nowrap; }
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Export Desk</span><span class="spacer"></span><a href="teacher-guide.html#export-desk" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Export Desk</span></div></header>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Export Desk engine: shipping route, currency hedging and cargo insurance for export orders */
@@ -546,8 +546,8 @@ if (typeof module !== 'undefined') module.exports = ED;
             <li>Cargo insurance costs 0.4% of the order. Why do most exporters buy it anyway?</li>
             <li>The cheapest strategy sometimes wins and sometimes loses badly. What does that tell you about risk?</li>
           </ol></section>
-        <section class="sheet"><h3>Send your result</h3>
-          <p class="small">Copy this line and send it to your teacher.</p>
+        <section class="sheet"><h3>Share your result</h3>
+          <p class="small">Copy this line to share your result.</p>
           <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
           <p class="small" id="copymsg" role="status"></p>
           <button class="btn" data-act="again" style="margin-top:8px">Play again</button></section>
@@ -581,7 +581,7 @@ if (typeof module !== 'undefined') module.exports = ED;
     if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
     if (act === 'copy') {
       const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
-      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied. Paste it into your message to your teacher.'; }
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
       catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
     }
   });

@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Coffee Chain</title>
 <meta name="description" content="A classroom supply chain game modelled on the beer game: four stages of a coffee supply chain, ordering week by week, and the bullwhip effect.">
-<script src="firebase-config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -173,10 +172,12 @@ td.r, th.r { text-align: right; }
 .bars2 .fill { height: 26px; background: var(--blue); border-radius: 3px; min-width: 2px; display: block; }
 @media (max-width: 600px) { .bars2 .bar { grid-template-columns: 100px 1fr 90px; } }
 .confirm { color: var(--red); }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Coffee Chain</span><span class="spacer"></span><a href="teacher-guide.html#coffee-chain" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Coffee Chain</span></div></header>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Coffee Chain engine: a four-stage coffee supply chain, modelled on the beer game */
@@ -321,7 +322,7 @@ const ONLINE = (() => {
     get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
   };
-  const mode = cfg ? 'firebase' : ls.get('scg-demo') === '1' ? 'demo' : 'off';
+  const mode = 'off';   // online team play is switched off on this site
   const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -455,7 +456,6 @@ const ONLINE = (() => {
     return (h >>> 0).toString(36);
   }
   const pinHash = (code, pin) => hash('pin|' + code + '|' + pin);
-  const teacherHash = (code, pw) => hash('teacher|' + code + '|' + pw) + hash(pw + '|' + code);
   function encodePin(pin, pw) {
     let out = '';
     for (let i = 0; i < pin.length; i++) out += String.fromCharCode(48 + ((pin.charCodeAt(i) - 48 + pw.charCodeAt(i % pw.length)) % 10));
@@ -556,12 +556,12 @@ const ONLINE = (() => {
       if (act === 'back') { found = null; err = ''; draw(); return; }
       if (act === 'find') {
         const code = normCode(vals.code);
-        if (code.length < 4) { err = 'Enter the class code your teacher gave you.'; draw(); return; }
+        if (code.length < 4) { err = 'Enter your class code.'; draw(); return; }
         busy = true; draw();
         try {
           const c = await findClass(code);
           busy = false;
-          if (!c) { err = 'No class with code ' + code + '. Check the code with your teacher.'; draw(); return; }
+          if (!c) { err = 'No class with code ' + code + '. Check the code.'; draw(); return; }
           if (c.meta.game !== game) {
             busy = false; found = null;
             err = '';
@@ -577,7 +577,7 @@ const ONLINE = (() => {
         if (!/^\d{4}$/.test(vals.pin.trim())) { err = 'The team PIN is 4 digits.'; draw(); return; }
         if (!vals.name.trim()) { err = 'Enter your name.'; draw(); return; }
         const team = found.teams[vals.team];
-        if (!team || team.pinHash !== pinHash(found.code, vals.pin.trim())) { err = 'That PIN doesn’t match this team. Check it with your teacher.'; draw(); return; }
+        if (!team || team.pinHash !== pinHash(found.code, vals.pin.trim())) { err = 'That PIN doesn’t match this team. Check the PIN.'; draw(); return; }
         const s = { code: found.code, teamId: vals.team, teamName: team.name, name: vals.name.trim(), className: found.meta.name || '', game };
         session.set(game, s);
         onJoined(s);
@@ -598,7 +598,7 @@ const ONLINE = (() => {
   function enableDemo() { ls.set('scg-demo', '1'); }
   function disableDemo() { ls.del('scg-demo'); ls.del('scg-demo-db'); }
 
-  return { mode, available: !!db, db, init, P, hash, pinHash, teacherHash, encodePin, decodePin, newCode, newPin, normCode, memberId, session, onlineMembers, findClass, joinUI, startPresence, enableDemo, disableDemo, GAME_NAMES, GAME_PAGES, esc, clone };
+  return { mode, available: !!db, db, init, P, hash, pinHash, encodePin, decodePin, newCode, newPin, normCode, memberId, session, onlineMembers, findClass, joinUI, startPresence, enableDemo, disableDemo, GAME_NAMES, GAME_PAGES, esc, clone };
 })();
 
 </script>
@@ -688,7 +688,7 @@ const ONLINE = (() => {
       on.tick = setInterval(() => sync(), 5000);
     } catch (e) {
       errorMsg = e && e.message === 'team-missing'
-        ? 'Your team no longer exists in this class. Ask your teacher, then join again.'
+        ? 'Your team no longer exists. Join again.'
         : 'Could not connect to your team. Check your internet connection and try again.';
       if (e && e.message === 'team-missing') ONLINE.session.clear('cc');
       go('error');
@@ -758,7 +758,7 @@ const ONLINE = (() => {
   function onlineCard() {
     if (!ONLINE.available) {
       return `<div class="sheet"><h3>Play with your team online</h3>
-        <p class="small">Each member plays a stage of the chain on their own phone or laptop and sees only their own stage, just like the real thing. Your teacher switches this on and gives you a class code and team PIN.</p>
+        <p class="small">Each member plays a stage of the chain on their own phone or laptop and sees only their own stage, just like the real thing..</p>
         <p class="small muted">Online team play isn&rsquo;t set up on this site yet. You can play solo against the computer for now.</p></div>`;
     }
     const saved = ONLINE.session.get('cc');
@@ -783,9 +783,8 @@ const ONLINE = (() => {
       </section>
       ${chainHtml()}
       <div class="choice">
-        ${onlineCard()}
         <form class="sheet" id="startForm" novalidate>
-          <h3>Play solo or on one device</h3>
+          <h3>Start a game</h3>
           <label for="team">Your name or team name</label>
           <input type="text" id="team" maxlength="24" autocomplete="off" placeholder="For example, Riya">
           <div style="height:12px"></div>
@@ -800,8 +799,6 @@ const ONLINE = (() => {
           <button class="btn primary" type="submit" style="width:100%;margin-top:12px">Start the game</button>
           ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">Continue ${esc(saved.S.team)} (week ${saved.S.week})</button>` : ''}
         </form>
-      </div>
-      <div class="grid2" style="margin-top:24px">
         <div class="sheet">
           <h3>How each week works</h3>
           <ol class="small" style="padding-left:1.2em;margin:0">
@@ -811,11 +808,6 @@ const ONLINE = (() => {
             <li>You decide how many bags to order from the stage above.</li>
           </ol>
           <p class="small" style="margin-top:10px">Every bag in stock costs ${inr(CC.HOLD)} a week. Every bag owed costs ${inr(CC.BACK)} a week. The team with the lowest total cost wins.</p>
-        </div>
-        <div class="sheet">
-          <h3>For the teacher</h3>
-          <p class="small">Create a class with team PINs on the <a href="teacher.html">teacher dashboard</a>. Teams of four work best, one student per stage. For solo games, use the practice scoreboard on this device.</p>
-          <button class="btn" type="button" data-act="board">Open the practice scoreboard</button>
         </div>
       </div>
       <p class="footer">The businesses and numbers in this game are made up for teaching.</p>
@@ -969,10 +961,14 @@ const ONLINE = (() => {
     const benchRows = [{ name: S.team + ' (you)', desc: 'Your team’s orders', s: sm }].concat(bench.map((x) => ({ name: x.b.name, desc: x.b.desc, s: x.s })))
       .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td class="r"><b>${inr(r.s.total)}</b></td><td class="r">${r.s.swing[3].toFixed(1)}&times;</td></tr>`).join('');
     const scoreSection = mode === 'online'
-      ? `<section class="sheet"><h3>Class results</h3><p class="small">Your team&rsquo;s result is already on your teacher&rsquo;s dashboard.</p><button class="btn" data-act="leave">Leave the team on this device</button></section>`
-      : `<section class="sheet"><h3>Class scoreboard</h3><p class="small">On the teacher&rsquo;s device, add this result to the practice scoreboard. Otherwise, read your total cost out to your teacher.</p>
-          <div class="row"><button class="btn primary" data-act="addself">Add ${esc(S.team)} to the scoreboard on this device</button><button class="btn" data-act="board">Open the scoreboard</button><button class="btn" data-act="again">Play again</button></div>
-          <p class="small" id="addmsg" role="status"></p></section>`;
+      ? `<section class="sheet"><h3>Class results</h3><p class="small">Your team&rsquo;s result is saved.</p><button class="btn" data-act="leave">Leave the team on this device</button></section>`
+      : `<section class="sheet">
+          <h3>Share your result</h3>
+          <p class="small">Copy this line to share your team&rsquo;s result.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(`Coffee Chain | ${S.team} | total cost ${inr(sm.total)}${S.share ? ' | customer sales shared' : ''}`)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Play again</button>
+        </section>`;
     app.innerHTML = `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.team)}</span><span class="small muted">Game over after ${n} weeks${S.share ? ', customer sales shared' : ''}</span></div></div>
     <div class="wrap" style="padding-bottom:40px">
       <section style="padding:26px 0 4px">
@@ -1025,7 +1021,7 @@ const ONLINE = (() => {
     app.innerHTML = `
     <div class="wrap">
       <section style="padding:26px 0 6px"><h1>Practice scoreboard</h1>
-        <p style="font-size:19px">For solo games and games on one device. Type in each team&rsquo;s total cost; lowest cost ranks first. Kept on this device only. Online classes appear on the <a href="teacher.html">teacher dashboard</a> automatically.</p></section>
+        <p style="font-size:19px">For solo games and games on one device. Type in each team&rsquo;s total cost; lowest cost ranks first. Kept on this device only.</p></section>
       <div class="grid2">
         <form class="sheet" id="boardForm" novalidate><h3>Add a team</h3>
           <label for="bTeam">Team or player name</label><input type="text" id="bTeam" maxlength="24" autocomplete="off">
@@ -1077,7 +1073,7 @@ const ONLINE = (() => {
       else app.querySelector('[data-act=sendall]')?.click();
     }
   });
-  app.addEventListener('click', (e) => {
+  app.addEventListener('click', async (e) => {
     const t = e.target.closest('[data-act]');
     if (!t) return;
     const act = t.dataset.act;
@@ -1121,6 +1117,12 @@ const ONLINE = (() => {
     if (act === 'restart') { confirmRestart = true; keepScroll(renderPlay); return; }
     if (act === 'restart-no') { confirmRestart = false; keepScroll(renderPlay); return; }
     if (act === 'restart-yes') { confirmRestart = false; store.del(SAVE_KEY); S = null; mode = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
+      return;
+    }
     if (act === 'board') { confirmClear = false; go('board'); return; }
     if (act === 'home') { go(S && mode === 'practice' ? (S.done ? 'final' : 'play') : 'start'); return; }
     if (act === 'again') { store.del(SAVE_KEY); S = null; mode = null; go('start'); return; }

@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Warehouse Rush</title>
 <meta name="description" content="A classroom warehouse game: pick orders on a warehouse map, re-slot fast sellers with ABC analysis and try batch picking.">
-<script src="firebase-config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -178,10 +177,12 @@ td.r, th.r { text-align: right; }
 .teamstrip .picking { color: var(--yellow); font-weight: 700; }
 .turn { background: var(--yellow-soft); border-left: 5px solid var(--yellow); padding: 10px 12px; margin: 0 0 12px; font-weight: 600; }
 .turn.mine { background: var(--yellow); border-left-color: var(--ink); }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Warehouse Rush</span><span class="spacer"></span><a href="teacher-guide.html#warehouse-rush" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Warehouse Rush</span></div></header>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Warehouse Rush engine: layout, distances, orders and best routes */
@@ -377,7 +378,7 @@ const ONLINE = (() => {
     get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
   };
-  const mode = cfg ? 'firebase' : ls.get('scg-demo') === '1' ? 'demo' : 'off';
+  const mode = 'off';   // online team play is switched off on this site
   const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -511,7 +512,6 @@ const ONLINE = (() => {
     return (h >>> 0).toString(36);
   }
   const pinHash = (code, pin) => hash('pin|' + code + '|' + pin);
-  const teacherHash = (code, pw) => hash('teacher|' + code + '|' + pw) + hash(pw + '|' + code);
   function encodePin(pin, pw) {
     let out = '';
     for (let i = 0; i < pin.length; i++) out += String.fromCharCode(48 + ((pin.charCodeAt(i) - 48 + pw.charCodeAt(i % pw.length)) % 10));
@@ -612,12 +612,12 @@ const ONLINE = (() => {
       if (act === 'back') { found = null; err = ''; draw(); return; }
       if (act === 'find') {
         const code = normCode(vals.code);
-        if (code.length < 4) { err = 'Enter the class code your teacher gave you.'; draw(); return; }
+        if (code.length < 4) { err = 'Enter your class code.'; draw(); return; }
         busy = true; draw();
         try {
           const c = await findClass(code);
           busy = false;
-          if (!c) { err = 'No class with code ' + code + '. Check the code with your teacher.'; draw(); return; }
+          if (!c) { err = 'No class with code ' + code + '. Check the code.'; draw(); return; }
           if (c.meta.game !== game) {
             busy = false; found = null;
             err = '';
@@ -633,7 +633,7 @@ const ONLINE = (() => {
         if (!/^\d{4}$/.test(vals.pin.trim())) { err = 'The team PIN is 4 digits.'; draw(); return; }
         if (!vals.name.trim()) { err = 'Enter your name.'; draw(); return; }
         const team = found.teams[vals.team];
-        if (!team || team.pinHash !== pinHash(found.code, vals.pin.trim())) { err = 'That PIN doesn’t match this team. Check it with your teacher.'; draw(); return; }
+        if (!team || team.pinHash !== pinHash(found.code, vals.pin.trim())) { err = 'That PIN doesn’t match this team. Check the PIN.'; draw(); return; }
         const s = { code: found.code, teamId: vals.team, teamName: team.name, name: vals.name.trim(), className: found.meta.name || '', game };
         session.set(game, s);
         onJoined(s);
@@ -654,7 +654,7 @@ const ONLINE = (() => {
   function enableDemo() { ls.set('scg-demo', '1'); }
   function disableDemo() { ls.del('scg-demo'); ls.del('scg-demo-db'); }
 
-  return { mode, available: !!db, db, init, P, hash, pinHash, teacherHash, encodePin, decodePin, newCode, newPin, normCode, memberId, session, onlineMembers, findClass, joinUI, startPresence, enableDemo, disableDemo, GAME_NAMES, GAME_PAGES, esc, clone };
+  return { mode, available: !!db, db, init, P, hash, pinHash, encodePin, decodePin, newCode, newPin, normCode, memberId, session, onlineMembers, findClass, joinUI, startPresence, enableDemo, disableDemo, GAME_NAMES, GAME_PAGES, esc, clone };
 })();
 
 </script>
@@ -791,7 +791,7 @@ const ONLINE = (() => {
       on.tick = setInterval(() => { if (S) refreshStrip(); }, 5000);
     } catch (e) {
       errorMsg = e && e.message === 'team-missing'
-        ? 'Your team no longer exists in this class. Ask your teacher, then join again.'
+        ? 'Your team no longer exists. Join again.'
         : 'Could not connect to your team. Check your internet connection and try again.';
       if (e && e.message === 'team-missing') ONLINE.session.clear('wr');
       go('error');
@@ -983,7 +983,7 @@ const ONLINE = (() => {
   function onlineCard() {
     if (!ONLINE.available) {
       return `<div class="sheet"><h3>Play with your team online</h3>
-        <p class="small">Each member plays on their own phone or laptop. You take turns as the picker, and everyone sees the picker move live. Your teacher switches this on and gives you a class code and team PIN.</p>
+        <p class="small">Each member plays on their own phone or laptop. You take turns as the picker, and everyone sees the picker move live..</p>
         <p class="small muted">Online team play isn&rsquo;t set up on this site yet. You can practise on one device for now.</p></div>`;
     }
     const saved = ONLINE.session.get('wr');
@@ -1006,10 +1006,9 @@ const ONLINE = (() => {
         <p class="muted">On day one, products were put wherever there was space. That is where you start.</p>
       </section>
       <div class="choice">
-        ${onlineCard()}
         <form class="sheet" id="startForm" novalidate>
-          <h3>Practise on one device</h3>
-          <p class="small muted">The whole team plays together on this screen. No class code needed.</p>
+          <h3>Start a game</h3>
+          <p class="small muted">The whole team plays together on one phone or laptop.</p>
           <label for="team">Team name</label>
           <input type="text" id="team" maxlength="24" autocomplete="off" placeholder="For example, Team Falcon">
           <div style="height:12px"></div>
@@ -1020,16 +1019,8 @@ const ONLINE = (() => {
           </div>
           <p class="tiny muted" style="margin-top:6px">Teams with the same code get the same warehouse and the same orders.</p>
           ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
-          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start practice game</button>
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start the game</button>
         </form>
-      </div>
-      <h2 style="margin-top:32px">Three rounds, the same six orders</h2>
-      <ol class="rounds">
-        <li><b>1</b><strong>Day one.</strong> Pick six orders from a warehouse where products are scattered at random. Choose your own route.</li>
-        <li><b>2</b><strong>ABC slotting.</strong> Study last month&rsquo;s sales, move the fast sellers next to dispatch, then pick the same orders again.</li>
-        <li><b>3</b><strong>Batch picking.</strong> Pick two orders in one trip with a two-tote trolley, using your new layout.</li>
-      </ol>
-      <div class="grid2" style="margin-top:24px">
         <div class="sheet">
           <h3>How picking time is counted</h3>
           <ul class="small" style="padding-left:1.2em;margin:0">
@@ -1037,15 +1028,15 @@ const ONLINE = (() => {
             <li>Each line picked takes ${WR.PICK_SEC} seconds.</li>
             <li>Walking with a trolley covers ${WR.SPEED} metres a second. You can only walk along aisles.</li>
             <li>After each trip you see the shortest possible route for the same shelves.</li>
-            <li>Online, team members take turns as the picker. The others help plan the route.</li>
           </ul>
         </div>
-        <div class="sheet">
-          <h3>For the teacher</h3>
-          <p class="small">Create a class with team PINs and watch every team live on the <a href="teacher.html">teacher dashboard</a>. For practice games, use the scoreboard on this device.</p>
-          <button class="btn" type="button" data-act="board">Open the practice scoreboard</button>
-        </div>
       </div>
+      <h2 style="margin-top:32px">Three rounds, the same six orders</h2>
+      <ol class="rounds">
+        <li><b>1</b><strong>Day one.</strong> Pick six orders from a warehouse where products are scattered at random. Choose your own route.</li>
+        <li><b>2</b><strong>ABC slotting.</strong> Study last month&rsquo;s sales, move the fast sellers next to dispatch, then pick the same orders again.</li>
+        <li><b>3</b><strong>Batch picking.</strong> Pick two orders in one trip with a two-tote trolley, using your new layout.</li>
+      </ol>
       <p class="footer">Products, sales figures and the warehouse in this game are made up for teaching.</p>
     </div>`;
     const jb = document.getElementById('joinBox');
@@ -1242,16 +1233,13 @@ const ONLINE = (() => {
     }).join('');
     const gain = s[0].lph ? s[2].lph / s[0].lph - 1 : 0;
     const scoreSection = mode === 'online'
-      ? `<section class="sheet"><h3>Class results</h3><p class="small">Your team&rsquo;s result is already on your teacher&rsquo;s dashboard.</p><button class="btn" data-act="leave">Leave the team on this device</button></section>`
+      ? `<section class="sheet"><h3>Class results</h3><p class="small">Your team&rsquo;s result is saved.</p><button class="btn" data-act="leave">Leave the team on this device</button></section>`
       : `<section class="sheet">
-          <h3>Class scoreboard</h3>
-          <p class="small">On the teacher&rsquo;s device, add this result to the practice scoreboard. On a team device, read your round 1 and round 3 lines per hour out to your teacher.</p>
-          <div class="row">
-            <button class="btn primary" data-act="addself">Add ${esc(S.team)} to the scoreboard on this device</button>
-            <button class="btn" data-act="board">Open the scoreboard</button>
-            <button class="btn" data-act="again">Play again</button>
-          </div>
-          <p class="small" id="addmsg" role="status"></p>
+          <h3>Share your result</h3>
+          <p class="small">Copy this line to share your team&rsquo;s result.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(`Warehouse Rush | ${S.team} | code ${S.code} | round 1: ${int(s[0].lph)} lines an hour | round 3: ${int(s[2].lph)} lines an hour`)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Play again</button>
         </section>`;
     app.innerHTML = bar() + `
     <div class="wrap" style="padding-bottom:40px">
@@ -1296,7 +1284,7 @@ const ONLINE = (() => {
     <div class="wrap">
       <section style="padding:26px 0 6px">
         <h1>Practice scoreboard</h1>
-        <p style="font-size:19px">For games played on one device per team. Type in each team&rsquo;s lines per hour. Teams are ranked on round 3. Online classes appear on the <a href="teacher.html">teacher dashboard</a> automatically.</p>
+        <p style="font-size:19px">For games played on one device per team. Type in each team&rsquo;s lines per hour. Teams are ranked on round 3.</p>
       </section>
       <div class="grid2">
         <form class="sheet" id="boardForm" novalidate>
@@ -1370,7 +1358,7 @@ const ONLINE = (() => {
     }
   }
 
-  app.addEventListener('click', (e) => {
+  app.addEventListener('click', async (e) => {
     const slot = e.target.closest('.slot');
     if (slot) { tapSlot(Number(slot.dataset.slot)); return; }
     const t = e.target.closest('[data-act]');
@@ -1415,6 +1403,12 @@ const ONLINE = (() => {
     if (act === 'beginround2') { commit((s) => { if (s.view !== 'abc') return false; s.view = 'play'; s.round = 2; s.tripIdx = 0; startTrip(s); }); return; }
     if (act === 'toround3') { commit((s) => { if (s.view !== 'summary' || s.round !== 2) return false; s.round = 3; s.layouts[3] = s.layouts[2].slice(); s.view = 'intro'; }); return; }
     if (act === 'tofinal') { commit((s) => { if (s.view !== 'summary' || s.round !== 3) return false; s.view = 'final'; }); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
+      return;
+    }
     if (act === 'board') { confirmClear = false; go('board'); return; }
     if (act === 'home') { if (S && mode === 'practice') { shown = ''; onState(); } else go('start'); return; }
     if (act === 'again') { S = null; mode = null; anim = null; shown = ''; go('start'); return; }

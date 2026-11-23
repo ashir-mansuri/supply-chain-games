@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Supplier Showdown</title>
 <meta name="description" content="A classroom sourcing game: choose suppliers for an electric scooter maker and survive eight months of supply shocks.">
-<script src="firebase-config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -200,10 +199,12 @@ td.r, th.r { text-align: right; }
 .owner.mine { background: var(--yellow); color: var(--ink); }
 .part.locked .stepper button { opacity: .25; }
 .waiting { color: #FFE27A; font-weight: 600; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Supplier Showdown</span><span class="spacer"></span><a href="teacher-guide.html#supplier-showdown" class="small" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Supplier Showdown</span></div></header>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Supplier Showdown engine: pure functions, same results for the same game code */
@@ -668,7 +669,7 @@ const ONLINE = (() => {
     get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
   };
-  const mode = cfg ? 'firebase' : ls.get('scg-demo') === '1' ? 'demo' : 'off';
+  const mode = 'off';   // online team play is switched off on this site
   const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -802,7 +803,6 @@ const ONLINE = (() => {
     return (h >>> 0).toString(36);
   }
   const pinHash = (code, pin) => hash('pin|' + code + '|' + pin);
-  const teacherHash = (code, pw) => hash('teacher|' + code + '|' + pw) + hash(pw + '|' + code);
   function encodePin(pin, pw) {
     let out = '';
     for (let i = 0; i < pin.length; i++) out += String.fromCharCode(48 + ((pin.charCodeAt(i) - 48 + pw.charCodeAt(i % pw.length)) % 10));
@@ -903,12 +903,12 @@ const ONLINE = (() => {
       if (act === 'back') { found = null; err = ''; draw(); return; }
       if (act === 'find') {
         const code = normCode(vals.code);
-        if (code.length < 4) { err = 'Enter the class code your teacher gave you.'; draw(); return; }
+        if (code.length < 4) { err = 'Enter your class code.'; draw(); return; }
         busy = true; draw();
         try {
           const c = await findClass(code);
           busy = false;
-          if (!c) { err = 'No class with code ' + code + '. Check the code with your teacher.'; draw(); return; }
+          if (!c) { err = 'No class with code ' + code + '. Check the code.'; draw(); return; }
           if (c.meta.game !== game) {
             busy = false; found = null;
             err = '';
@@ -924,7 +924,7 @@ const ONLINE = (() => {
         if (!/^\d{4}$/.test(vals.pin.trim())) { err = 'The team PIN is 4 digits.'; draw(); return; }
         if (!vals.name.trim()) { err = 'Enter your name.'; draw(); return; }
         const team = found.teams[vals.team];
-        if (!team || team.pinHash !== pinHash(found.code, vals.pin.trim())) { err = 'That PIN doesn’t match this team. Check it with your teacher.'; draw(); return; }
+        if (!team || team.pinHash !== pinHash(found.code, vals.pin.trim())) { err = 'That PIN doesn’t match this team. Check the PIN.'; draw(); return; }
         const s = { code: found.code, teamId: vals.team, teamName: team.name, name: vals.name.trim(), className: found.meta.name || '', game };
         session.set(game, s);
         onJoined(s);
@@ -945,7 +945,7 @@ const ONLINE = (() => {
   function enableDemo() { ls.set('scg-demo', '1'); }
   function disableDemo() { ls.del('scg-demo'); ls.del('scg-demo-db'); }
 
-  return { mode, available: !!db, db, init, P, hash, pinHash, teacherHash, encodePin, decodePin, newCode, newPin, normCode, memberId, session, onlineMembers, findClass, joinUI, startPresence, enableDemo, disableDemo, GAME_NAMES, GAME_PAGES, esc, clone };
+  return { mode, available: !!db, db, init, P, hash, pinHash, encodePin, decodePin, newCode, newPin, normCode, memberId, session, onlineMembers, findClass, joinUI, startPresence, enableDemo, disableDemo, GAME_NAMES, GAME_PAGES, esc, clone };
 })();
 
 </script>
@@ -1033,7 +1033,7 @@ const ONLINE = (() => {
       on.tick = setInterval(sync, 5000);
     } catch (e) {
       errorMsg = e && e.message === 'team-missing'
-        ? 'Your team no longer exists in this class. Ask your teacher, then join again.'
+        ? 'Your team no longer exists. Join again.'
         : 'Could not connect to your team. Check your internet connection and try again.';
       if (e && e.message === 'team-missing') ONLINE.session.clear('ss');
       go('error');
@@ -1130,7 +1130,7 @@ const ONLINE = (() => {
   function onlineCard() {
     if (!ONLINE.available) {
       return `<div class="sheet"><h3>Play with your team online</h3>
-        <p class="small">Each member plays on their own phone or laptop, and the screens stay in sync. Your teacher switches this on for the site and gives you a class code and team PIN.</p>
+        <p class="small">Each member plays on their own phone or laptop, and the screens stay in sync..</p>
         <p class="small muted">Online team play isn&rsquo;t set up on this site yet. You can practise on one device for now.</p></div>`;
     }
     const saved = ONLINE.session.get('ss');
@@ -1155,10 +1155,9 @@ const ONLINE = (() => {
         <p class="muted">The previous manager bought everything from Shenzhen because it was cheapest. That is where you start.</p>
       </section>
       <div class="choice">
-        ${onlineCard()}
         <form class="sheet" id="startForm" novalidate>
-          <h3>Practise on one device</h3>
-          <p class="small muted">The whole team plays together on this screen. No class code needed.</p>
+          <h3>Start a game</h3>
+          <p class="small muted">The whole team plays together on one phone or laptop.</p>
           <label for="team">Team name</label>
           <input type="text" id="team" maxlength="24" autocomplete="off" placeholder="For example, Team Falcon">
           <div style="height:12px"></div>
@@ -1169,9 +1168,18 @@ const ONLINE = (() => {
           </div>
           <p class="tiny muted" style="margin-top:6px">Teams that use the same code get the same news in the same months.</p>
           ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
-          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start practice game</button>
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start the game</button>
           ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">Continue ${esc(saved.game.team)} (${M[saved.game.month]})</button>` : ''}
         </form>
+        <div class="sheet">
+          <h3>Rules worth knowing</h3>
+          <ul class="small" style="padding-left:1.2em;margin:0">
+            <li>A new supplier costs ${lakh(SS.ONBOARD_FEE)} to approve and ships only half your order in its first month.</li>
+            <li>Pune can make at most 60% of your battery packs and 40% of your chips.</li>
+            <li>Scooters you can&rsquo;t build are lost sales, and dealers charge ${inr(SS.PENALTY)} for each one.</li>
+            <li>Buffer stock protects you but costs ${pct(SS.HOLD_RATE)} of its value every month.</li>
+          </ul>
+        </div>
       </div>
       <h2 style="margin-top:32px">Each month</h2>
       <ol class="steps">
@@ -1180,23 +1188,6 @@ const ONLINE = (() => {
         <li><b>3</b>Draw the news card. Fires, floods and tariffs can hit any supplier.</li>
         <li><b>4</b>See what you built and what you earned. A scooter needs all four parts, so the scarcest part sets your output.</li>
       </ol>
-      <div class="grid2" style="margin-top:24px">
-        <div class="sheet">
-          <h3>Rules worth knowing</h3>
-          <ul class="small" style="padding-left:1.2em;margin:0">
-            <li>A new supplier costs ${lakh(SS.ONBOARD_FEE)} to approve and ships only half your order in its first month.</li>
-            <li>Pune can make at most 60% of your battery packs and 40% of your chips.</li>
-            <li>Scooters you can&rsquo;t build are lost sales, and dealers charge ${inr(SS.PENALTY)} for each one.</li>
-            <li>Buffer stock protects you but costs ${pct(SS.HOLD_RATE)} of its value every month.</li>
-            <li>Online, each member manages some of the parts. Orders go out when every member taps Ready.</li>
-          </ul>
-        </div>
-        <div class="sheet">
-          <h3>For the teacher</h3>
-          <p class="small">Create a class with team PINs and watch every team live on the <a href="teacher.html">teacher dashboard</a>. For practice games, use the scoreboard on this device.</p>
-          <button class="btn" type="button" data-act="board">Open the practice scoreboard</button>
-        </div>
-      </div>
       <p class="footer">All companies, prices and events in this game are made up for teaching.</p>
     </div>`;
     const jb = document.getElementById('joinBox');
@@ -1502,17 +1493,14 @@ const ONLINE = (() => {
       <td class="r"><b>${lakh(r.s.profit)}</b></td><td class="r">${pct(r.s.fillRate, 1)}</td><td class="r">${inr(r.s.partsCostPerScooter)}</td><td class="r">${int(r.s.carbonPerScooter)} kg</td></tr>`).join('');
     const worst = game.history.reduce((a, r) => (r.profit < a.profit ? r : a), game.history[0]);
     const scoreSection = mode === 'online'
-      ? `<section class="sheet" style="margin-top:16px"><h3>Class results</h3><p class="small">Your team&rsquo;s result is already on your teacher&rsquo;s dashboard.</p><button class="btn" data-act="leave">Leave the team on this device</button></section>`
+      ? `<section class="sheet" style="margin-top:16px"><h3>Class results</h3><p class="small">Your team&rsquo;s result is saved.</p><button class="btn" data-act="leave">Leave the team on this device</button></section>`
       : `<section class="sheet" style="margin-top:16px">
-        <h3>Class scoreboard</h3>
-        <p class="small">On the teacher&rsquo;s device, add this result to the practice scoreboard. On a team device, read your profit and delivery rate out to your teacher.</p>
-        <div class="row">
-          <button class="btn primary" data-act="addself">Add ${esc(game.team)} to the scoreboard on this device</button>
-          <button class="btn" data-act="board">Open the scoreboard</button>
-          <button class="btn" data-act="again">Play again</button>
-        </div>
-        <p class="small" id="addmsg" role="status"></p>
-      </section>`;
+          <h3>Share your result</h3>
+          <p class="small">Copy this line to share your team&rsquo;s result.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(`Supplier Showdown | ${game.team} | code ${game.code} | profit ${lakh(you.profit)} | delivered ${pct(you.fillRate, 1)}`)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Play again</button>
+        </section>`;
     app.innerHTML = gameBar(M.length) + `
     <div class="wrap">
       <section style="padding:26px 0 8px">
@@ -1572,7 +1560,7 @@ const ONLINE = (() => {
     <div class="wrap">
       <section style="padding:26px 0 6px">
         <h1>Practice scoreboard</h1>
-        <p class="lede" style="font-size:19px">For games played on one device per team. Type in each team&rsquo;s final profit. The scoreboard is kept on this device only. Online classes appear on the <a href="teacher.html">teacher dashboard</a> automatically.</p>
+        <p class="lede" style="font-size:19px">For games played on one device per team. Type in each team&rsquo;s final profit. The scoreboard is kept on this device only.</p>
       </section>
       <div class="grid2">
         <form class="sheet" id="boardForm" novalidate>
@@ -1629,7 +1617,7 @@ const ONLINE = (() => {
     if (mode === 'online') on.db.set(on.base + '/draft/split/' + p.id, sp);
   }
 
-  app.addEventListener('click', (e) => {
+  app.addEventListener('click', async (e) => {
     const t = e.target.closest('[data-act]');
     if (!t) return;
     const act = t.dataset.act;
@@ -1693,6 +1681,12 @@ const ONLINE = (() => {
     if (act === 'restart') { confirmRestart = true; renderPlan(); return; }
     if (act === 'restart-no') { confirmRestart = false; render(); return; }
     if (act === 'restart-yes') { confirmRestart = false; store.del(SAVE_KEY); game = null; mode = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
+      return;
+    }
     if (act === 'board') { confirmRestart = false; go('board'); return; }
     if (act === 'home') { go(game && mode === 'practice' ? (game.done ? 'final' : 'plan') : 'start'); return; }
     if (act === 'again') { store.del(SAVE_KEY); game = null; mode = null; go('start'); return; }

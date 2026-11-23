@@ -163,7 +163,7 @@ tr.tot td { font-weight: 600; border-top: 2px solid var(--ink-2); }
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Freight Buyer</span><span class="spacer"></span><a href="teacher-guide.html#freight-buyer" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Freight Buyer</span></div></header>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Freight Buyer engine: booking container space on contract or on the spot market */
@@ -607,8 +607,8 @@ if (typeof module !== 'undefined') module.exports = FB;
             <li>Did the shipping news help you? What did you do when analysts warned of a rise?</li>
             <li>Real shippers sign contracts for a year at a time. What would that change in this game?</li>
           </ol></section>
-        <section class="sheet"><h3>Send your result</h3>
-          <p class="small">Copy this line and send it to your teacher.</p>
+        <section class="sheet"><h3>Share your result</h3>
+          <p class="small">Copy this line to share your result.</p>
           <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
           <p class="small" id="copymsg" role="status"></p>
           <button class="btn" data-act="again" style="margin-top:8px">Play again</button></section>
@@ -659,7 +659,7 @@ if (typeof module !== 'undefined') module.exports = FB;
     if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
     if (act === 'copy') {
       const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
-      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied. Paste it into your message to your teacher.'; }
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
       catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
     }
   });
