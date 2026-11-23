@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Go Global – Internationalisierung</title>
+<meta name="description" content="Ein Entscheidungsspiel für eine Person zur Internationalisierung einer deutschen Marke: welche Märkte, welche Eintrittsform und wann mehr investieren.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
+.topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
+.lane { display: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
+}
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], input[type=password], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
+}
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.steps6 { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; flex: 1 1 340px; }
+.steps6 span { font-size: 12px; text-align: center; padding: 3px 0 4px; border-bottom: 5px solid var(--concrete-2); color: var(--muted); }
+.steps6 span.now { border-bottom-color: var(--yellow); color: var(--ink); font-weight: 600; }
+.steps6 span.up { border-bottom-color: var(--green); }
+.steps6 span.down { border-bottom-color: var(--red); }
+.score { font-family: var(--display); font-weight: 600; font-size: 22px; }
+.mkts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin: 18px 0; }
+.mkt { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.mkt-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); border-top: 6px solid var(--ink-2); }
+.mkt-head h3 { margin: 0; font-size: 28px; }
+.mkt-body { padding: 12px 16px 14px; }
+.mfacts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+.mfacts div { background: var(--concrete); border-radius: 4px; padding: 6px 8px; }
+.mfacts b { display: block; font-family: var(--display); font-size: 22px; line-height: 1.05; }
+.mfacts span { font-size: 12px; color: var(--muted); }
+.modes { display: grid; gap: 6px; }
+.mode { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; border: 2px solid var(--line); border-radius: 4px; padding: 7px 10px; background: #fff; cursor: pointer; font-size: 15px; }
+.mode:has(input:checked) { border-color: var(--ink); background: var(--yellow-soft); }
+.mode input { width: 18px; height: 18px; margin: 0; }
+.mode .cost { font-family: var(--display); font-weight: 600; font-size: 17px; text-align: right; }
+.mode .cost small { display: block; font-family: var(--body); font-weight: 400; font-size: 12px; color: var(--muted); }
+.mode.disabled { opacity: .45; cursor: not-allowed; }
+.cur { font-size: 13px; font-weight: 600; background: var(--green-soft); color: var(--green); padding: 1px 6px; border-radius: 4px; }
+.warn { font-size: 13px; color: #6B5200; background: var(--yellow-soft); padding: 6px 8px; border-radius: 6px; margin-top: 8px; }
+.newsbox { list-style: none; padding: 0; margin: 0; }
+.newsbox li { padding: 10px 12px; border-left: 5px solid var(--blue); background: var(--blue-soft); margin-bottom: 8px; }
+.newsbox li.bad { border-left-color: var(--red); background: var(--red-soft); }
+.newsbox li.good { border-left-color: var(--green); background: var(--green-soft); }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.actionbar .muted { color: #C5CDD8; }
+.actionbar .neg { color: #FFB4AA; font-weight: 600; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 38px; line-height: 1; }
+.kpi.bad .bignum { color: var(--red); }
+.kpi.good .bignum { color: var(--green); }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
+.legend span::before { content: ''; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); vertical-align: middle; margin-right: 6px; }
+.legend span.dash::before { border-top-style: dashed; }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+td.r { white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index-de.html">Supply Chain Games</a><span class="here">Go Global</span><div class="versions"><nav class="switch" aria-label="Version"><a href="go-global.html" hreflang="en">Indien</a><a aria-current="page">Europa</a></nav><nav class="switch" aria-label="Sprache"><a href="go-global-eu.html" lang="en" hreflang="en">English</a><a aria-current="page">Deutsch</a></nav></div></div></header>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Go Global engine: choosing markets and entry modes for a brand going abroad */
+const GG = (() => {
+  const ROUNDS = 6;
+  const ROUND_LABELS = ['Jahr 1, Jan.–Juni', 'Jahr 1, Juli–Dez.', 'Jahr 2, Jan.–Juni', 'Jahr 2, Juli–Dez.', 'Jahr 3, Jan.–Juni', 'Jahr 3, Juli–Dez.'];
+  const START_CASH = 10;    // units of €500,000
+  const MISFIT_COLD = 0.5;  // chance a joint venture or subsidiary opened with no market experience needs its product reworked
+  const MISFIT_WARM = 0.1;  // the same chance after at least one round in the market
+  const MISFIT_COST = 1.0;  // units of €500,000 to rework the product
+  const OVERDRAFT = 0.12;   // interest per round on negative cash
+  const MARKETS = [
+    { id: 'ae', name: 'VAE', pot: 5, growth: 0.06, dist: 1.0, note: 'Kaufkräftige Kundschaft, Drehkreuz für die ganze Golfregion, stabile Währung.' },
+    { id: 'uk', name: 'Großbritannien', pot: 7, growth: 0.03, dist: 1.2, note: 'Großes Interesse an Naturkosmetik, das Pfund kann schwanken.' },
+    { id: 'us', name: 'USA', pot: 16, growth: 0.04, dist: 1.6, note: 'Der größte Markt, aber weit weg und teuer im Markteintritt.' },
+    { id: 'de', name: 'Japan', pot: 9, growth: 0.02, dist: 1.4, note: 'Kaufkräftige Kundschaft, strenge Produktvorschriften.' },
+    { id: 'ke', name: 'Kenia', pot: 3, growth: 0.12, dist: 1.3, note: 'Klein, aber schnell wachsend; der Schilling kann stark schwanken.' }
+  ];
+  const MODES = [
+    { id: 'none', name: 'Nicht vertreten', setup: 0, run: 0, reach: 0, margin: 0, ramp: [0], exit: 0, local: false },
+    { id: 'online', name: 'Onlineshop', setup: 0.2, run: 0.1, reach: 0.2, margin: 0.32, ramp: [0.6, 1], exit: 0, local: false,
+      about: 'Verkauf über einen grenzüberschreitenden Online-Marktplatz. Günstiger Start, erreicht wenige Käufer.' },
+    { id: 'dist', name: 'Vertriebspartner', setup: 0.3, run: 0, reach: 0.5, margin: 0.15, ramp: [0.7, 1], exit: 0, local: false,
+      about: 'Ein lokales Unternehmen kauft bei Ihnen und verkauft weiter. Geringe Kosten und Risiken, aber der Partner behält den Großteil der Marge.' },
+    { id: 'jv', name: 'Joint Venture', setup: 1.2, run: 0.3, reach: 0.7, margin: 0.18, ramp: [0.5, 0.85, 1], exit: 0.4, local: true,
+      about: 'Gemeinsames Unternehmen mit einem lokalen Partner, Gewinne werden 50:50 geteilt. Der Partner kennt den Markt.' },
+    { id: 'sub', name: 'Eigene Tochtergesellschaft', setup: 2.5, run: 0.7, reach: 0.9, margin: 0.36, ramp: [0.3, 0.7, 1], exit: 1.0, local: true,
+      about: 'Ihr eigenes Unternehmen mit lokaler Produktion. Volle Kontrolle und voller Gewinn, höchste Kosten und Risiken.' }
+  ];
+  const modeById = (id) => MODES.find((m) => m.id === id);
+  const marketById = (id) => MARKETS.find((m) => m.id === id);
+  const setupCost = (mk, mo) => Math.round(mo.setup * (mo.id === 'online' ? 1 : mk.dist) * 100) / 100;
+  const exitCost = (mk, mo) => Math.round(mo.exit * mk.dist * 100) / 100;
+
+  function hash(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  }
+  function rand(seed) {
+    let a = hash(seed);
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'PRACTICE';
+  const pick = (code, tag, arr) => arr[Math.floor(rand(code + '|' + tag) * arr.length)];
+
+  /* the news, the same for everyone with the same code */
+  function schedule(code) {
+    const c = normCode(code);
+    return [
+      { id: 'kecrash', round: pick(c, 'ke', [1, 2, 3]), market: 'ke', title: 'Kenia-Schilling fällt um 25%', text: 'Umsätze in Kenia sind in Euro nun ein Viertel weniger wert, für den Rest des Spiels.' },
+      { id: 'ustariff', round: pick(c, 'us', [2, 3, 4]), market: 'us', title: 'USA erheben 20% Zoll auf importierte Kosmetik', text: 'Umsätze über Onlineshop, Vertriebspartner und Joint Venture in den USA verlieren ab jetzt 20% ihrer Marge. Lokale Produktion (eigene Tochtergesellschaft) ist nicht betroffen.' },
+      { id: 'derule', round: pick(c, 'de', [1, 2, 3, 4]), market: 'de', title: 'Japan verschärft die Regeln für pflanzliche Kosmetik', text: 'Importierte Produkte werden sechs Monate lang geprüft: in dieser Runde keine Umsätze über Onlineshop oder Vertriebspartner in Japan. Joint Ventures und Tochtergesellschaften mit eigenen Laboren vor Ort verkaufen weiter.' },
+      { id: 'dispute', round: pick(c, 'dp', [2, 3, 4, 5]), market: pick(c, 'dpm', ['ae', 'uk', 'us', 'de', 'ke']), title: 'Streit mit dem Joint-Venture-Partner', text: 'Wenn Sie in diesem Markt ein Joint Venture haben, verdient es in dieser Runde nichts, solange die Partner streiten.' },
+      { id: 'gbp', round: pick(c, 'gbp', [1, 2, 3, 4, 5]), market: 'uk', title: 'Pfund fällt um 10%', text: 'Umsätze in Großbritannien sind in Euro ab jetzt 10% weniger wert.' },
+      { id: 'usslump', round: pick(c, 'usl', [2, 3, 4]), market: 'us', title: 'Konsumflaute in den USA', text: 'Die US-Kundschaft spart: Die Umsätze in den USA sinken in dieser und der nächsten Runde um 35%. Die Fixkosten bleiben gleich.' },
+      { id: 'viral', round: pick(c, 'viral', [1, 2, 3, 4, 5]), market: pick(c, 'vm', ['ae', 'uk', 'us']), title: 'Ihre Marke geht viral', text: 'Ein Social-Media-Trend steigert die Umsätze in diesem Markt in dieser Runde um 30%.' }
+    ];
+  }
+
+  function newGame(code, name) {
+    const markets = {};
+    MARKETS.forEach((m) => { markets[m.id] = { mode: 'none', age: 0, exp: 0, misfit: 0 }; });
+    return { v: 1, code: normCode(code), name: name || 'Player', round: 0, cash: START_CASH, markets, history: [], done: false };
+  }
+
+  /* cost of changing to the chosen modes this round */
+  function changeCost(s, choice) {
+    let setup = 0, exit = 0;
+    MARKETS.forEach((mk) => {
+      const cur = s.markets[mk.id].mode, nxt = choice[mk.id] || cur;
+      if (nxt !== cur) {
+        exit += exitCost(mk, modeById(cur));
+        setup += setupCost(mk, modeById(nxt));
+      }
+    });
+    return { setup: Math.round(setup * 100) / 100, exit: Math.round(exit * 100) / 100, total: Math.round((setup + exit) * 100) / 100 };
+  }
+
+  function playRound(s0, choice) {
+    const s = JSON.parse(JSON.stringify(s0));
+    const r = s.round;
+    const sched = schedule(s.code);
+    const cc = changeCost(s, choice);
+    s.cash = Math.round((s.cash - cc.total) * 100) / 100;
+    const res = { round: r, events: sched.filter((e) => e.round === r).map((e) => e.id), markets: {}, setup: cc.setup, exit: cc.exit, operating: 0 };
+    MARKETS.forEach((mk) => {
+      const st = s.markets[mk.id];
+      const nxt = choice[mk.id] || st.mode;
+      let misfitNow = false;
+      if (nxt !== st.mode) {
+        st.mode = nxt; st.age = 0; st.misfit = 0;
+        const m2 = modeById(nxt);
+        if (m2.local) {
+          const chance = st.exp === 0 ? MISFIT_COLD : MISFIT_WARM;
+          if (rand(s.code + '|misfit|' + mk.id + '|' + nxt + '|' + r) < chance) { st.misfit = 2; misfitNow = true; res.misfitCost = (res.misfitCost || 0) + MISFIT_COST; }
+        }
+      }
+      const mo = modeById(st.mode);
+      if (mo.id === 'none') { res.markets[mk.id] = { mode: 'none', sales: 0, profit: 0 }; return; }
+      const pot = mk.pot * Math.pow(1 + mk.growth, r);
+      const ramp = mo.ramp[Math.min(st.age, mo.ramp.length - 1)];
+      const learn = mo.local ? Math.min(1, 0.4 + 0.3 * st.exp) : 1;
+      let fx = 1, margin = mo.margin, extra = 1;
+      const notes = [];
+      if (st.misfit > 0) { extra *= 0.4; notes.push(misfitNow ? 'Produkt passt nicht zur lokalen Kundschaft: Die Überarbeitung kostet ' + (MISFIT_COST * 0.5).toFixed(1).replace('.', ',') + ' Mio. € und senkt die Umsätze zwei Runden lang um 60%' : 'Produkt wird noch überarbeitet: Umsätze 60% niedriger'); st.misfit -= 1; }
+      sched.forEach((e) => {
+        if (e.market !== mk.id || e.round > r) return;
+        if (e.id === 'kecrash') { fx *= 0.75; if (e.round === r) notes.push(e.title); }
+        if (e.id === 'gbp') { fx *= 0.9; if (e.round === r) notes.push(e.title); }
+        if (e.id === 'ustariff' && mo.id !== 'sub') { margin = margin * 0.8; if (e.round === r) notes.push(e.title); }
+        if (e.id === 'derule' && e.round === r && !mo.local) { extra = 0; notes.push(e.title); }
+        if (e.id === 'dispute' && e.round === r && mo.id === 'jv') { extra = 0; notes.push(e.title); }
+        if (e.id === 'viral' && e.round === r) { extra *= 1.3; notes.push(e.title); }
+        if (e.id === 'usslump' && (e.round === r || e.round === r - 1)) { extra *= 0.65; notes.push(e.round === r ? e.title : 'Konsumflaute in den USA hält an'); }
+      });
+      const sales = pot * mo.reach * ramp * learn * extra;
+      const profit = sales * margin * fx - mo.run;
+      res.markets[mk.id] = { mode: mo.id, sales: Math.round(sales * 100) / 100, profit: Math.round(profit * 100) / 100, ramp, learn, notes };
+      res.operating += profit;
+      st.age += 1;
+      st.exp += 1;
+    });
+    res.operating = Math.round(res.operating * 100) / 100;
+    res.misfitCost = res.misfitCost || 0;
+    s.cash = s.cash + res.operating - res.misfitCost;
+    res.interest = s.cash < 0 ? Math.round(-s.cash * OVERDRAFT * 100) / 100 : 0;
+    s.cash = Math.round((s.cash - res.interest) * 100) / 100;
+    res.cash = s.cash;
+    s.history.push(res);
+    s.round = r + 1;
+    if (s.round >= ROUNDS) s.done = true;
+    return s;
+  }
+
+  function summary(s) {
+    const last = s.history[s.history.length - 1];
+    const runRate = last ? Math.max(0, last.operating) * 2 : 0;
+    const worth = Math.round((s.cash + runRate * 2) * 100) / 100;  // cash plus two years of current profit
+    const totalSales = s.history.reduce((a, h) => a + Object.values(h.markets).reduce((b, m) => b + m.sales, 0), 0);
+    const markets = MARKETS.filter((m) => s.markets[m.id].mode !== 'none').length;
+    return { cash: s.cash, runRate: Math.round(runRate * 100) / 100, worth, totalSales: Math.round(totalSales * 10) / 10, markets };
+  }
+
+  const STRATEGIES = [
+    { id: 'dist', name: 'Überall Vertriebspartner', desc: 'Von Anfang an ein Vertriebspartner in allen fünf Märkten. Ändert nie etwas.',
+      plan: () => [{ ae: 'dist', uk: 'dist', us: 'dist', de: 'dist', ke: 'dist' }] },
+    { id: 'allin', name: 'Alles auf eine Karte', desc: 'Sofort eigene Tochtergesellschaften in den USA und Großbritannien, ein Vertriebspartner in den VAE.',
+      plan: () => [{ us: 'sub', uk: 'sub', ae: 'dist' }] },
+    { id: 'steps', name: 'Schritt für Schritt', desc: 'Testet Märkte zuerst mit Vertriebspartnern und einem Onlineshop, eröffnet dann Tochtergesellschaften in den größten bewährten Märkten und ein Joint Venture in den VAE.',
+      plan: () => [
+        { ae: 'dist', uk: 'dist', us: 'dist', ke: 'online' },
+        { us: 'sub', uk: 'sub', de: 'dist' },
+        {},
+        { ae: 'jv' },
+        {},
+        {}
+      ] }
+  ];
+  function runStrategy(code, st) {
+    let s = newGame(code, st.name);
+    const plan = st.plan();
+    for (let r = 0; r < ROUNDS; r++) {
+      const ch = Object.assign({}, plan[r] || {});
+      const cost = changeCost(s, ch).total;
+      s = playRound(s, cost <= s.cash ? ch : {});
+    }
+    return s;
+  }
+  function randomCode() {
+    const w = ['GLOBE', 'ATLAS', 'VOYAGE', 'BRIDGE', 'HORIZON', 'PASSPORT', 'MERIDIAN', 'EMBASSY'];
+    return w[Math.floor(Math.random() * w.length)] + (10 + Math.floor(Math.random() * 90));
+  }
+  return { MISFIT_COLD, MISFIT_WARM, MISFIT_COST, OVERDRAFT, ROUNDS, ROUND_LABELS, START_CASH, MARKETS, MODES, modeById, marketById, setupCost, exitCost, schedule, newGame, changeCost, playRound, summary, STRATEGIES, runStrategy, normCode, randomCode };
+})();
+if (typeof module !== 'undefined') module.exports = GG;
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'gg-game-v1-de';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const cr = (n) => (n < 0 ? '−' : '') + Math.abs(n * 0.5).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '\u00A0Mio.\u00A0€';
+  const cr2 = (n) => (n < 0 ? '−' : '') + Math.abs(n * 0.5).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00A0Mio.\u00A0€';
+  const L = GG.ROUND_LABELS;
+
+  let view = 'start', S = null, choice = {}, formError = '', confirmRestart = false;
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+  function save() { if (S) store.set(SAVE_KEY, S); }
+  function resetChoice() { choice = {}; GG.MARKETS.forEach((m) => { choice[m.id] = S.markets[m.id].mode; }); }
+
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'round') return renderRound();
+    if (view === 'result') return renderResult();
+    if (view === 'final') return renderFinal();
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && !saved.done && saved.history && saved.history.length > 0;
+    app.innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <p class="kicker">Ein Entscheidungsspiel zur Internationalisierung für eine Person, 3 Jahre</p>
+          <h1>Go Global</h1>
+          <p style="font-size:20px;max-width:34em">Sie verantworten das internationale Wachstum von Waldkraft, einer Naturkosmetikmarke aus Freiburg. Mit 5 Mio. € können Sie fünf Märkte erschließen: die VAE, Großbritannien, die USA, Japan und Kenia. Alle sechs Monate entscheiden Sie, wo und wie Sie vertreten sind: online, über einen Vertriebspartner, in einem Joint Venture oder mit einer eigenen Tochtergesellschaft. Bauen Sie in drei Jahren das wertvollste internationale Geschäft auf.</p>
+        </div>
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Spiel starten</h3>
+          <label for="name">Ihr Name</label>
+          <input type="text" id="name" maxlength="24" autocomplete="off" placeholder="Zum Beispiel Lena">
+          <div style="height:12px"></div>
+          <label for="code">Spielcode</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(GG.randomCode())}" style="text-transform:uppercase">
+            <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">Neuer Code</button>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">Wer denselben Code nutzt, erlebt dieselben Ereignisse. So lassen sich Ergebnisse vergleichen.</p>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Spiel starten</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">${esc(saved.name)} fortsetzen (${esc(L[saved.round])})</button>` : ''}
+        </form>
+      </section>
+      <section class="sheet tablewrap" style="margin-top:12px"><h3>Vier Wege in einen Markt</h3>
+        <table class="small"><thead><tr><th>Eintrittsform</th><th>Was das bedeutet</th><th class="r">Startkosten</th><th class="r">Laufende Kosten je Runde</th><th class="r">Erreichte Käufer</th><th class="r">Ihr Anteil am Umsatz</th></tr></thead>
+        <tbody>${GG.MODES.slice(1).map((m) => `<tr><td><b>${m.name}</b></td><td>${esc(m.about)}</td><td class="r">ab ${cr2(m.setup)}</td><td class="r">${m.run ? cr2(m.run) : 'keine'}</td><td class="r">${Math.round(m.reach * 100)}%</td><td class="r">${Math.round(m.margin * 100)}%</td></tr>`).join('')}</tbody></table>
+        <p class="small" style="margin-top:10px">In fernen Märkten sind die Startkosten höher. Ein Joint Venture oder eine Tochtergesellschaft funktioniert am besten, wenn Sie den Markt kennen: Ohne Erfahrung dort läuft sie langsam an, und mit ${Math.round(GG.MISFIT_COLD * 100)}% Wahrscheinlichkeit muss das Produkt überarbeitet werden (${Math.round(GG.MISFIT_WARM * 100)}%, wenn Sie mindestens eine Runde dort waren). Auch der Ausstieg aus einem Joint Venture oder einer Tochtergesellschaft kostet Geld. Ihr Ergebnis ist der <b>Unternehmenswert</b>: Kassenbestand am Ende plus zwei Jahresgewinne auf Ihrem letzten Niveau.</p></section>
+      <p class="footer">Unternehmen, Märkte, Zahlen und Ereignisse in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) { formError = 'Geben Sie Ihren Namen ein, um zu starten.'; renderStart(); document.getElementById('name').focus(); return; }
+      formError = '';
+      S = GG.newGame(document.getElementById('code').value, name);
+      resetChoice(); save(); go('round');
+    });
+    document.getElementById('name').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar(now) {
+    const n = now === undefined ? S.round : now;
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.name)}</span><span class="small muted">Code ${esc(S.code)}</span>
+      <div class="steps6" aria-label="Runden">${L.map((l, i) => { const h = S.history[i]; return `<span class="${i === n ? 'now' : h ? (h.operating >= 0 ? 'up' : 'down') : ''}" title="${esc(l)}">${i < 2 ? 'J1' : i < 4 ? 'J2' : 'J3'} ${i % 2 ? 'H2' : 'H1'}</span>`; }).join('')}</div>
+      <span class="score" title="Kasse">${cr(S.cash)}</span></div></div>`;
+  }
+
+  function lastingNews() {
+    const out = [];
+    GG.schedule(S.code).forEach((e) => {
+      if (e.round >= S.round) return;
+      if (['kecrash', 'ustariff', 'gbp'].includes(e.id)) out.push({ kind: 'bad', text: e.title + ': ' + e.text });
+      if (e.id === 'usslump' && e.round === S.round - 1) out.push({ kind: 'bad', text: 'Die Konsumflaute in den USA hält in dieser Runde an.' });
+    });
+    return out;
+  }
+
+  function renderRound() {
+    const r = S.round;
+    const cc = GG.changeCost(S, choice);
+    const after = Math.round((S.cash - cc.total) * 100) / 100;
+    const last = S.history[S.history.length - 1];
+    const news = lastingNews();
+    const cards = GG.MARKETS.map((mk) => {
+      const st = S.markets[mk.id];
+      const pot = mk.pot * Math.pow(1 + mk.growth, r);
+      const lp = last && last.markets[mk.id];
+      const modes = GG.MODES.map((mo) => {
+        const isCur = mo.id === st.mode;
+        const cost = isCur ? 0 : GG.setupCost(mk, mo) + GG.exitCost(mk, GG.modeById(st.mode));
+        const full = mo.id === 'none' ? 0 : pot * mo.reach * mo.margin - mo.run;
+        return `<label class="mode"><input type="radio" name="m-${mk.id}" value="${mo.id}" ${choice[mk.id] === mo.id ? 'checked' : ''}>
+          <span><b>${mo.name}</b>${isCur && mo.id !== 'none' ? ' <span class="cur">aktuell</span>' : ''}${mo.id !== 'none' ? `<br><span class="tiny muted">Im vollen Betrieb: etwa ${cr(full)} Gewinn je Runde</span>` : ''}</span>
+          <span class="cost">${isCur ? 'keine Änderung' : cost ? cr2(cost) : 'kostenlos'}${!isCur && GG.exitCost(mk, GG.modeById(st.mode)) && mo.id !== st.mode ? '<small>inkl. Ausstiegskosten</small>' : ''}</span></label>`;
+      }).join('');
+      const chosen = GG.modeById(choice[mk.id]);
+      const warn = chosen.local && choice[mk.id] !== st.mode
+        ? `<p class="warn">${st.exp === 0 ? `Noch keine Erfahrung in ${mk.name}: ${chosen.name} würde langsam anlaufen, mit ${Math.round(GG.MISFIT_COLD * 100)}% Wahrscheinlichkeit muss das Produkt überarbeitet werden.` : `Sie haben hier ${st.exp} Runde${st.exp > 1 ? 'n' : ''} Erfahrung. ${Math.round(GG.MISFIT_WARM * 100)}% Wahrscheinlichkeit, dass das Produkt überarbeitet werden muss.`}</p>` : '';
+      return `<section class="mkt" aria-labelledby="mh-${mk.id}">
+        <div class="mkt-head"><h3 id="mh-${mk.id}">${mk.name}</h3><span class="small muted">${esc(mk.note)}</span></div>
+        <div class="mkt-body">
+          <div class="mfacts">
+            <div><b>${cr(pot)}</b><span>Marktgröße in dieser Runde</span></div>
+            <div><b>${Math.round(mk.growth * 200)}%</b><span>Wachstum pro Jahr</span></div>
+            <div><b>${lp && lp.mode !== 'none' ? cr2(lp.profit) : '&ndash;'}</b><span>Ihr Gewinn in der Vorrunde</span></div>
+          </div>
+          <p class="tiny muted" style="margin:-4px 0 8px">${st.exp ? `Erfahrung hier: ${st.exp} Runde${st.exp > 1 ? 'n' : ''}.` : 'Noch keine Erfahrung hier.'} Marktgröße bedeutet den Umsatz, wenn alle möglichen Käufer bei Ihnen kauften.</p>
+          <div class="modes" role="radiogroup" aria-label="Präsenz in ${mk.name}">${modes}</div>
+          ${warn}
+        </div>
+      </section>`;
+    }).join('');
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        <h2 style="margin-top:22px">${esc(L[r])}</h2>
+        <p class="muted">Runde ${r + 1} von ${GG.ROUNDS}. Wählen Sie Ihre Präsenz in jedem Markt. Nachrichten kommen erst nach Ihrer Entscheidung.</p>
+        ${news.length ? `<section class="sheet" style="margin-top:12px"><h3>Weiterhin in Kraft</h3><ul class="newsbox">${news.map((n) => `<li class="${n.kind}">${esc(n.text)}</li>`).join('')}</ul></section>` : ''}
+        <div class="mkts">${cards}</div>
+      </div>
+      <div class="actionbar"><div class="wrap">
+        <div><b>Kasse jetzt:</b> ${cr2(S.cash)}. <b>Änderungen in dieser Runde:</b> ${cr2(cc.total)}${cc.exit ? ` (davon ${cr2(cc.exit)} für Ausstiege)` : ''}. <span class="${after < 0 ? 'neg' : ''}"><b>Kasse nach Änderungen:</b> ${cr2(after)}</span></div>
+        <div class="row">${after < 0 ? '<span class="neg small">Nicht genug Geld für diese Änderungen</span>' : ''}<button class="btn primary" data-act="run" ${after < 0 ? 'disabled' : ''}>${esc(L[r])} durchspielen</button></div>
+      </div></div>
+      <div class="wrap footer">${confirmRestart ? `<span style="color:var(--red)">Damit wird das Spiel auf diesem Gerät gelöscht.</span> <button class="btn small dark" data-act="restart-yes">Löschen und neu beginnen</button> <button class="btn small" data-act="restart-no">Weiterspielen</button>` : `<button class="btn ghost small" data-act="restart">Neu beginnen</button>`}</div>`;
+  }
+
+  function renderResult() {
+    const h = S.history[S.history.length - 1];
+    const sched = GG.schedule(S.code).filter((e) => e.round === h.round);
+    const evHtml = sched.map((e) => `<li class="${e.id === 'viral' ? 'good' : 'bad'}"><b>${esc(e.title)}${e.id === 'dispute' || e.id === 'viral' ? ' (' + esc(GG.marketById(e.market).name) + ')' : ''}.</b> ${esc(e.text)}</li>`).join('');
+    const rows = GG.MARKETS.map((mk) => {
+      const m = h.markets[mk.id];
+      if (m.mode === 'none') return `<tr><td>${mk.name}</td><td class="muted">Nicht vertreten</td><td class="r">&ndash;</td><td class="r">&ndash;</td><td></td></tr>`;
+      return `<tr><td>${mk.name}</td><td>${GG.modeById(m.mode).name}</td><td class="r">${cr2(m.sales)}</td><td class="r"><b>${cr2(m.profit)}</b></td><td class="small">${esc((m.notes || []).join('. '))}</td></tr>`;
+    }).join('');
+    app.innerHTML = bar(h.round) + `
+      <div class="wrap" style="padding-bottom:40px">
+        <h2 style="margin-top:22px">${esc(L[h.round])}: Ergebnisse</h2>
+        ${evHtml ? `<section class="sheet"><h3>Weltnachrichten in dieser Runde</h3><ul class="newsbox">${evHtml}</ul></section>` : '<p class="muted">Ein ruhiges Halbjahr ohne größere Nachrichten.</p>'}
+        <div class="kpis">
+          <div class="kpi"><div class="small muted">Ausgaben für Änderungen</div><div class="bignum">${cr2(h.setup + h.exit)}</div></div>
+          <div class="kpi ${h.operating < 0 ? 'bad' : 'good'}"><div class="small muted">Gewinn aus den Märkten</div><div class="bignum">${cr2(h.operating)}</div></div>
+          <div class="kpi ${h.misfitCost || h.interest ? 'bad' : ''}"><div class="small muted">Produktüberarbeitung und Zinsen</div><div class="bignum">${cr2((h.misfitCost || 0) + (h.interest || 0))}</div></div>
+          <div class="kpi"><div class="small muted">Kasse jetzt</div><div class="bignum">${cr2(h.cash)}</div></div>
+        </div>
+        <section class="sheet tablewrap"><table class="small"><thead><tr><th>Markt</th><th>Ihre Präsenz</th><th class="r">Umsatz</th><th class="r">Ihr Gewinn</th><th>Hinweise</th></tr></thead><tbody>${rows}</tbody></table></section>
+        <div class="row" style="margin-top:20px"><button class="btn primary" data-act="${S.done ? 'final' : 'next'}">${S.done ? 'Zum Abschlussbericht' : esc(L[S.round]) + ' planen'}</button></div>
+      </div>`;
+    app.querySelector('[data-act=next],[data-act=final]')?.focus({ preventScroll: true });
+  }
+
+  function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = (raw || 1) / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function cashChart(series) {
+    const W = 680, H = 280, Lm = 52, R = 110, T = 14, B = 30;
+    const all = series.flatMap((s) => s.values);
+    let lo = Math.min(0, ...all), hi = Math.max(1, ...all) * 1.08;
+    const n = series[0].values.length;
+    const x = (i) => Lm + (i * (W - Lm - R)) / (n - 1);
+    const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
+    const step = niceStep((hi - lo) / 5);
+    let g = '';
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1B2A41' : '#D5DAE1'}"/><text x="${Lm - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${v}</text>`;
+    const xl = ['Start'].concat(L.map((l, i) => (i < 2 ? 'J1' : i < 4 ? 'J2' : 'J3') + (i % 2 ? ' H2' : ' H1'))).map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#5B6676">${l}</text>`).join('');
+    const ends = [];
+    const lines = series.map((s) => { ends.push({ y: y(s.values[n - 1]), x: x(n - 1), name: s.short, c: s.color }); return `<path d="${s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.5}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`; }).join('');
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Kasse in Millionen Euro nach jeder Runde">${g}${xl}${lines}${ends.map((e) => `<text x="${e.x + 8}" y="${e.y + 4}" font-size="13" font-weight="600" fill="${e.c}">${esc(e.name)}</text>`).join('')}</svg>`;
+  }
+
+  function renderFinal() {
+    const you = GG.summary(S);
+    const bench = GG.STRATEGIES.map((st) => { const run = GG.runStrategy(S.code, st); return { st, run, s: GG.summary(run) }; });
+    const rank = [{ n: 'you', w: you.worth }].concat(bench.map((b) => ({ n: b.st.id, w: b.s.worth }))).sort((a, b) => b.w - a.w);
+    const pos = rank.findIndex((r) => r.n === 'you') + 1;
+    const cash = (st) => [GG.START_CASH * 0.5].concat(st.history.map((h) => Math.round(h.cash * 50) / 100));
+    const colors = { dist: '#2C6B4C', allin: '#A93A34', steps: '#3A4A63' };
+    const dashes = { dist: '2 5', allin: '7 5', steps: '12 4 2 4' };
+    const shorts = { dist: 'Vertriebspartner', allin: 'Alles auf eine Karte', steps: 'Schrittweise' };
+    const series = [{ name: S.name, short: 'You', values: cash(S), color: '#1F4E8C', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cash(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
+    const pathOf = (st, id) => { const modes = st.history.map((h) => h.markets[id].mode); const out = []; modes.forEach((m, i) => { if (i === 0 || m !== modes[i - 1]) out.push((m === 'none' ? 'Nicht vertreten' : GG.modeById(m).name) + (i ? ' (J' + (Math.floor(i / 2) + 1) + (i % 2 ? ' H2' : ' H1') + ')' : '')); }); return out.join(' → '); };
+    const mktRows = GG.MARKETS.map((mk) => {
+      const profit = S.history.reduce((a, h) => a + (h.markets[mk.id].profit || 0), 0);
+      return `<tr><td><b>${mk.name}</b></td><td>${esc(pathOf(S, mk.id))}</td><td class="r">${cr2(profit)}</td></tr>`;
+    }).join('');
+    const benchRows = [{ name: S.name + ' (Sie)', desc: 'Ihre Entscheidungen', s: you }].concat(bench.map((b) => ({ name: b.st.name, desc: b.st.desc, s: b.s })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td class="r"><b>${cr(r.s.worth)}</b></td><td class="r">${cr(r.s.cash)}</td><td class="r">${cr(r.s.runRate)}</td><td class="r">${r.s.markets}</td></tr>`).join('');
+    const result = `Go Global | ${S.name} | Code ${S.code} | Unternehmenswert ${cr(you.worth)} | Kasse ${cr(you.cash)}`;
+    app.innerHTML = bar(GG.ROUNDS) + `
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 6px">
+        <p class="kicker">Abschlussbericht für ${esc(S.name)}, Spielcode ${esc(S.code)}</p>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${cr(you.worth)}</h1>
+        <p style="font-size:20px;max-width:40em">Unternehmenswert nach drei Jahren: ${cr(you.cash)} Kasse plus zwei Jahresgewinne auf Ihrem letzten Niveau von ${cr(you.runRate)} pro Jahr. Sie sind mit ${cr(GG.START_CASH)} gestartet. Im Vergleich mit den drei Standardstrategien unten belegen Sie Platz ${pos} von 4.</p>
+      </section>
+      <section class="sheet chart"><h3>Kasse nach jeder Runde</h3>
+        ${cashChart(series)}
+        <div class="legend">${series.map((s) => `<span class="${s.dash ? 'dash' : ''}" style="--c:${s.color}">${esc(s.name)}</span>`).join('')}</div>
+        <p class="tiny muted">Werte in Mio. €. Alle Strategien erlebten dieselben Ereignisse.</p></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet tablewrap"><h3>Ihr Weg in jedem Markt</h3>
+          <table class="small"><thead><tr><th>Markt</th><th>Ihre Präsenz</th><th class="r">Gesamtgewinn</th></tr></thead><tbody>${mktRows}</tbody></table></section>
+        <section class="sheet"><h3>Die Weltnachrichten dieses Spiels</h3>
+          <table class="small"><tbody>${GG.schedule(S.code).sort((a, b) => a.round - b.round).map((e) => `<tr><td style="white-space:nowrap">${esc(L[e.round])}</td><td>${esc(e.title)}${e.id === 'dispute' || e.id === 'viral' ? ' (' + esc(GG.marketById(e.market).name) + ')' : ''}</td></tr>`).join('')}</tbody></table></section>
+      </div>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>Die Strategien im Vergleich</h3>
+        <table class="small"><thead><tr><th>Strategie</th><th class="r">Unternehmenswert</th><th class="r">Kasse</th><th class="r">Jahresgewinn am Ende</th><th class="r">Märkte am Ende</th></tr></thead><tbody>${benchRows}</tbody></table></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Zur Diskussion</h3>
+          <ol class="questions small">
+            <li>Welchen Markt haben Sie zuerst erschlossen und warum? War es der größte, der nächste oder der sicherste?</li>
+            <li>Ein Start mit Vertriebspartner oder Onlineshop bringt wenig Gewinn. Was hat er Ihnen außer Gewinn gebracht?</li>
+            <li>Wann war ein Joint Venture besser als eine eigene Tochtergesellschaft und wann schlechter?</li>
+            <li>Welches Ereignis hat Ihnen am meisten geschadet? Hätte eine andere Eintrittsform Sie geschützt?</li>
+            <li>Große Unternehmen gehen oft schrittweise vor: erst Export, dann lokale Partner, dann eigene Gesellschaften. Hat Ihr Spiel diese Idee bestätigt?</li>
+          </ol></section>
+        <section class="sheet"><h3>Ergebnis teilen</h3>
+          <p class="small">Kopieren Sie diese Zeile, um Ihr Ergebnis zu teilen.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Ergebnis kopieren</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Noch einmal spielen</button></section>
+      </div>
+      <p class="footer">Unternehmen, Märkte, Zahlen und Ereignisse in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+  }
+
+  app.addEventListener('change', (e) => {
+    const t = e.target;
+    if (view !== 'round' || !t.name || !t.name.startsWith('m-')) return;
+    choice[t.name.slice(2)] = t.value;
+    const name = t.name, val = t.value;
+    keepScroll(renderRound);
+    app.querySelector(`input[name="${name}"][value="${val}"]`)?.focus({ preventScroll: true });
+  });
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t) return;
+    const act = t.dataset.act;
+    if (act === 'newcode') { document.getElementById('code').value = GG.randomCode(); return; }
+    if (act === 'resume') { S = store.get(SAVE_KEY); resetChoice(); go('round'); return; }
+    if (act === 'run') { if (GG.changeCost(S, choice).total > S.cash + 1e-9) return; S = GG.playRound(S, choice); save(); go('result'); return; }
+    if (act === 'next') { resetChoice(); go('round'); return; }
+    if (act === 'final') { go('final'); return; }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderRound); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderRound); return; }
+    if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Kopiert.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Markieren Sie die Zeile oben und kopieren Sie sie.'; }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coffee Chain – Lieferkettenspiel</title>
+<meta name="description" content="A classroom supply chain game modelled on the beer game: four stages of a coffee supply chain, ordering week by week, and the bullwhip effect.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
+.topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
+.lane { display: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
+}
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], input[type=password], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
+}
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+:root { --c-cafe: #A93A34; --c-dist: #2C6B4C; --c-whole: #1F4E8C; --c-roaster: #8A5B00; }
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 8px; }
+@media (max-width: 860px) { .choice { grid-template-columns: 1fr; } }
+.chain { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; margin: 22px 0 8px; align-items: stretch; }
+.chain .st { position: relative; padding: 12px 10px 10px; border: 1px solid var(--ink-2); background: var(--sheet); margin-right: 18px; border-radius: 4px; }
+.chain .st:not(:last-child)::after { content: ''; position: absolute; right: -18px; top: 50%; width: 18px; height: 2px; background: var(--ink); }
+.chain .st b { display: block; font-family: var(--display); font-size: 20px; line-height: 1.1; }
+.chain .st span { font-size: 13px; color: var(--muted); }
+.chain .st.edge { border-style: dashed; background: transparent; }
+.chain .st.me { background: var(--ink); color: #fff; border-color: var(--ink); }
+.chain .st.me span { color: #C5CDD8; }
+.chain .st .bar4 { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-radius: 6px 0 0 6px; }
+@media (max-width: 760px) { .chain { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 10px; } .chain .st:nth-child(3)::after { display: none; } }
+.flow { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.weekno { font-family: var(--display); font-weight: 700; font-size: 26px; margin-left: auto; }
+.teamstrip { background: var(--ink); color: #fff; }
+.teamstrip .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; padding-top: 8px; padding-bottom: 8px; font-size: 15px; }
+.teamstrip .who { display: inline-flex; align-items: center; gap: 6px; }
+.teamstrip .dot { width: 10px; height: 10px; border-radius: 50%; background: #8FD3A8; display: inline-block; }
+.teamstrip .muted { color: #C5CDD8; }
+.teamstrip .tick { color: var(--yellow); font-weight: 700; }
+.roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px; margin: 18px 0; }
+.roles.one { max-width: 760px; }
+.role { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.role-head { padding: 14px 16px 10px; border-top: 8px solid var(--rc); border-bottom: 1px solid var(--line); }
+.role-head h2 { margin: 0 0 2px; font-size: 32px; }
+.role-body { padding: 14px 16px 16px; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.tile { background: var(--concrete); border-radius: 4px; padding: 8px 10px; }
+.tile b { display: block; font-family: var(--display); font-size: 30px; line-height: 1.05; }
+.tile span { font-size: 13px; color: var(--muted); }
+.tile.bad b { color: var(--red); }
+.week-list { list-style: none; padding: 0; margin: 0 0 10px; }
+.week-list li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 16px; }
+.week-list b { font-family: var(--display); font-size: 20px; }
+.onway { font-size: 15px; background: var(--blue-soft); border-radius: 6px; padding: 8px 10px; margin-bottom: 12px; }
+.orderbox { border-top: 3px solid var(--ink); padding-top: 12px; }
+.orderrow { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+.orderrow input { width: 120px; font-family: var(--display); font-size: 30px; font-weight: 700; text-align: center; padding: 4px 8px; margin: 0; }
+.orderrow .step { width: 52px; height: 48px; border: 2px solid var(--ink); background: var(--sheet); border-radius: 6px; font-weight: 700; cursor: pointer; }
+.sent { color: var(--green); font-weight: 600; }
+.hist { font-size: 14px; margin-top: 12px; }
+.hist td, .hist th { padding: 4px 6px; }
+.sales { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; margin-top: 18px; }
+.sales .bars { display: flex; align-items: flex-end; gap: 3px; height: 70px; margin-top: 8px; }
+.sales .bars span { flex: 0 0 16px; background: var(--ink-2); border-radius: 2px 2px 0 0; min-height: 2px; }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.actionbar .muted { color: #C5CDD8; }
+.waiting { color: #FFE27A; font-weight: 600; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } .tiles { grid-template-columns: 1fr 1fr 1fr; } .tile b { font-size: 24px; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; }
+.reveal { background: var(--yellow); border: 2px solid var(--ink); border-radius: 4px; padding: 18px 20px; margin: 16px 0; font-size: 20px; }
+.reveal b { font-family: var(--display); font-size: 26px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
+.legend span::before { content: ''; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); vertical-align: middle; margin-right: 6px; }
+.legend span.dash::before { border-top-style: dashed; }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.radio { display: grid; gap: 8px; margin-top: 6px; }
+.radio label { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; border: 2px solid var(--ink-2); border-radius: 6px; padding: 10px 12px; background: #fff; cursor: pointer; }
+.radio input { width: 18px; height: 18px; margin-top: 3px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; margin-top: 10px; }
+.check input { width: 18px; height: 18px; margin-top: 3px; }
+.bars2 .bar { display: grid; grid-template-columns: 160px 1fr 120px; gap: 10px; align-items: center; margin-bottom: 6px; }
+.bars2 .fill { height: 26px; background: var(--blue); border-radius: 3px; min-width: 2px; display: block; }
+@media (max-width: 600px) { .bars2 .bar { grid-template-columns: 100px 1fr 90px; } }
+.confirm { color: var(--red); }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index-de.html">Supply Chain Games</a><span class="here">Coffee Chain</span><div class="versions"><nav class="switch" aria-label="Version"><a href="coffee-chain.html" hreflang="en">Indien</a><a aria-current="page">Europa</a></nav><nav class="switch" aria-label="Sprache"><a href="coffee-chain-eu.html" lang="en" hreflang="en">English</a><a aria-current="page">Deutsch</a></nav></div></div></header>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Coffee Chain engine: a four-stage coffee supply chain, modelled on the beer game */
+const CC = (() => {
+  const ROLES = [
+    { id: 'cafe', name: 'Caf\u00e9', place: 'München', sellsTo: 'Kundschaft', buysFrom: 'Verteiler' },
+    { id: 'dist', name: 'Verteiler', place: 'München', sellsTo: 'Caf\u00e9', buysFrom: 'Großhändler' },
+    { id: 'whole', name: 'Großhändler', place: 'Frankfurt', sellsTo: 'Verteiler', buysFrom: 'Kaffeerösterei' },
+    { id: 'roaster', name: 'Kaffeerösterei', place: 'Hamburg', sellsTo: 'Großhändler', buysFrom: 'Kaffeeplantagen' }
+  ];
+  const WEEKS = 24;
+  const HOLD = 10;        // per bag in stock per week (shown as €0.50)
+  const BACK = 20;        // per bag owed (backlog) per week (shown as €1.00)
+  const START_INV = 120;
+  const BASE = 40;        // bags a week before the change
+  const STEP = 80;        // bags a week after the change
+  const STEP_WEEK = 5;
+  const demand = (w) => (w < STEP_WEEK ? BASE : STEP);
+
+  function newGame(opts) {
+    const s = {
+      v: 1, team: opts.team || 'Team', share: !!opts.share, week: 1, done: false,
+      roles: ROLES.map(() => ({ inv: START_INV, backlog: 0, pipe: [BASE, BASE], lastOrder: BASE, cost: 0, hist: [] })),
+      demandHist: []
+    };
+    step(s);
+    return s;
+  }
+
+  /* receive, take orders, ship, count costs for the current week */
+  function step(s) {
+    const w = s.week;
+    const R = s.roles;
+    const arrived = R.map((r) => { const a = r.pipe[0]; r.pipe = [r.pipe[1], 0]; r.inv += a; return a; });
+    const d = demand(w);
+    s.demandHist.push(d);
+    // the coffee estates always deliver what the roaster ordered last week
+    R[3].pipe[1] += R[3].lastOrder;
+    for (let i = 0; i < 4; i++) {
+      const r = R[i];
+      const incoming = i === 0 ? d : R[i - 1].lastOrder;
+      const need = incoming + r.backlog;
+      const sent = Math.min(r.inv, need);
+      r.inv -= sent;
+      r.backlog = need - sent;
+      if (i > 0) R[i - 1].pipe[1] += sent;
+      const cost = r.inv * HOLD + r.backlog * BACK;
+      r.cost += cost;
+      r.hist.push({ week: w, arrived: arrived[i], incoming, sent, inv: r.inv, backlog: r.backlog, cost, order: null });
+    }
+  }
+
+  /* everyone has ordered: record the orders and move to next week */
+  function playWeek(s0, orders) {
+    const s = JSON.parse(JSON.stringify(s0));
+    if (s.done) return s;
+    s.roles.forEach((r, i) => {
+      const q = Math.max(0, Math.round(Number(orders[i]) || 0));
+      r.lastOrder = q;
+      r.hist[r.hist.length - 1].order = q;
+    });
+    if (s.week >= WEEKS) { s.done = true; return s; }
+    s.week += 1;
+    step(s);
+    return s;
+  }
+
+  /* what a role sees: the goods on the way and the order it is waiting on */
+  function view(s, i) {
+    const r = s.roles[i];
+    const h = r.hist[r.hist.length - 1];
+    const upstreamOwes = i < 3 ? s.roles[i + 1].backlog : 0;
+    return { r, h, nextWeek: r.pipe[0], inTwoWeeks: r.pipe[1], lastOrder: r.lastOrder, owedToYou: upstreamOwes };
+  }
+
+  /* computer players */
+  const POLICIES = {
+    // anchoring and adjustment, as estimated for real players of the beer game
+    typical(s, i, mem) {
+      const r = s.roles[i], h = r.hist[r.hist.length - 1];
+      mem.exp = mem.exp === undefined ? BASE : mem.exp + 0.36 * (h.incoming - mem.exp);
+      const stock = r.inv - r.backlog;
+      const supplyLine = r.pipe[0] + r.pipe[1] + r.lastOrder + (i < 3 ? s.roles[i + 1].backlog : 0);
+      return Math.max(0, Math.round(mem.exp + 0.26 * (170 - stock - 0.34 * supplyLine)));
+    },
+    pass(s, i) {
+      const r = s.roles[i];
+      return r.hist[r.hist.length - 1].incoming;
+    },
+    // plans from the café's customer sales (shared information) and counts goods already on the way
+    shared(s, i, mem) {
+      const r = s.roles[i];
+      const d = s.demandHist[s.demandHist.length - 1];
+      mem.exp = mem.exp === undefined ? BASE : mem.exp + 0.8 * (d - mem.exp);
+      const stock = r.inv - r.backlog;
+      const supplyLine = r.pipe[0] + r.pipe[1] + r.lastOrder + (i < 3 ? s.roles[i + 1].backlog : 0);
+      return Math.max(0, Math.round(mem.exp + (mem.exp * 4 - stock - supplyLine) / 6));
+    }
+  };
+
+  function runPolicy(name, opts) {
+    let s = newGame(Object.assign({ team: name }, opts || {}));
+    const mem = [{}, {}, {}, {}];
+    while (!s.done) s = playWeek(s, [0, 1, 2, 3].map((i) => POLICIES[name](s, i, mem[i])));
+    return s;
+  }
+
+  const BENCHMARKS = [
+    { id: 'typical', name: 'Typische Spieler', desc: 'Computerspieler, die so bestellen, wie es die meisten Menschen in diesem Spiel tun.' },
+    { id: 'pass', name: 'Bestellung weitergeben', desc: 'Jede Stufe bestellt genau das, was in dieser Woche bei ihr bestellt wurde.' },
+    { id: 'shared', name: 'Planung nach Kundenverkäufen', desc: 'Jede Stufe sieht die Verkäufe des Caf\u00e9s, plant danach und rechnet die bereits unterwegs befindliche Ware mit.' }
+  ];
+
+  function summary(s) {
+    const roleCosts = s.roles.map((r) => r.cost);
+    const total = roleCosts.reduce((a, b) => a + b, 0);
+    const orders = s.roles.map((r) => r.hist.filter((h) => h.order !== null).map((h) => h.order));
+    const sd = (a) => { if (a.length < 2) return 0; const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) * (y - m), 0) / (a.length - 1)); };
+    const dsd = sd(s.demandHist.slice(0, orders[0].length));
+    const swing = orders.map((o) => (dsd ? sd(o) / dsd : 0));
+    const peak = orders.map((o) => (o.length ? Math.max(...o) : 0));
+    const backlogWeeks = s.roles.map((r) => r.hist.filter((h) => h.backlog > 0).length);
+    return { total, roleCosts, swing, peak, backlogWeeks };
+  }
+
+  return { ROLES, WEEKS, HOLD, BACK, START_INV, BASE, STEP, STEP_WEEK, demand, newGame, playWeek, view, POLICIES, runPolicy, BENCHMARKS, summary };
+})();
+if (typeof module !== 'undefined') module.exports = CC;
+
+</script>
+<script>
+/* Online team play: Firebase Realtime Database, or a one-browser demo store */
+const ONLINE = (() => {
+  const FB_VER = '10.12.2';
+  const cfg = (typeof window !== 'undefined' && window.FIREBASE_CONFIG) || null;
+  const ls = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const ss = {
+    get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+  };
+  const mode = 'off';   // online team play is switched off on this site
+  const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function loadScript(src) {
+    return new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = src; s.async = false;
+      s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+      document.head.appendChild(s);
+    });
+  }
+
+  /* ---------- Firebase adapter ---------- */
+  function firebaseAdapter() {
+    let db = null;
+    return {
+      mode: 'firebase',
+      async init() {
+        const base = 'https://www.gstatic.com/firebasejs/' + FB_VER + '/';
+        if (!window.firebase) {
+          await loadScript(base + 'firebase-app-compat.js');
+          await loadScript(base + 'firebase-auth-compat.js');
+          await loadScript(base + 'firebase-database-compat.js');
+        }
+        if (!firebase.apps.length) firebase.initializeApp(cfg);
+        if (!firebase.auth().currentUser) await firebase.auth().signInAnonymously();
+        db = firebase.database();
+      },
+      async get(p) { const s = await db.ref(p).get(); return s.exists() ? s.val() : null; },
+      set(p, v) { return db.ref(p).set(v); },
+      update(p, obj) { return db.ref(p).update(obj); },
+      remove(p) { return db.ref(p).remove(); },
+      on(p, cb) {
+        const ref = db.ref(p);
+        const h = (s) => cb(s.exists() ? s.val() : null);
+        ref.on('value', h);
+        return () => ref.off('value', h);
+      },
+      async transaction(p, fn) {
+        const r = await db.ref(p).transaction((cur) => {
+          const out = fn(cur === undefined ? null : cur);
+          return out; // undefined aborts
+        });
+        return { committed: r.committed, value: r.snapshot.exists() ? r.snapshot.val() : null };
+      },
+      presence(p, info) {
+        const ref = db.ref(p);
+        const conn = db.ref('.info/connected');
+        const h = (s) => {
+          if (s.val() === true) {
+            ref.onDisconnect().update({ online: false }).then(() => ref.update(Object.assign({}, info, { online: true, seen: Date.now() })));
+          }
+        };
+        conn.on('value', h);
+        const t = setInterval(() => { ref.update({ seen: Date.now(), online: true }); }, 30000);
+        return () => { conn.off('value', h); clearInterval(t); ref.update({ online: false }); };
+      }
+    };
+  }
+
+  /* ---------- demo adapter: one browser, many tabs ---------- */
+  function demoAdapter() {
+    const KEY = 'scg-demo-db';
+    const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+    const listeners = new Set();
+    const notify = () => listeners.forEach((l) => l.check());
+    const save = (t) => { ls.set(KEY, JSON.stringify(t)); setTimeout(notify, 0); };
+    const keys = (p) => p.split('/').filter(Boolean);
+    const getAt = (t, p) => keys(p).reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), t);
+    function setAt(t, p, v) {
+      const ks = keys(p);
+      let o = t;
+      for (let i = 0; i < ks.length - 1; i++) {
+        if (!o[ks[i]] || typeof o[ks[i]] !== 'object') o[ks[i]] = {};
+        o = o[ks[i]];
+      }
+      const last = ks[ks.length - 1];
+      if (v === null || v === undefined) delete o[last]; else o[last] = clone(v);
+    }
+    window.addEventListener('storage', (e) => { if (e.key === KEY) notify(); });
+    // tabs take turns writing, so one tab never overwrites another's change
+    const withLock = (fn) => (navigator.locks && navigator.locks.request ? navigator.locks.request('scg-demo-db', () => fn()) : Promise.resolve(fn()));
+    const api = {
+      mode: 'demo',
+      async init() {},
+      async get(p) { const v = getAt(load(), p); return v === undefined ? null : clone(v); },
+      set(p, v) { return withLock(() => { const t = load(); setAt(t, p, v); save(t); }); },
+      update(p, obj) { return withLock(() => { const t = load(); Object.keys(obj).forEach((k) => setAt(t, p + '/' + k, obj[k])); save(t); }); },
+      remove(p) { return withLock(() => { const t = load(); setAt(t, p, null); save(t); }); },
+      on(p, cb) {
+        let last;
+        const l = { check() { const v = getAt(load(), p); const s = JSON.stringify(v === undefined ? null : v); if (s !== last) { last = s; cb(JSON.parse(s)); } } };
+        listeners.add(l);
+        setTimeout(() => l.check(), 0);
+        return () => listeners.delete(l);
+      },
+      transaction(p, fn) {
+        return withLock(() => {
+          const t = load();
+          const cur = getAt(t, p);
+          const out = fn(cur === undefined ? null : clone(cur));
+          if (out === undefined) return { committed: false, value: cur === undefined ? null : cur };
+          setAt(t, p, out); save(t);
+          return { committed: true, value: out };
+        });
+      },
+      presence(p, info) {
+        const beat = () => api.update(p, Object.assign({}, info, { online: true, seen: Date.now() }));
+        beat();
+        const t = setInterval(beat, 4000);
+        const bye = () => { const tr = load(); const cur = getAt(tr, p); if (cur) { cur.online = false; setAt(tr, p, cur); ls.set(KEY, JSON.stringify(tr)); } };
+        window.addEventListener('pagehide', bye);
+        return () => { clearInterval(t); window.removeEventListener('pagehide', bye); bye(); notify(); };
+      }
+    };
+    return api;
+  }
+
+  const db = mode === 'firebase' ? firebaseAdapter() : mode === 'demo' ? demoAdapter() : null;
+  let initP = null;
+  function init() {
+    if (!db) return Promise.reject(new Error('Online play is not set up.'));
+    if (!initP) initP = db.init().catch((e) => { initP = null; throw e; });
+    return initP;
+  }
+
+  /* ---------- helpers ---------- */
+  function hash(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return (h >>> 0).toString(36);
+  }
+  const pinHash = (code, pin) => hash('pin|' + code + '|' + pin);
+  function encodePin(pin, pw) {
+    let out = '';
+    for (let i = 0; i < pin.length; i++) out += String.fromCharCode(48 + ((pin.charCodeAt(i) - 48 + pw.charCodeAt(i % pw.length)) % 10));
+    return out;
+  }
+  function decodePin(enc, pw) {
+    let out = '';
+    for (let i = 0; i < enc.length; i++) out += String.fromCharCode(48 + ((((enc.charCodeAt(i) - 48 - pw.charCodeAt(i % pw.length)) % 10) + 10) % 10));
+    return out;
+  }
+  const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  function newCode() { let c = ''; for (let i = 0; i < 6; i++) c += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]; return c; }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  function newPin() { return String(1000 + Math.floor(Math.random() * 9000)); }
+
+  function memberId(game) {
+    const k = 'scg-member-' + game;
+    let id = ss.get(k);
+    if (!id) { id = 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); ss.set(k, id); }
+    return id;
+  }
+  /* demo mode runs every player in one browser, so it keeps each tab's login separate */
+  const sesStore = mode === 'demo'
+    ? { get: ss.get, set: ss.set, del(k) { try { sessionStorage.removeItem(k); } catch (e) {} } }
+    : ls;
+  const session = {
+    get(game) { try { return JSON.parse(sesStore.get('scg-session-' + game)); } catch (e) { return null; } },
+    set(game, s) { sesStore.set('scg-session-' + game, JSON.stringify(s)); },
+    clear(game) { sesStore.del('scg-session-' + game); }
+  };
+
+  /* members present in a team, oldest first */
+  function onlineMembers(presence) {
+    const now = Date.now();
+    return Object.keys(presence || {}).map((id) => Object.assign({ id }, presence[id]))
+      .filter((m) => m.online !== false && (mode === 'firebase' || now - (m.seen || 0) < 15000))
+      .sort((a, b) => (a.joined || 0) - (b.joined || 0) || (a.id < b.id ? -1 : 1));
+  }
+
+  const P = {
+    meta: (c) => `classes/${c}/meta`,
+    teams: (c) => `classes/${c}/teams`,
+    presence: (c, t) => `classes/${c}/presence/${t}`,
+    play: (c, t) => `classes/${c}/play/${t}`,
+    board: (c, t) => `classes/${c}/board${t ? '/' + t : ''}`
+  };
+
+  async function findClass(code) {
+    await init();
+    const meta = await db.get(P.meta(code));
+    if (!meta) return null;
+    const teams = (await db.get(P.teams(code))) || {};
+    return { code, meta, teams };
+  }
+
+  const GAME_NAMES = { ss: 'Supplier Showdown', wr: 'Warehouse Rush', cc: 'Coffee Chain' };
+  const GAME_PAGES = { ss: 'supplier-showdown.html', wr: 'warehouse-rush.html', cc: 'coffee-chain.html' };
+
+  /* the join screen, shared by both games */
+  function joinUI(el, game, onJoined) {
+    let found = null, err = '', busy = false;
+    const vals = { code: '', team: '', pin: '', name: (session.get(game) || {}).name || '' };
+    function draw() {
+      if (!found) {
+        el.innerHTML = `
+          <h3>Join your team</h3>
+          <p class="small muted">Everyone in your team joins on their own phone or laptop with the same team and PIN.</p>
+          <label for="jCode">Class code</label>
+          <input type="text" id="jCode" maxlength="8" autocomplete="off" autocapitalize="characters" value="${esc(vals.code)}" style="text-transform:uppercase" placeholder="For example KX4P7Q">
+          ${err ? `<p class="err" role="alert">${esc(err)}</p>` : ''}
+          <button class="btn primary" type="button" data-j="find" style="width:100%;margin-top:12px" ${busy ? 'disabled' : ''}>${busy ? 'Looking for your class…' : 'Find my class'}</button>`;
+      } else {
+        const teams = Object.keys(found.teams).sort((a, b) => (found.teams[a].order || 0) - (found.teams[b].order || 0));
+        el.innerHTML = `
+          <h3>${esc(found.meta.name || 'Your class')}</h3>
+          <p class="small muted">Class code ${esc(found.code)}. <button class="btn ghost small" type="button" data-j="back">Change</button></p>
+          <label for="jTeam">Your team</label>
+          <select id="jTeam"><option value="">Choose your team</option>${teams.map((t) => `<option value="${esc(t)}" ${vals.team === t ? 'selected' : ''}>${esc(found.teams[t].name)}</option>`).join('')}</select>
+          <div style="height:10px"></div>
+          <label for="jPin">Team PIN</label>
+          <input type="text" id="jPin" inputmode="numeric" maxlength="4" autocomplete="off" value="${esc(vals.pin)}" placeholder="4 digits">
+          <div style="height:10px"></div>
+          <label for="jName">Your name</label>
+          <input type="text" id="jName" maxlength="20" autocomplete="off" value="${esc(vals.name)}" placeholder="So your team knows who is who">
+          ${err ? `<p class="err" role="alert">${esc(err)}</p>` : ''}
+          <button class="btn primary" type="button" data-j="join" style="width:100%;margin-top:12px" ${busy ? 'disabled' : ''}>${busy ? 'Joining…' : 'Join team'}</button>`;
+      }
+      el.querySelectorAll('input,select').forEach((i) => i.addEventListener('input', () => {
+        if (i.id === 'jCode') vals.code = i.value; if (i.id === 'jTeam') vals.team = i.value; if (i.id === 'jPin') vals.pin = i.value; if (i.id === 'jName') vals.name = i.value;
+        if (err) { err = ''; el.querySelector('.err')?.remove(); }
+      }));
+      el.querySelectorAll('select').forEach((i) => i.addEventListener('change', () => { vals.team = i.value; }));
+    }
+    el.addEventListener('click', async (e) => {
+      const b = e.target.closest('[data-j]');
+      if (!b || busy) return;
+      const act = b.dataset.j;
+      if (act === 'back') { found = null; err = ''; draw(); return; }
+      if (act === 'find') {
+        const code = normCode(vals.code);
+        if (code.length < 4) { err = 'Enter your class code.'; draw(); return; }
+        busy = true; draw();
+        try {
+          const c = await findClass(code);
+          busy = false;
+          if (!c) { err = 'No class with code ' + code + '. Check the code.'; draw(); return; }
+          if (c.meta.game !== game) {
+            busy = false; found = null;
+            err = '';
+            el.innerHTML = `<h3>Wrong game</h3><p>Class ${esc(code)} is playing ${GAME_NAMES[c.meta.game]}.</p><a class="btn primary" href="${GAME_PAGES[c.meta.game]}">Open ${GAME_NAMES[c.meta.game]}</a> <button class="btn ghost" type="button" data-j="back">Try another code</button>`;
+            return;
+          }
+          found = c; vals.code = code; draw();
+        } catch (ex) { busy = false; err = 'Could not reach the game server. Check your internet connection and try again.'; draw(); }
+        return;
+      }
+      if (act === 'join') {
+        if (!vals.team) { err = 'Choose your team.'; draw(); return; }
+        if (!/^\d{4}$/.test(vals.pin.trim())) { err = 'The team PIN is 4 digits.'; draw(); return; }
+        if (!vals.name.trim()) { err = 'Enter your name.'; draw(); return; }
+        const team = found.teams[vals.team];
+        if (!team || team.pinHash !== pinHash(found.code, vals.pin.trim())) { err = 'That PIN doesn’t match this team. Check the PIN.'; draw(); return; }
+        const s = { code: found.code, teamId: vals.team, teamName: team.name, name: vals.name.trim(), className: found.meta.name || '', game };
+        session.set(game, s);
+        onJoined(s);
+      }
+    });
+    draw();
+  }
+
+  /* start presence for this device in its team; returns stop() */
+  function startPresence(s) {
+    const id = memberId(s.game);
+    const joinedKey = 'scg-joined-' + s.game + '-' + s.code + '-' + s.teamId;
+    let joined = Number(ss.get(joinedKey));
+    if (!joined) { joined = Date.now(); ss.set(joinedKey, String(joined)); }
+    return db.presence(P.presence(s.code, s.teamId) + '/' + id, { name: s.name, joined });
+  }
+
+  function enableDemo() { ls.set('scg-demo', '1'); }
+  function disableDemo() { ls.del('scg-demo'); ls.del('scg-demo-db'); }
+
+  return { mode, available: !!db, db, init, P, hash, pinHash, encodePin, decodePin, newCode, newPin, normCode, memberId, session, onlineMembers, findClass, joinUI, startPresence, enableDemo, disableDemo, GAME_NAMES, GAME_PAGES, esc, clone };
+})();
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'cc-coffee-game-v1-de', BOARD_KEY = 'cc-coffee-board-v1-de';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const int = (n) => Math.round(n).toLocaleString('de-DE');
+  const inr = (n) => { const v = Math.abs(n) * 0.05; const d = v < 100 ? 2 : 0; return (n < 0 ? '−' : '') + v.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d }) + '\u00A0€'; };
+  const listNames = (arr) => arr.length <= 1 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+  const RC = ['var(--c-cafe)', 'var(--c-dist)', 'var(--c-whole)', 'var(--c-roaster)'];
+  const RHEX = ['#A93A34', '#2C6B4C', '#1F4E8C', '#8A5B00'];
+
+  let view = 'start', mode = null, S = null, settings = null, aiMem = null;
+  let on = null, formError = '', errorMsg = '', showJoin = false, boardError = '', confirmClear = false, confirmRestart = false;
+  let drafts = {}, draftWeek = 0, orderErr = {};
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) {
+    const y = window.scrollY;
+    const a = document.activeElement;
+    const id = a && a.id, ss = a && a.selectionStart, se = a && a.selectionEnd;
+    fn();
+    window.scrollTo(0, y);
+    if (id) { const el = document.getElementById(id); if (el) { el.focus({ preventScroll: true }); try { if (ss !== null && ss !== undefined) el.setSelectionRange(ss, se); } catch (e) {} } }
+  }
+  function save() { if (mode === 'practice' && S) store.set(SAVE_KEY, { S, settings, aiMem }); }
+
+  /* ---------- roles ---------- */
+  function members() {
+    if (mode !== 'online') return [];
+    const list = ONLINE.onlineMembers(on.presence);
+    if (!list.some((m) => m.id === on.me)) list.push({ id: on.me, name: on.s.name, joined: Number.MAX_SAFE_INTEGER });
+    return list;
+  }
+  function owners(mem) {
+    const o = [[], [], [], []];
+    const n = mem.length;
+    if (!n) return o;
+    if (n <= 4) for (let r = 0; r < 4; r++) o[r].push(mem[r % n]);
+    else mem.forEach((m, k) => o[k % 4].push(m));
+    return o;
+  }
+  function myRoles() {
+    if (mode === 'practice') return settings.play === 'all' ? [0, 1, 2, 3] : [settings.role];
+    return owners(members()).map((o, r) => (o.some((m) => m.id === on.me) ? r : -1)).filter((r) => r >= 0);
+  }
+  function weekOrders() {
+    if (mode !== 'online' || !on.orders) return {};
+    return on.orders['w' + S.week] || {};
+  }
+  const hasOrder = (wo, i) => wo['r' + i] !== undefined && wo['r' + i] !== null;
+
+  function resetDraftsIfNewWeek() {
+    if (draftWeek !== S.week) {
+      drafts = {}; orderErr = {};
+      S.roles.forEach((r, i) => { drafts[i] = String(r.lastOrder); });
+      draftWeek = S.week;
+    }
+  }
+
+  /* ---------- online ---------- */
+  async function enterOnline(s) {
+    mode = 'online'; S = null; errorMsg = ''; draftWeek = 0;
+    go('connecting');
+    try {
+      await ONLINE.init();
+      const db = ONLINE.db;
+      const base = ONLINE.P.play(s.code, s.teamId);
+      const team = await db.get(ONLINE.P.teams(s.code) + '/' + s.teamId);
+      if (!team) throw new Error('team-missing');
+      const meta = await db.get(ONLINE.P.meta(s.code));
+      await db.transaction(base + '/core', (cur) => (cur ? undefined : { stateJson: JSON.stringify(CC.newGame({ team: team.name, share: !!(meta && meta.share) })) }));
+      on = { s, base, db, me: ONLINE.memberId('cc'), presence: {}, orders: {}, advancing: false, mySent: {} };
+      on.stop = ONLINE.startPresence(s);
+      on.unsub = [
+        db.on(base + '/core', (v) => { if (!v) return; const first = !S; S = JSON.parse(v.stateJson); if (first) writeBoard(S); sync(); }),
+        db.on(base + '/orders', (v) => { on.orders = v || {}; sync(); }),
+        db.on(ONLINE.P.presence(s.code, s.teamId), (v) => { on.presence = v || {}; sync(); })
+      ];
+      on.tick = setInterval(() => sync(), 5000);
+    } catch (e) {
+      errorMsg = e && e.message === 'team-missing'
+        ? 'Your team no longer exists. Join again.'
+        : 'Could not connect to your team. Check your internet connection and try again.';
+      if (e && e.message === 'team-missing') ONLINE.session.clear('cc');
+      go('error');
+    }
+  }
+  function leaveOnline() {
+    if (on) { try { on.unsub.forEach((u) => u()); on.stop && on.stop(); } catch (e) {} clearInterval(on.tick); }
+    on = null; mode = null; S = null;
+    ONLINE.session.clear('cc');
+  }
+  function sync() {
+    if (!on || !S) return;
+    if (S.done) { if (view !== 'final') go('final'); return; }
+    // if an order this device sent hasn't reached the team yet, send it again
+    const sentNow = on.mySent['w' + S.week] || {};
+    const dbNow = on.orders['w' + S.week] || {};
+    Object.keys(sentNow).forEach((k) => { if (dbNow[k] === undefined || dbNow[k] === null) on.db.set(on.base + '/orders/w' + S.week + '/' + k, sentNow[k]); });
+    const sig = JSON.stringify([S.week, on.orders['w' + S.week] || null, members().map((m) => m.id + m.name)]);
+    if (view !== 'play') { on.sig = sig; go('play'); }
+    else if (sig !== on.sig) { on.sig = sig; keepScroll(renderPlay); }
+    maybeAdvance();
+  }
+  function maybeAdvance() {
+    if (!on || !S || S.done || on.advancing) return;
+    const wo = weekOrders();
+    if (![0, 1, 2, 3].every((i) => hasOrder(wo, i))) return;
+    const w = S.week;
+    const orders = [0, 1, 2, 3].map((i) => Number(wo['r' + i]));
+    on.advancing = true;
+    on.db.transaction(on.base + '/core', (cur) => {
+      if (!cur) return cur;
+      const st = JSON.parse(cur.stateJson);
+      if (st.week !== w || st.done) return undefined;
+      return { stateJson: JSON.stringify(CC.playWeek(st, orders)) };
+    }).then((r) => {
+      if (on) on.advancing = false;
+      if (r.committed && r.value) writeBoard(JSON.parse(r.value.stateJson));
+    }).catch(() => { if (on) on.advancing = false; });
+  }
+  function writeBoard(st) {
+    if (mode !== 'online' || !on) return;
+    const sm = CC.summary(st);
+    on.db.set(ONLINE.P.board(on.s.code, on.s.teamId), { game: 'cc', team: st.team, week: st.week, cost: Math.round(sm.total), share: !!st.share, done: !!st.done, updated: Date.now() });
+  }
+
+  /* ---------- views ---------- */
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'connecting') { app.innerHTML = `<div class="wrap" style="padding:60px 20px"><h2>Connecting to your team&hellip;</h2><p class="muted">This takes a few seconds.</p></div>`; return; }
+    if (view === 'error') { app.innerHTML = `<div class="wrap" style="padding:60px 20px"><h2>Something went wrong</h2><p>${esc(errorMsg)}</p><div class="row">${ONLINE.session.get('cc') ? '<button class="btn primary" data-act="retry">Try again</button>' : ''}<button class="btn" data-act="tostart">Back to the start</button></div></div>`; return; }
+    if (view === 'board') return renderBoard();
+    if (!S) return renderStart();
+    if (view === 'play') return renderPlay();
+    if (view === 'final') return renderFinal();
+  }
+
+  function chainHtml(mine) {
+    const st = (cls, title, sub, i) => `<div class="st ${cls}">${i !== undefined ? `<span class="bar4" style="background:${RC[i]}"></span>` : ''}<b>${title}</b><span>${sub}</span></div>`;
+    return `<div class="chain" aria-label="The supply chain, from coffee estates to customers">
+      ${st('edge', 'Kaffeeplantagen', 'Beliefern die Rösterei')}
+      ${[3, 2, 1, 0].map((i) => st(mine && mine.includes(i) ? 'me' : '', CC.ROLES[i].name, CC.ROLES[i].place, i)).join('')}
+      ${st('edge', 'Kundschaft', 'Kauft Kaffee im Caf\u00e9')}
+    </div>
+    <div class="flow"><span>Kaffee fließt in diese Richtung &rarr; (2 Wochen je Stufe)</span><span>&larr; Bestellungen fließen in diese Richtung (1 Woche)</span></div>`;
+  }
+
+  function onlineCard() {
+    if (!ONLINE.available) {
+      return `<div class="sheet"><h3>Play with your team online</h3>
+        <p class="small">Each member plays a stage of the chain on their own phone or laptop and sees only their own stage, just like the real thing..</p>
+        <p class="small muted">Online team play isn&rsquo;t set up on this site yet. You can play solo against the computer for now.</p></div>`;
+    }
+    const saved = ONLINE.session.get('cc');
+    if (saved && !showJoin) {
+      return `<div class="sheet"><h3>Play with your team online</h3>
+        <p>You&rsquo;re in <b>${esc(saved.teamName)}</b>${saved.className ? ` (${esc(saved.className)})` : ''} as ${esc(saved.name)}.</p>
+        <button class="btn primary" type="button" data-act="rejoin" style="width:100%">Continue with ${esc(saved.teamName)}</button>
+        <button class="btn ghost small" type="button" data-act="showjoin" style="margin-top:8px">Join a different team</button></div>`;
+    }
+    return `<div class="sheet" id="joinBox"></div>`;
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && saved.S && !saved.S.done;
+    app.innerHTML = `
+    <div class="wrap">
+      <section style="padding:36px 0 0">
+        <p class="kicker">Ein Lieferkettenspiel nach dem Vorbild des Beer Game</p>
+        <h1>Coffee Chain</h1>
+        <p style="font-size:20px;max-width:36em">Gerösteter Kaffee gelangt von einer Rösterei in Hamburg über einen Großhändler in Frankfurt und einen Verteiler in München zu einem Caf&eacute; in München. Jede Stufe hält Lagerbestand, nimmt Bestellungen der nachfolgenden Stufe an und bestellt bei der vorgelagerten Stufe. Halten Sie den Kaffeefluss zur Kundschaft aufrecht, zu den niedrigsten Gesamtkosten für die ganze Kette.</p>
+      </section>
+      ${chainHtml()}
+      <div class="choice">
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Spiel starten</h3>
+          <label for="team">Ihr Name oder Teamname</label>
+          <input type="text" id="team" maxlength="24" autocomplete="off" placeholder="Zum Beispiel Lena">
+          <div style="height:12px"></div>
+          <label>Wie möchten Sie spielen?</label>
+          <div class="radio">
+            <label><input type="radio" name="play" value="solo" checked> <span>Eine Stufe spielen. Der Computer spielt die anderen drei.
+              <select id="role" style="margin-top:6px">${CC.ROLES.map((r, i) => `<option value="${i}" ${i === 2 ? 'selected' : ''}>${r.name}, ${r.place}</option>`).join('')}</select></span></label>
+            <label><input type="radio" name="play" value="all"> <span>Alle vier Stufen auf diesem Gerät spielen, als Team an einem Bildschirm.</span></label>
+          </div>
+          <label class="check"><input type="checkbox" id="share"> <span>Alle sehen jede Woche die Verkäufe des Caf&eacute;s</span></label>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:12px">Spiel starten</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">${esc(saved.S.team)} fortsetzen (Woche ${saved.S.week})</button>` : ''}
+        </form>
+        <div class="sheet">
+          <h3>So läuft jede Woche ab</h3>
+          <ol class="small" style="padding-left:1.2em;margin:0">
+            <li>Früher bestellter Kaffee kommt von der vorgelagerten Stufe an.</li>
+            <li>Eine Bestellung kommt von der nachfolgenden Stufe (beim Caf&eacute; von der Kundschaft).</li>
+            <li>Sie liefern so viel Sie können. Was Sie nicht liefern können, schulden Sie (Rückstand) und liefern es später.</li>
+            <li>Sie entscheiden, wie viele Säcke Sie bei der vorgelagerten Stufe bestellen.</li>
+          </ol>
+          <p class="small" style="margin-top:10px">Jeder Sack auf Lager kostet ${inr(CC.HOLD)} pro Woche. Jeder geschuldete Sack kostet ${inr(CC.BACK)} pro Woche. Das Team mit den niedrigsten Gesamtkosten gewinnt.</p>
+        </div>
+      </div>
+      <p class="footer">Unternehmen und Zahlen in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+    const jb = document.getElementById('joinBox');
+    if (jb) ONLINE.joinUI(jb, 'cc', (s) => { showJoin = false; enterOnline(s); });
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const team = document.getElementById('team').value.trim();
+      if (!team) { formError = 'Geben Sie Ihren Namen oder einen Teamnamen ein, um zu starten.'; renderStart(); document.getElementById('team').focus(); return; }
+      formError = '';
+      const play = (f.querySelector('input[name=play]:checked') || {}).value || 'solo';
+      settings = { play, role: Number(document.getElementById('role').value), share: document.getElementById('share').checked };
+      mode = 'practice';
+      S = CC.newGame({ team, share: settings.share });
+      aiMem = [{}, {}, {}, {}];
+      draftWeek = 0;
+      save();
+      go('play');
+    });
+    document.getElementById('team').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar() {
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.team)}</span>
+      <span class="small muted">${mode === 'online' ? 'Class ' + esc(on.s.code) : settings.play === 'all' ? 'Alle vier Stufen auf diesem Gerät' : 'Allein: Der Computer spielt die anderen Stufen'}${S.share ? ', Verkäufe geteilt' : ''}</span>
+      <span class="weekno">Woche ${S.week}</span></div></div>` + teamStrip();
+  }
+  function teamStrip() {
+    if (mode !== 'online') return '';
+    const own = owners(members());
+    const wo = weekOrders();
+    const who = members().map((m) => {
+      const roles = own.map((o, r) => (o.some((x) => x.id === m.id) ? r : -1)).filter((r) => r >= 0);
+      const done = roles.length && roles.every((r) => hasOrder(wo, r));
+      return `<span class="who"><span class="dot" aria-hidden="true"></span><b>${esc(m.id === on.me ? m.name + ' (you)' : m.name)}</b> <span class="muted">${esc(roles.map((r) => CC.ROLES[r].name.toLowerCase()).join(', '))}</span>${done ? ' <span class="tick">Ordered</span>' : ''}</span>`;
+    }).join('');
+    return `<div class="teamstrip"><div class="wrap"><span class="muted">Online now:</span>${who}</div></div>`;
+  }
+
+  function roleHtml(i, wo) {
+    const role = CC.ROLES[i];
+    const v = CC.view(S, i);
+    const h = v.h;
+    const recent = v.r.hist.slice(-5).reverse();
+    const sentOnline = mode === 'online' && hasOrder(wo, i);
+    const toLabel = ['die Kundschaft', 'das Café', 'den Verteiler', 'den Großhändler'][i];
+    const toDat = ['der Kundschaft', 'dem Café', 'dem Verteiler', 'dem Großhändler'][i];
+    const fromLabel = ['dem Verteiler', 'dem Großhändler', 'der Rösterei', 'den Kaffeeplantagen'][i];
+    const fromNom = ['Der Verteiler', 'Der Großhändler', 'Die Rösterei', ''][i];
+    const toVon = ['von der Kundschaft', 'vom Café', 'vom Verteiler', 'vom Großhändler'][i];
+    const fromVon = ['vom Verteiler', 'vom Großhändler', 'von der Rösterei', 'von den Kaffeeplantagen'][i];
+    return `<section class="role" style="--rc:${RC[i]}" aria-labelledby="rh${i}">
+      <div class="role-head"><h2 id="rh${i}">${role.name}</h2><span class="small muted">${role.place}. Sie beliefern ${toLabel} und bestellen bei ${fromLabel}.</span></div>
+      <div class="role-body">
+        <div class="tiles">
+          <div class="tile"><b>${int(h.inv)}</b><span>Säcke auf Lager</span></div>
+          <div class="tile ${h.backlog > 0 ? 'bad' : ''}"><b>${int(h.backlog)}</b><span>Rückstand gegenüber ${toDat}</span></div>
+          <div class="tile"><b style="font-size:22px">${inr(v.r.cost)}</b><span>Ihre bisherigen Kosten</span></div>
+        </div>
+        <ul class="week-list">
+          <li><span>Eingang ${fromVon}</span><b>${int(h.arrived)}</b></li>
+          <li><span>Neue Bestellung ${toVon}</span><b>${int(h.incoming)}</b></li>
+          <li><span>Geliefert an ${toLabel}</span><b>${int(h.sent)}</b></li>
+        </ul>
+        <div class="onway">Unterwegs zu Ihnen: <b>${int(v.nextWeek)}</b> nächste Woche, <b>${int(v.inTwoWeeks)}</b> in zwei Wochen.${i < 3 ? ` ${fromNom} schuldet Ihnen noch <b>${int(v.owedToYou)}</b>.` : ''} Letzte Woche haben Sie <b>${int(v.lastOrder)}</b> bestellt.</div>
+        <div class="orderbox">
+          <label for="ord${i}">Wie viele Säcke bestellen Sie diese Woche bei ${fromLabel}?</label>
+          <div class="orderrow">
+            <button class="step" type="button" data-act="minus" data-i="${i}" aria-label="10 weniger">&minus;10</button>
+            <input type="number" id="ord${i}" data-i="${i}" min="0" max="999" inputmode="numeric" value="${esc(drafts[i] !== undefined ? drafts[i] : v.r.lastOrder)}">
+            <button class="step" type="button" data-act="plus" data-i="${i}" aria-label="10 mehr">+10</button>
+            ${mode === 'online' ? `<button class="btn ${sentOnline ? '' : 'primary'}" type="button" data-act="send" data-i="${i}">${sentOnline ? 'Update order' : 'Send order'}</button>` : ''}
+          </div>
+          ${orderErr[i] ? `<p class="err" role="alert">${esc(orderErr[i])}</p>` : ''}
+          ${sentOnline ? `<p class="sent small" style="margin:6px 0 0">Order sent: ${int(wo['r' + i])} bags.</p>` : ''}
+        </div>
+        <table class="hist"><thead><tr><th>Woche</th><th class="r">Bestellt bei Ihnen</th><th class="r">Geliefert</th><th class="r">Lager</th><th class="r">Rückstand</th><th class="r">Ihre Bestellung</th></tr></thead>
+          <tbody>${recent.map((x) => `<tr><td>${x.week}</td><td class="r">${int(x.incoming)}</td><td class="r">${int(x.sent)}</td><td class="r">${int(x.inv)}</td><td class="r">${int(x.backlog)}</td><td class="r">${x.order === null ? '&ndash;' : int(x.order)}</td></tr>`).join('')}</tbody></table>
+      </div>
+    </section>`;
+  }
+
+  function renderPlay() {
+    resetDraftsIfNewWeek();
+    const mine = myRoles();
+    const wo = weekOrders();
+    let action;
+    if (mode === 'practice') {
+      action = `<span class="muted small">${settings.play === 'all' ? 'Legen Sie alle vier Bestellungen fest und senden Sie sie dann gemeinsam.' : 'Der Computer gibt die anderen drei Bestellungen auf.'}</span>
+        <button class="btn primary" data-act="sendall">${settings.play === 'all' ? 'Alle vier Bestellungen senden' : 'Meine Bestellung senden'}</button>`;
+    } else {
+      const own = owners(members());
+      const waiting = [0, 1, 2, 3].filter((r) => !hasOrder(wo, r)).map((r) => CC.ROLES[r].name + (own[r][0] ? ' (' + (own[r][0].id === on.me ? 'you' : own[r][0].name) + ')' : ''));
+      action = `<span class="${waiting.length ? 'waiting' : ''}">${waiting.length ? 'Waiting for ' + esc(listNames(waiting)) : 'All orders in. Moving to the next week…'}</span>
+        <span class="muted small">The week moves on when all four stages have ordered.</span>`;
+    }
+    const sales = S.share ? `<section class="sales"><h3 style="margin:0">Verkäufe im Caf&eacute;</h3>
+        <p class="small muted" style="margin:2px 0 0">Mit der ganzen Kette geteilt. Diese Woche: <b style="color:var(--ink);font-size:18px">${int(S.demandHist[S.demandHist.length - 1])} Säcke</b></p>
+        <div class="bars" aria-hidden="true">${S.demandHist.map((d) => `<span style="height:${Math.min(100, (d / 120) * 100)}%" title="${d}"></span>`).join('')}</div></section>` : '';
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        ${chainHtml(mine)}
+        ${sales}
+        ${mine.length ? `<div class="roles ${mine.length === 1 ? 'one' : ''}">${mine.map((i) => roleHtml(i, wo)).join('')}</div>` : '<p class="sheet" style="margin-top:18px">Waiting for the team to share out the stages&hellip;</p>'}
+      </div>
+      <div class="actionbar"><div class="wrap">${action}</div></div>
+      <div class="wrap footer">${mode === 'online' ? `<span class="small">Playing online in ${esc(on.s.className || 'class ' + on.s.code)} as ${esc(on.s.name)}. You see only your own stage${mine.length > 1 ? 's' : ''}.</span> <button class="btn ghost small" data-act="leave">Leave the team on this device</button>`
+        : confirmRestart ? `<span class="confirm">Damit wird das Spiel auf diesem Gerät gelöscht.</span> <button class="btn small dark" data-act="restart-yes">Löschen und neu beginnen</button> <button class="btn small" data-act="restart-no">Weiterspielen</button>` : `<button class="btn ghost small" data-act="restart">Neu beginnen</button>`}</div>`;
+  }
+
+  /* ---------- final report ---------- */
+  function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = (raw || 1) / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function lineChart(series, n, fmt, label) {
+    const W = 680, H = 300, L = 56, R = 104, T = 14, B = 34;
+    const all = series.flatMap((s) => s.values);
+    let lo = Math.min(0, ...all), hi = Math.max(1, ...all);
+    const pad = (hi - lo) * 0.06; hi += pad; if (lo < 0) lo -= pad;
+    const x = (i) => L + (i * (W - L - R)) / (n - 1);
+    const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
+    const step = niceStep((hi - lo) / 5);
+    let grid = '';
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) {
+      const z = Math.abs(v) < step / 2;
+      grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${z ? '#1B2A41' : '#D5DAE1'}" stroke-width="${z ? 1.5 : 1}"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${fmt(v)}</text>`;
+    }
+    let xl = '';
+    for (let i = 0; i < n; i += 4) xl += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="12" fill="#5B6676">Wo. ${i + 1}</text>`;
+    const ends = [];
+    const lines = series.map((s) => {
+      const d = s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+      ends.push({ y: y(s.values[s.values.length - 1]), x: x(s.values.length - 1), name: s.short || s.name, c: s.color });
+      return `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.5}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"><title>${esc(s.name)}</title></path>`;
+    }).join('');
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+    const endLabels = ends.map((e) => `<text x="${e.x + 8}" y="${e.y + 4}" font-size="13" font-weight="600" fill="${e.c}">${esc(e.name)}</text>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${grid}${xl}${lines}${endLabels}</svg>`;
+  }
+
+  function renderFinal() {
+    const sm = CC.summary(S);
+    const bench = CC.BENCHMARKS.map((b) => ({ b, s: CC.summary(CC.runPolicy(b.id, { share: S.share })) }));
+    const n = S.roles[0].hist.length;
+    const demand = S.demandHist.slice(0, n);
+    const orderSeries = [{ name: 'Kundenverkäufe', short: 'Kundschaft', values: demand, color: '#1B2A41', dash: '6 5', width: 2 }]
+      .concat(S.roles.map((r, i) => ({ name: 'Bestellungen ' + CC.ROLES[i].name, short: CC.ROLES[i].name, values: r.hist.map((h) => h.order || 0), color: RHEX[i], width: 3 })));
+    const stockSeries = S.roles.map((r, i) => ({ name: CC.ROLES[i].name + ': Lager minus Rückstand', short: CC.ROLES[i].name, values: r.hist.map((h) => h.inv - h.backlog), color: RHEX[i], width: 3 }));
+    const rank = [{ name: S.team + ' (Sie)', total: sm.total }].concat(bench.map((x) => ({ name: x.b.name, total: x.s.total }))).sort((a, b) => a.total - b.total);
+    const pos = rank.findIndex((r) => r.name === S.team + ' (Sie)') + 1;
+    const ownerNames = mode === 'online' ? owners(members()).map((o) => o.map((m) => m.name).join(', ')) : settings && settings.play === 'solo' ? CC.ROLES.map((_, i) => (i === settings.role ? 'Sie' : 'Computer')) : null;
+    const roleRows = S.roles.map((r, i) => `<tr><td><b style="color:${RHEX[i]}">${CC.ROLES[i].name}</b>${ownerNames ? `<br><span class="tiny muted">${esc(ownerNames[i] || '')}</span>` : ''}</td>
+      <td class="r">${inr(sm.roleCosts[i])}</td><td class="r">${sm.swing[i].toFixed(1).replace('.', ',')}&times;</td><td class="r">${int(sm.peak[i])}</td><td class="r">${sm.backlogWeeks[i]}</td></tr>`).join('');
+    const benchRows = [{ name: S.team + ' (Sie)', desc: 'Die Bestellungen Ihres Teams', s: sm }].concat(bench.map((x) => ({ name: x.b.name, desc: x.b.desc, s: x.s })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td class="r"><b>${inr(r.s.total)}</b></td><td class="r">${r.s.swing[3].toFixed(1).replace('.', ',')}&times;</td></tr>`).join('');
+    const scoreSection = mode === 'online'
+      ? `<section class="sheet"><h3>Class results</h3><p class="small">Your team&rsquo;s result is saved.</p><button class="btn" data-act="leave">Leave the team on this device</button></section>`
+      : `<section class="sheet">
+          <h3>Ergebnis teilen</h3>
+          <p class="small">Kopieren Sie diese Zeile, um das Ergebnis Ihres Teams zu teilen.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(`Coffee Chain | ${S.team} | Gesamtkosten ${inr(sm.total)}${S.share ? ' | Verkäufe geteilt' : ''}`)}"><button class="btn primary" data-act="copy">Ergebnis kopieren</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Noch einmal spielen</button>
+        </section>`;
+    app.innerHTML = `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.team)}</span><span class="small muted">Spielende nach ${n} Wochen${S.share ? ', Verkäufe geteilt' : ''}</span></div></div>
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 4px">
+        <p class="kicker">Abschlussbericht für ${esc(S.team)}${mode === 'online' ? ', class ' + esc(on.s.code) : ''}</p>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${inr(sm.total)}</h1>
+        <p style="font-size:20px;max-width:40em">Gesamtkosten der ganzen Kette über ${n} Wochen. Niedriger ist besser. Im Vergleich mit den drei Computerteams unten belegen Sie Platz ${pos} von 4.</p>
+      </section>
+      <div class="reveal"><b>Das Geheimnis:</b> Die Kundschaft kaufte in den ersten ${CC.STEP_WEEK - 1} Wochen ${CC.BASE} Säcke pro Woche, dann ab Woche ${CC.STEP_WEEK} bis zum Ende ${CC.STEP} pro Woche. Das war die einzige Änderung im ganzen Spiel.</div>
+      <section class="sheet chart">
+        <h3>Bestellungen je Woche</h3>
+        <p class="small muted">Die gestrichelte Linie zeigt, was die Kundschaft tatsächlich kaufte. Die Schwankungen wachsen mit jeder Stufe, die weiter von der Kundschaft entfernt ist. Das ist der Bullwhip-Effekt.</p>
+        ${lineChart(orderSeries, n, (v) => int(v), 'Bestellungen jeder Stufe je Woche im Vergleich zu den Kundenverkäufen')}
+        <div class="legend">${orderSeries.map((s) => `<span class="${s.dash ? 'dash' : ''}" style="--c:${s.color}">${esc(s.name)}</span>`).join('')}</div>
+      </section>
+      <section class="sheet chart" style="margin-top:16px">
+        <h3>Lager minus Rückstand</h3>
+        <p class="small muted">Über null: Säcke auf Lager. Unter null: Säcke, die der nächsten Stufe geschuldet werden.</p>
+        ${lineChart(stockSeries, n, (v) => int(v), 'Lager minus Rückstand je Stufe und Woche')}
+        <div class="legend">${stockSeries.map((s) => `<span style="--c:${s.color}">${esc(s.short)}</span>`).join('')}</div>
+      </section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet tablewrap"><h3>Jede Stufe</h3>
+          <table class="small"><thead><tr><th>Stufe</th><th class="r">Kosten</th><th class="r">Bestellschwankung</th><th class="r">Größte Bestellung</th><th class="r">Wochen im Rückstand</th></tr></thead><tbody>${roleRows}</tbody></table>
+          <p class="tiny muted" style="margin-top:8px">Die Bestellschwankung vergleicht, wie stark die Bestellungen einer Stufe schwankten, mit der Schwankung der Kundenverkäufe. 1&times; heißt: keine zusätzliche Schwankung.</p></section>
+        <section class="sheet tablewrap"><h3>Die Strategien im Vergleich</h3>
+          <table class="small"><thead><tr><th>Team</th><th class="r">Gesamtkosten</th><th class="r">Schwankung Rösterei</th></tr></thead><tbody>${benchRows}</tbody></table></section>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Zur Diskussion</h3>
+          <ol class="questions small">
+            <li>Die Kundenverkäufe änderten sich nur einmal, von ${CC.BASE} auf ${CC.STEP}. Warum schwankten die Bestellungen bei der Rösterei so viel stärker als beim Caf\u00e9?</li>
+            <li>Als die Bestellungen bei Ihnen plötzlich stiegen: Was dachten Sie, passiert mit der Nachfrage der Kundschaft?</li>
+            <li>Haben Sie den bereits unterwegs befindlichen Kaffee mitgerechnet, bevor Sie bestellten? Was geschah, als alles ankam?</li>
+            <li>&bdquo;Bestellung weitergeben&ldquo; schlug die meisten Teams. Warum funktioniert weniger Reagieren hier so gut?</li>
+            <li>${S.share ? 'Sie konnten die Kundenverkäufe sehen. Wie hat das Ihre Bestellungen verändert?' : 'Wie hätte es Ihre Bestellungen verändert, die Verkäufe des Caf\u00e9s zu sehen?'}</li>
+            <li>Wo haben Sie den Bullwhip-Effekt im echten Leben gesehen, zum Beispiel beim Weihnachtsgeschäft oder bei Hamsterkäufen?</li>
+          </ol></section>
+        ${scoreSection}
+      </div>
+    </div>`;
+  }
+
+  /* ---------- practice scoreboard ---------- */
+  function getBoard() { return store.get(BOARD_KEY) || []; }
+  function renderBoard() {
+    const board = getBoard().slice().sort((a, b) => a.cost - b.cost);
+    const max = Math.max(1, ...board.map((r) => r.cost));
+    const bars = board.map((r, i) => `<div class="bar"><span><b>${i + 1}.</b> ${esc(r.team)}</span><span><span class="fill" style="width:${(r.cost / max) * 100}%"></span></span><span class="num" style="font-size:19px">${inr(r.cost)}</span></div>`).join('');
+    const rows = board.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.team)}</td><td class="r">${inr(r.cost)}</td><td class="r"><button class="btn small" data-act="delrow" data-i="${esc(r.id)}" aria-label="Remove ${esc(r.team)}">Remove</button></td></tr>`).join('');
+    app.innerHTML = `
+    <div class="wrap">
+      <section style="padding:26px 0 6px"><h1>Practice scoreboard</h1>
+        <p style="font-size:19px">For solo games and games on one device. Type in each team&rsquo;s total cost; lowest cost ranks first. Kept on this device only.</p></section>
+      <div class="grid2">
+        <form class="sheet" id="boardForm" novalidate><h3>Add a team</h3>
+          <label for="bTeam">Team or player name</label><input type="text" id="bTeam" maxlength="24" autocomplete="off">
+          <div style="height:10px"></div>
+          <label for="bCost">Total cost (€)</label><input type="number" id="bCost" min="0" inputmode="numeric" placeholder="e.g. 152340">
+          ${boardError ? `<p class="err" role="alert">${esc(boardError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="margin-top:12px">Add to scoreboard</button></form>
+        <div class="sheet"><h3>Ranking</h3>${board.length ? `<div class="bars2">${bars}</div>` : '<p class="muted">No teams yet. Add the first result on the left.</p>'}</div>
+      </div>
+      ${board.length ? `<section class="sheet tablewrap" style="margin-top:16px"><table class="small"><thead><tr><th>#</th><th>Team</th><th class="r">Total cost</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="row" style="margin-top:12px">${confirmClear ? `<span class="confirm small">Remove every team from this scoreboard?</span><button class="btn small dark" data-act="clear-yes">Clear scoreboard</button><button class="btn small" data-act="clear-no">Keep it</button>` : `<button class="btn small" data-act="clear">Clear scoreboard</button>`}</div></section>` : ''}
+      <div class="row" style="margin:20px 0 50px"><button class="btn" data-act="home">Back to the game</button></div>
+    </div>`;
+    document.getElementById('boardForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const team = document.getElementById('bTeam').value.trim();
+      const cost = parseFloat(document.getElementById('bCost').value);
+      if (!team) { boardError = 'Enter a team or player name.'; return renderBoard(); }
+      if (!isFinite(cost) || cost < 0) { boardError = 'Enter the total cost in euros, for example 7617.'; return renderBoard(); }
+      boardError = '';
+      const b = getBoard();
+      b.push({ id: String(Date.now()) + Math.random().toString(36).slice(2, 6), team, cost: Math.round(cost) });
+      store.set(BOARD_KEY, b);
+      renderBoard();
+      document.getElementById('bTeam').focus();
+    });
+    ['bTeam', 'bCost'].forEach((id) => document.getElementById(id).addEventListener('input', () => { if (boardError) { boardError = ''; app.querySelector('#boardForm .err')?.remove(); } }));
+  }
+
+  /* ---------- actions ---------- */
+  function readOrder(i) {
+    const raw = String(drafts[i] !== undefined ? drafts[i] : '').trim();
+    if (!/^\d{1,3}$/.test(raw)) return null;
+    return Number(raw);
+  }
+  app.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.id && t.id.startsWith('ord')) {
+      const i = Number(t.dataset.i);
+      drafts[i] = t.value;
+      if (orderErr[i]) { delete orderErr[i]; t.closest('.orderbox').querySelector('.err')?.remove(); }
+    }
+  });
+  app.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (e.key === 'Enter' && t.id && t.id.startsWith('ord')) {
+      e.preventDefault();
+      if (mode === 'online') app.querySelector(`[data-act=send][data-i="${t.dataset.i}"]`)?.click();
+      else app.querySelector('[data-act=sendall]')?.click();
+    }
+  });
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t) return;
+    const act = t.dataset.act;
+    if (act === 'showjoin') { showJoin = true; renderStart(); return; }
+    if (act === 'rejoin' || act === 'retry') { const s = ONLINE.session.get('cc'); if (s) enterOnline(s); return; }
+    if (act === 'tostart') { leaveOnline(); go('start'); return; }
+    if (act === 'leave') { leaveOnline(); showJoin = false; go('start'); return; }
+    if (act === 'resume') { const sv = store.get(SAVE_KEY); if (sv && sv.S) { mode = 'practice'; S = sv.S; settings = sv.settings; aiMem = sv.aiMem || [{}, {}, {}, {}]; draftWeek = 0; go('play'); } return; }
+    if (act === 'plus' || act === 'minus') {
+      const i = Number(t.dataset.i);
+      const cur = readOrder(i);
+      const base = cur === null ? S.roles[i].lastOrder : cur;
+      drafts[i] = String(Math.max(0, Math.min(999, base + (act === 'plus' ? 10 : -10))));
+      delete orderErr[i];
+      keepScroll(renderPlay);
+      app.querySelector(`[data-act="${act}"][data-i="${i}"]`)?.focus({ preventScroll: true });
+      return;
+    }
+    if (act === 'send') {
+      const i = Number(t.dataset.i);
+      const q = readOrder(i);
+      if (q === null) { orderErr[i] = 'Geben Sie eine ganze Zahl von Säcken zwischen 0 und 999 ein.'; keepScroll(renderPlay); return; }
+      on.orders = Object.assign({}, on.orders, { ['w' + S.week]: Object.assign({}, on.orders['w' + S.week] || {}, { ['r' + i]: q }) });
+      on.mySent['w' + S.week] = Object.assign({}, on.mySent['w' + S.week] || {}, { ['r' + i]: q });
+      on.db.set(on.base + '/orders/w' + S.week + '/r' + i, q);
+      keepScroll(renderPlay);
+      maybeAdvance();
+      return;
+    }
+    if (act === 'sendall') {
+      const mine = myRoles();
+      let bad = false;
+      mine.forEach((i) => { if (readOrder(i) === null) { orderErr[i] = 'Geben Sie eine ganze Zahl von Säcken zwischen 0 und 999 ein.'; bad = true; } });
+      if (bad) { keepScroll(renderPlay); return; }
+      const orders = [0, 1, 2, 3].map((i) => (mine.includes(i) ? readOrder(i) : CC.POLICIES.typical(S, i, aiMem[i])));
+      S = CC.playWeek(S, orders);
+      save();
+      if (S.done) go('final'); else keepScroll(renderPlay);
+      return;
+    }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderPlay); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderPlay); return; }
+    if (act === 'restart-yes') { confirmRestart = false; store.del(SAVE_KEY); S = null; mode = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Kopiert.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Markieren Sie die Zeile oben und kopieren Sie sie.'; }
+      return;
+    }
+    if (act === 'board') { confirmClear = false; go('board'); return; }
+    if (act === 'home') { go(S && mode === 'practice' ? (S.done ? 'final' : 'play') : 'start'); return; }
+    if (act === 'again') { store.del(SAVE_KEY); S = null; mode = null; go('start'); return; }
+    if (act === 'addself') {
+      const b = getBoard();
+      const gid = S.team + '|' + S.roles[0].hist.length + '|' + Math.round(CC.summary(S).total);
+      if (b.some((r) => r.gameId === gid)) { document.getElementById('addmsg').textContent = 'This result is already on the scoreboard.'; return; }
+      b.push({ id: String(Date.now()), gameId: gid, team: S.team, cost: Math.round(CC.summary(S).total) });
+      store.set(BOARD_KEY, b);
+      document.getElementById('addmsg').textContent = 'Added to the scoreboard.';
+      return;
+    }
+    if (act === 'delrow') { store.set(BOARD_KEY, getBoard().filter((r) => r.id !== t.dataset.i)); renderBoard(); return; }
+    if (act === 'clear') { confirmClear = true; renderBoard(); return; }
+    if (act === 'clear-no') { confirmClear = false; renderBoard(); return; }
+    if (act === 'clear-yes') { confirmClear = false; store.set(BOARD_KEY, []); renderBoard(); return; }
+  });
+
+  if (location.hash === '#scoreboard') view = 'board';
+  render();
+})();
+</script>
+</body>
+</html>

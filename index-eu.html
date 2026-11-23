@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supply Chain Games</title>
+<meta name="description" content="Free classroom games for supply chain and operations management: Supplier Showdown, Warehouse Rush, Coffee Chain, Halftime Bakes, Season Planner, Export Desk, Go Global, Factory Footprint and Freight Buyer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
+.topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
+.lane { display: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
+}
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], input[type=password], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
+}
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.hero { padding: 48px 0 30px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+.hero h1 { margin-bottom: 14px; }
+.hero p { font-size: 20px; max-width: 36em; color: var(--ink-2); margin: 0; }
+.group { padding: 34px 0 10px; }
+.group-head { display: grid; grid-template-columns: 360px 1fr; gap: 8px 32px; align-items: baseline; margin-bottom: 18px; }
+@media (max-width: 760px) { .group-head { grid-template-columns: 1fr; } }
+.group-head h2 { margin: 0; }
+.group-head p { margin: 0; color: var(--muted); }
+.games { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.group.ops .games, .group.global .games { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 960px) { .games, .group.ops .games, .group.global .games { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .games, .group.ops .games, .group.global .games { grid-template-columns: 1fr; } }
+.game { background: var(--sheet); border: 1px solid var(--line); border-top: 3px solid var(--ink); border-radius: 4px; padding: 20px 22px 22px; display: flex; flex-direction: column; }
+.group.ops .game { border-top-color: var(--blue); }
+.group.global .game { border-top-color: var(--yellow); }
+.game h3 { font-size: 26px; margin-bottom: 8px; }
+.game p { color: var(--ink-2); }
+.game .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 4px 0 18px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 15px; }
+.game .facts dt { color: var(--muted); }
+.game .facts dd { margin: 0; }
+.game .btn { align-self: flex-start; margin-top: auto; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index-eu.html">Supply Chain Games</a><div class="versions"><nav class="switch" aria-label="Version"><a href="index.html">India</a><a aria-current="page">Europe</a></nav><nav class="switch" aria-label="Language"><a aria-current="page">English</a><a href="index-de.html" lang="de" hreflang="de">Deutsch</a></nav></div></div></header>
+<main class="wrap">
+  <section class="hero">
+    <h1>Supply Chain Games</h1>
+    <p>Nine classroom games about the decisions that keep goods moving. Three team games, played by a team gathered round one phone or laptop, and six solo games, four of them about doing business across borders. Nothing to install.</p>
+  </section>
+  <section class="group team" aria-labelledby="g-team">
+    <div class="group-head"><h2 id="g-team">Team games</h2><p>A team of two to five gathers round one phone or laptop and decides together.</p></div>
+    <div class="games">
+      <article class="game">
+        <h3>Supplier Showdown</h3>
+        <p>Buy four parts for an e-bike maker in Leipzig from suppliers in China, Vietnam, Poland and Taiwan. Fires, floods, tariffs and chip shortages hit over eight months. Cheap or safe: which one wins?</p>
+        <dl class="facts"><dt>Players</dt><dd>A team of 3 to 5, round one phone or laptop</dd><dt>Time</dt><dd>About 30 minutes of play, plus debrief</dd><dt>Topics</dt><dd>Supplier selection, total cost of ownership, dual sourcing, buffer stock, supply risk</dd></dl>
+        <a class="btn primary" href="supplier-showdown-eu.html">Play Supplier Showdown</a>
+      </article>
+      <article class="game">
+        <h3>Warehouse Rush</h3>
+        <p>Black Friday week at a fulfilment centre near Leipzig. Pick customer orders on a warehouse map, then use last month&rsquo;s sales to move fast sellers next to dispatch, then try batch picking. The same six orders, three times, getting faster each time.</p>
+        <dl class="facts"><dt>Players</dt><dd>A team of 2 to 4, round one phone or laptop</dd><dt>Time</dt><dd>About 20 minutes of play, plus debrief</dd><dt>Topics</dt><dd>ABC analysis, Pareto principle, slotting, pick routes, batch picking, productivity</dd></dl>
+        <a class="btn primary" href="warehouse-rush-eu.html">Play Warehouse Rush</a>
+      </article>
+      <article class="game">
+        <h3>Coffee Chain</h3>
+        <p>Run one stage of a coffee supply chain, from a roaster in Hamburg to a caf&eacute; in Munich. Order week by week, see only your own stage, and find out what one small change in demand does further up the chain. Modelled on the beer game.</p>
+        <dl class="facts"><dt>Players</dt><dd>One player against the computer, or a team of 4 round one screen</dd><dt>Time</dt><dd>About 25 minutes of play, plus debrief</dd><dt>Topics</dt><dd>Bullwhip effect, lead times, information sharing, stock versus backlog costs</dd></dl>
+        <a class="btn primary" href="coffee-chain-eu.html">Play Coffee Chain</a>
+      </article>
+    </div>
+  </section>
+  <section class="group ops" aria-labelledby="g-ops">
+    <div class="group-head"><h2 id="g-ops">Solo games: operations</h2><p>One player per device.</p></div>
+    <div class="games">
+      <article class="game">
+        <h3>Halftime Bakes</h3>
+        <p>Run a bakery stall outside a football stadium in Munich during a 10-day summer tournament. Each morning, decide how many brownies and sandwiches to make. Too few and fans walk away; too many and the leftovers lose money.</p>
+        <dl class="facts"><dt>Players</dt><dd>One player, on any phone or laptop</dd><dt>Time</dt><dd>About 15 minutes, plus debrief</dd><dt>Topics</dt><dd>Perishable stock, uncertain demand, cost of too many versus too few, critical ratio</dd></dl>
+        <a class="btn primary" href="boundary-bakes-eu.html">Play Halftime Bakes</a>
+      </article>
+      <article class="game">
+        <h3>Season Planner</h3>
+        <p>Plan six months of production at a garden furniture maker in Bielefeld, with a big peak as spring arrives. Hire, run overtime, subcontract or build stock early, and meet the orders at the lowest cost.</p>
+        <dl class="facts"><dt>Players</dt><dd>One player, on any phone or laptop</dd><dt>Time</dt><dd>About 20 minutes, plus debrief</dd><dt>Topics</dt><dd>Aggregate planning, level versus chase strategy, capacity, overtime, subcontracting</dd></dl>
+        <a class="btn primary" href="season-planner-eu.html">Play Season Planner</a>
+      </article>
+    </div>
+  </section>
+  <section class="group global" aria-labelledby="g-global">
+    <div class="group-head"><h2 id="g-global">Solo games: global business</h2><p>One player per device. Trade, shipping and production decisions across borders.</p></div>
+    <div class="games">
+      <article class="game">
+        <h3>Export Desk</h3>
+        <p>Ship a Dortmund pump maker&rsquo;s orders to India, China, the UK and Nigeria. Choose sea, sea-air or air for each order, decide whether to lock the exchange rate, and whether to insure the cargo, while canal blockages, port strikes and currency swings hit along the way.</p>
+        <dl class="facts"><dt>Players</dt><dd>One player, on any phone or laptop</dd><dt>Time</dt><dd>About 15 minutes, plus debrief</dd><dt>Topics</dt><dd>International logistics, transit time versus cost, currency risk and forward contracts, cargo insurance</dd></dl>
+        <a class="btn primary" href="export-desk-eu.html">Play Export Desk</a>
+      </article>
+      <article class="game">
+        <h3>Go Global</h3>
+        <p>Take a natural skincare brand from Freiburg into the UAE, UK, USA, Japan and Kenya over three years. In each market, choose an online store, a distributor, a joint venture or your own subsidiary, and face tariffs, currency crashes and partner disputes.</p>
+        <dl class="facts"><dt>Players</dt><dd>One player, on any phone or laptop</dd><dt>Time</dt><dd>About 20 minutes, plus debrief</dd><dt>Topics</dt><dd>Market selection, entry modes, step-by-step internationalisation, country risk</dd></dl>
+        <a class="btn primary" href="go-global-eu.html">Play Go Global</a>
+      </article>
+      <article class="game">
+        <h3>Factory Footprint</h3>
+        <p>A tile maker in Castell&oacute;n, Spain, sells in Europe, the Gulf, the UK and the USA. Over six years, decide where to build plants: at home, in the UAE, the UK or Mexico. Compare landed costs as a US duty, a UK carbon fee, a freight spike and a gas cut change the picture.</p>
+        <dl class="facts"><dt>Players</dt><dd>One player, on any phone or laptop</dd><dt>Time</dt><dd>About 20 minutes, plus debrief</dd><dt>Topics</dt><dd>Global facility location, landed cost, tariffs and carbon border fees, capacity planning, concentration risk</dd></dl>
+        <a class="btn primary" href="factory-footprint-eu.html">Play Factory Footprint</a>
+      </article>
+      <article class="game">
+        <h3>Freight Buyer</h3>
+        <p>Buy container space for a Hamburg homeware importer bringing goods from Shanghai for two years. Each quarter, book space on contract with a large or a small shipping line, or leave it to the spot market, while freight rates calm, spike and crash.</p>
+        <dl class="facts"><dt>Players</dt><dd>One player, on any phone or laptop</dd><dt>Time</dt><dd>About 15 minutes, plus debrief</dd><dt>Topics</dt><dd>Freight procurement, contract versus spot, carrier reliability, price volatility</dd></dl>
+        <a class="btn primary" href="freight-buyer-eu.html">Play Freight Buyer</a>
+      </article>
+    </div>
+  </section>
+  <p class="footer">All companies, products, prices and events in these games are made up for teaching.</p>
+</main>
+</body>
+</html>

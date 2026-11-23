@@ -20,6 +20,7 @@ Nine free games for supply chain and operations management. There are three team
 
 ## Contents
 
+- [India and Europe versions](#india-and-europe-versions)
 - [How to play](#how-to-play)
   - [Starting a game](#starting-a-game)
   - Team games
@@ -37,6 +38,26 @@ Nine free games for supply chain and operations management. There are three team
 
 ---
 
+## India and Europe versions
+
+Every page has a switch at the top right. **India** is the original version, in English, with prices in rupees. **Europe** sets the same games in Europe, with prices in euros, and comes in **English** and **Deutsch** (German). The rules, decisions and lessons are the same in every version; only the places, companies, events and currency change.
+
+| Game | India setting | Europe setting |
+| --- | --- | --- |
+| Supplier Showdown | Electric scooter maker in Sanand; suppliers in China, Vietnam, Pune and Stuttgart | E-bike maker in Leipzig; suppliers in China, Vietnam, Wrocław (Poland) and Taichung (Taiwan) |
+| Warehouse Rush | Festive sale at a fulfilment centre near Ahmedabad | Black Friday week at a fulfilment centre near Leipzig |
+| Coffee Chain | Roaster in Bengaluru to a café in Vadodara | Roaster in Hamburg to a café in Munich |
+| Boundary Bakes / **Halftime Bakes** | Bakery stall at a cricket stadium | Bakery stall at a football stadium in Munich (the game is called Halftime Bakes in Europe) |
+| Season Planner | School uniform factory in Surat | Garden furniture maker in Bielefeld |
+| Export Desk | Rajkot pump maker shipping to Germany, the USA, the UAE and Kenya | Dortmund pump maker shipping to India, China, the UK and Nigeria |
+| Go Global | Ayurvedic skincare brand from Ahmedabad | Natural skincare brand from Freiburg, entering the UAE, UK, USA, Japan and Kenya |
+| Factory Footprint | Tile maker in Morbi; plants at home, in the UAE, Poland or Mexico | Tile maker in Castellón, Spain; plants at home, in the UAE, the UK or Mexico |
+| Freight Buyer | Tiruppur textile exporter shipping to Rotterdam | Hamburg homeware importer bringing goods from Shanghai |
+
+Each version saves its own progress, so switching version doesn't overwrite a game in progress. Players who want to compare results should all use the same version and the same game code.
+
+---
+
 ## How to play
 
 ### Starting a game
@@ -46,7 +67,7 @@ Every game runs in a web browser on a phone, tablet or laptop. Nothing to instal
 1. Open the game from the home page.
 2. Type your name, or your team's name if you're playing as a team round one screen.
 3. Keep the game code shown, or type a code you've agreed with others. Players with the same code get the same events, so results can be compared.
-4. Tap **Start the game**.
+4. Tap **Start the game** (**Spiel starten** in German).
 5. Every game except Warehouse Rush saves your progress on the device. If you leave, open the game again and tap **Continue** on the start page.
 
 In Coffee Chain you also choose whether to play one stage against the computer, or all four stages on one screen.
@@ -390,13 +411,15 @@ The final report shows your total cost and cost per container, charts of the rat
 
 ## Files
 
+Every page comes in three files: the India version (`name.html`), the Europe version in English (`name-eu.html`) and the Europe version in German (`name-de.html`).
+
 | File | What it is |
 | --- | --- |
 | `index.html` | Home page |
 | `supplier-showdown.html` | Supplier Showdown game |
 | `warehouse-rush.html` | Warehouse Rush game |
 | `coffee-chain.html` | Coffee Chain game |
-| `boundary-bakes.html` | Boundary Bakes solo game |
+| `boundary-bakes.html` | Boundary Bakes solo game (Halftime Bakes in the Europe files) |
 | `season-planner.html` | Season Planner solo game |
 | `export-desk.html` | Export Desk solo game |
 | `go-global.html` | Go Global solo game |

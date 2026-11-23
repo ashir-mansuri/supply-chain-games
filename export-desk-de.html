@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Export Desk – Exportabwicklung</title>
+<meta name="description" content="Ein Entscheidungsspiel für eine Person zum Export: Transportwege wählen, Wechselkurse absichern und Fracht versichern für Aufträge nach Indien, China, Großbritannien und Nigeria.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
+.topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
+.lane { display: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
+}
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], input[type=password], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
+}
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.steps8 { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 3px; flex: 1 1 340px; }
+.steps8 span { font-size: 12px; text-align: center; padding: 3px 0 4px; border-bottom: 5px solid var(--concrete-2); color: var(--muted); }
+.steps8 span.now { border-bottom-color: var(--yellow); color: var(--ink); font-weight: 600; }
+.steps8 span.ok { border-bottom-color: var(--green); }
+.steps8 span.late { border-bottom-color: var(--red); }
+.score { font-family: var(--display); font-weight: 600; font-size: 22px; }
+.order { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; margin: 18px 0; }
+@media (max-width: 860px) { .order { grid-template-columns: 1fr; } }
+.order h2 { margin-bottom: 4px; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.facts div { background: var(--concrete); border-radius: 4px; padding: 8px 10px; }
+.facts b { display: block; font-family: var(--display); font-size: 26px; line-height: 1.05; }
+.facts span { font-size: 13px; color: var(--muted); }
+.news { list-style: none; padding: 0; margin: 0; }
+.news li { padding: 10px 12px; border-left: 5px solid var(--yellow); background: var(--yellow-soft); margin-bottom: 8px; }
+.news li.price { border-left-color: var(--red); background: var(--red-soft); }
+.choices { display: grid; gap: 8px; margin-top: 10px; }
+.opt { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; border: 2px solid var(--line); border-radius: 4px; padding: 10px 12px; background: #fff; cursor: pointer; }
+.opt:has(input:checked) { border-color: var(--ink); background: var(--yellow-soft); }
+.opt input { width: 20px; height: 20px; margin: 0; }
+.opt b { font-size: 17px; }
+.opt .meta { font-size: 14px; color: var(--muted); }
+.opt .right { text-align: right; font-family: var(--display); font-size: 22px; font-weight: 600; }
+.tag { font-size: 13px; font-weight: 600; padding: 1px 8px; border-radius: 4px; }
+.tag.ok { background: var(--green-soft); color: var(--green); }
+.tag.risk { background: var(--yellow-soft); color: #6B5200; }
+.tag.late { background: var(--red-soft); color: var(--red); }
+.section { margin-top: 18px; }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.actionbar .muted { color: #C5CDD8; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 38px; line-height: 1; }
+.kpi.bad .bignum { color: var(--red); }
+.kpi.good .bignum { color: var(--green); }
+.pl td:last-child { text-align: right; }
+.pl tr.total td { font-weight: 700; border-top: 2px solid var(--ink); }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+td.r { white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index-de.html">Supply Chain Games</a><span class="here">Export Desk</span><div class="versions"><nav class="switch" aria-label="Version"><a href="export-desk.html" hreflang="en">Indien</a><a aria-current="page">Europa</a></nav><nav class="switch" aria-label="Sprache"><a href="export-desk-eu.html" lang="en" hreflang="en">English</a><a aria-current="page">Deutsch</a></nav></div></div></header>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Export Desk engine: shipping route, currency hedging and cargo insurance for export orders */
+const ED = (() => {
+  const CUR = {
+    EUR: { name: 'US-Dollar', symbol: '$', rate: 0.86 },
+    USD: { name: 'US-Dollar', symbol: '$', rate: 0.86 },
+    GBP: { name: 'britischen Pfund', symbol: '£', rate: 1.15 }
+  };
+  const DEST = {
+    DE: { city: 'Mumbai', country: 'Indien', cur: 'USD', routes: [
+      { id: 'suez', name: 'See über den Suezkanal', mode: 'sea', days: 26, cost: 2000 },
+      { id: 'cape', name: 'See über das Kap der Guten Hoffnung', mode: 'sea', days: 36, cost: 2600 },
+      { id: 'seaair', name: 'See bis Dubai, dann Luft', mode: 'seaair', days: 12, cost: 5200 },
+      { id: 'air', name: 'Luftfracht ab Frankfurt', mode: 'air', days: 4, cost: 9000 }
+    ] },
+    US: { city: 'Shanghai', country: 'China', cur: 'USD', routes: [
+      { id: 'suez', name: 'See über den Suezkanal', mode: 'sea', days: 32, cost: 2400 },
+      { id: 'cape', name: 'See über das Kap der Guten Hoffnung', mode: 'sea', days: 40, cost: 2900 },
+      { id: 'seaair', name: 'See bis Dubai, dann Luft', mode: 'seaair', days: 16, cost: 6000 },
+      { id: 'air', name: 'Luftfracht ab Frankfurt', mode: 'air', days: 5, cost: 11000 }
+    ] },
+    AE: { city: 'Manchester', country: 'Großbritannien', cur: 'GBP', routes: [
+      { id: 'sea', name: 'Schiff bis Felixstowe, dann Lkw', mode: 'sea', days: 6, cost: 800 },
+      { id: 'air', name: 'Luftfracht ab Frankfurt', mode: 'air', days: 2, cost: 3000 }
+    ] },
+    KE: { city: 'Lagos', country: 'Nigeria', cur: 'USD', routes: [
+      { id: 'sea', name: 'See ab Hamburg', mode: 'sea', days: 14, cost: 1500 },
+      { id: 'air', name: 'Luftfracht ab Frankfurt', mode: 'air', days: 4, cost: 6000 }
+    ] }
+  };
+  // eight orders, the same in every game; events and currency moves change with the game code
+  const ORDERS = [
+    { dest: 'DE', customer: 'ein Wasserversorger', amount: 64000, deadline: 40 },
+    { dest: 'AE', customer: 'eine Baufirma', amount: 33000, deadline: 10 },
+    { dest: 'US', customer: 'ein Landmaschinenhändler', amount: 78000, deadline: 45 },
+    { dest: 'DE', customer: 'ein Chemiewerk', amount: 96000, deadline: 20 },
+    { dest: 'KE', customer: 'ein Bewässerungsprojekt', amount: 54000, deadline: 30 },
+    { dest: 'US', customer: 'eine städtische Feuerwehr', amount: 117000, deadline: 22 },
+    { dest: 'DE', customer: 'eine Werft', amount: 75000, deadline: 32 },
+    { dest: 'AE', customer: 'eine Hotelgruppe', amount: 47500, deadline: 7 }
+  ];
+  const LATE_RATE = 0.01;     // 1% of order value per day late
+  const LATE_CAP = 0.15;      // at most 15%
+  const FORWARD_COST = 0.006; // a forward contract locks today's rate, less 0.6%
+  const INSURE_RATE = 0.004;  // cargo insurance: 0.4% of order value
+  const DAMAGE = { sea: 0.07, seaair: 0.05, air: 0.02 }; // chance of damage on the way
+  const DAMAGE_LOSS = 0.35;   // share of the order lost when cargo is damaged
+  const PRODUCTION = 0.72;    // cost of making the pumps, as a share of order value at today's rate
+
+  function hash(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  }
+  function rand(seed) {
+    let a = hash(seed);
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'PRACTICE';
+  const pick = (code, tag, arr) => arr[Math.floor(rand(code + '|' + tag) * arr.length)];
+
+  /* the news for each order: one Suez closure, one port strike, one currency shock, sometimes an air cargo squeeze */
+  function events(code) {
+    const c = normCode(code);
+    const ev = new Array(ORDERS.length).fill(null).map(() => []);
+    const suez = pick(c, 'suez', [2, 3, 5, 6]);           // ships through Suez booked for this order are held up
+    ev[suez].push({ type: 'suez', extra: 14 });
+    const strike = pick(c, 'strike', [0, 3, 6].filter((i) => i !== suez));
+    ev[strike].push({ type: 'strike', extra: 7 });
+    const fx = pick(c, 'fx', [1, 2, 4, 5, 6]);
+    ev[fx].push({ type: 'fx', move: rand(c + '|fxdir') < 0.5 ? -0.07 : 0.06 });
+    if (rand(c + '|aircrunch') < 0.6) ev[pick(c, 'airwhen', [3, 5, 7])].push({ type: 'aircrunch', mult: 1.8 });
+    return ev;
+  }
+  /* warnings shown before you book */
+  function warnings(code, i) {
+    const out = [];
+    events(code)[i].forEach((e) => {
+      if (e.type === 'aircrunch') out.push({ kind: 'price', text: 'Luftfrachtkapazität ist diesen Monat knapp. Luft- und See-Luft-Preise sind 80% höher.' });
+      if (e.type === 'suez' && rand(normCode(code) + '|suezwarn') < 0.7) out.push({ kind: 'warn', text: 'Schifffahrtsnachricht: Ein auf Grund gelaufenes Schiff bremst den Verkehr am Suezkanal.' });
+      if (e.type === 'strike' && rand(normCode(code) + '|strikewarn') < 0.5) out.push({ kind: 'warn', text: 'Die Hafengewerkschaften in Indien drohen mit Streik.' });
+    });
+    return out;
+  }
+
+  function rateAtPayment(code, i, cur) {
+    // ordinary drift of the euro against the currency, plus any shock this order
+    const drift = (rand(normCode(code) + '|drift|' + i + '|' + cur) * 2 - 1) * 0.03;
+    let shock = 0;
+    events(code)[i].forEach((e) => { if (e.type === 'fx') shock += e.move; });
+    return CUR[cur].rate * (1 + drift + shock);
+  }
+  function routeCost(code, i, r) {
+    let mult = 1;
+    events(code)[i].forEach((e) => { if (e.type === 'aircrunch' && (r.mode === 'air' || r.mode === 'seaair')) mult = e.mult; });
+    return Math.round(r.cost * mult);
+  }
+
+  function ship(code, i, choice) {
+    const o = ORDERS[i];
+    const d = DEST[o.dest];
+    const r = d.routes.find((x) => x.id === choice.route) || d.routes[0];
+    const cur = CUR[d.cur];
+    const evs = events(code)[i];
+    let days = r.days;
+    const delays = [];
+    evs.forEach((e) => {
+      if (e.type === 'suez' && r.id === 'suez') { days += e.extra; delays.push('Ein Schiff ist im Suezkanal auf Grund gelaufen. Ihr Container wartete ' + e.extra + ' Tage.'); }
+      if (e.type === 'strike' && o.dest === 'DE' && r.mode === 'sea') { days += e.extra; delays.push('Ein Hafenstreik in Mumbai hielt Ihren Container ' + e.extra + ' Tage fest.'); }
+    });
+    const jitter = Math.round(rand(normCode(code) + '|jit|' + i + '|' + r.id) * (r.mode === 'air' ? 1 : 3));
+    days += jitter;
+    const late = Math.max(0, days - o.deadline);
+    const todayRate = cur.rate;
+    const payRate = rateAtPayment(code, i, d.cur);
+    const usedRate = choice.hedge ? todayRate * (1 - FORWARD_COST) : payRate;
+    const valueInr = o.amount * usedRate;
+    const freight = routeCost(code, i, r);
+    const insurance = choice.insure ? Math.round(o.amount * todayRate * INSURE_RATE) : 0;
+    const damaged = rand(normCode(code) + '|dmg|' + i + '|' + r.mode) < DAMAGE[r.mode];
+    const damageLoss = damaged ? Math.round(valueInr * DAMAGE_LOSS) : 0;
+    const claim = damaged && choice.insure ? damageLoss : 0;
+    const penalty = Math.round(valueInr * Math.min(LATE_CAP, late * LATE_RATE));
+    const making = Math.round(o.amount * todayRate * PRODUCTION);
+    const received = Math.round(valueInr);
+    const profit = received - making - freight - insurance - penalty - damageLoss + claim;
+    return { i, route: r.id, routeName: r.name, mode: r.mode, hedge: !!choice.hedge, insure: !!choice.insure, days, deadline: o.deadline, late, delays,
+      todayRate, payRate, usedRate, received, making, freight, insurance, damaged, damageLoss, claim, penalty, profit };
+  }
+
+  function newGame(code, name) { return { v: 1, code: normCode(code), name: name || 'Player', i: 0, history: [], done: false }; }
+  function play(s0, choice) {
+    const s = JSON.parse(JSON.stringify(s0));
+    s.history.push(ship(s.code, s.i, choice));
+    s.i += 1;
+    if (s.i >= ORDERS.length) s.done = true;
+    return s;
+  }
+  function summary(s) {
+    const sum = (k) => s.history.reduce((a, r) => a + r[k], 0);
+    return {
+      profit: sum('profit'), freight: sum('freight'), penalty: sum('penalty'), insurance: sum('insurance'),
+      damageLoss: sum('damageLoss') - sum('claim'), onTime: s.history.filter((r) => r.late === 0).length,
+      fxGain: s.history.reduce((a, r) => a + Math.round(ORDERS[r.i].amount * (r.usedRate - r.todayRate)), 0)
+    };
+  }
+
+  const STRATEGIES = [
+    { id: 'cheap', name: 'Immer die günstigste Route', desc: 'Immer die günstigste Route. Sichert nie den Kurs ab, versichert nie.',
+      choose: () => (i) => ({ route: DEST[ORDERS[i].dest].routes[0].id, hedge: false, insure: false }) },
+    { id: 'safe', name: 'Immer am schnellsten und sichersten', desc: 'Fliegt immer. Sichert immer den Kurs ab und versichert immer.',
+      choose: () => (i) => ({ route: 'air', hedge: true, insure: true }) },
+    { id: 'smart', name: 'Route passend zur Frist', desc: 'Nimmt die günstigste Route, die voraussichtlich 3 Tage vor Frist ankommt, sichert den Kurs ab und versichert.',
+      choose: () => (i) => {
+        const o = ORDERS[i];
+        const routes = DEST[o.dest].routes.slice().sort((a, b) => a.cost - b.cost);
+        const r = routes.find((x) => x.days + 3 <= o.deadline) || routes[routes.length - 1];
+        return { route: r.id, hedge: true, insure: true };
+      } }
+  ];
+  function runStrategy(code, st) {
+    let s = newGame(code, st.name);
+    const f = st.choose();
+    for (let i = 0; i < ORDERS.length; i++) s = play(s, f(i));
+    return s;
+  }
+  function randomCode() {
+    const w = ['CARGO', 'ELBE', 'WESER', 'HARBOUR', 'ANCHOR', 'CONTAINER', 'PORT', 'COMPASS'];
+    return w[Math.floor(Math.random() * w.length)] + (10 + Math.floor(Math.random() * 90));
+  }
+  return { CUR, DEST, ORDERS, LATE_RATE, LATE_CAP, FORWARD_COST, INSURE_RATE, DAMAGE, DAMAGE_LOSS, PRODUCTION, events, warnings, rateAtPayment, routeCost, ship, newGame, play, summary, STRATEGIES, runStrategy, normCode, randomCode };
+})();
+if (typeof module !== 'undefined') module.exports = ED;
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'ed-game-v1-de';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const inr = (n) => (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('de-DE') + '\u00A0€';
+  const lakh = (n) => (n < 0 ? '−' : '') + Math.round(Math.abs(n)).toLocaleString('de-DE') + '\u00A0€';
+  const fcy = (cur, n) => Math.round(n).toLocaleString('de-DE') + '\u00A0' + ED.CUR[cur].symbol;
+  const rate = (n) => n.toFixed(4).replace('.', ',') + '\u00A0€';
+  const pct = (x) => (x * 100).toFixed(1).replace('.0', '').replace('.', ',') + '%';
+
+  let view = 'start', S = null, choice = null, formError = '', confirmRestart = false;
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+  function save() { if (S) store.set(SAVE_KEY, S); }
+  function resetChoice() { const d = ED.DEST[ED.ORDERS[S.i].dest]; choice = { route: null, hedge: null, insure: false }; }
+
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'order') return renderOrder();
+    if (view === 'result') return renderResult();
+    if (view === 'final') return renderFinal();
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && !saved.done && saved.history && saved.history.length > 0;
+    app.innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <p class="kicker">Ein Entscheidungsspiel zum Export für eine Person, 8 Aufträge</p>
+          <h1>Export Desk</h1>
+          <p style="font-size:20px;max-width:34em">Sie leiten die Exportabteilung eines Pumpenherstellers in Dortmund. Acht Aufträge kommen von Kunden in Indien, China, Großbritannien und Nigeria. Für jeden wählen Sie den Transportweg, ob Sie den Wechselkurs absichern und ob Sie die Fracht versichern. Liefern Sie pünktlich und schützen Sie Ihren Gewinn vor Verzögerungen, Schäden und Kursschwankungen.</p>
+        </div>
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Spiel starten</h3>
+          <label for="name">Ihr Name</label>
+          <input type="text" id="name" maxlength="24" autocomplete="off" placeholder="Zum Beispiel Lena">
+          <div style="height:12px"></div>
+          <label for="code">Spielcode</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(ED.randomCode())}" style="text-transform:uppercase">
+            <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">Neuer Code</button>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">Wer denselben Code nutzt, hat dieselben Verzögerungen und Kursbewegungen. So lassen sich Ergebnisse vergleichen.</p>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Spiel starten</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">${esc(saved.name)} fortsetzen (Auftrag ${saved.i + 1})</button>` : ''}
+        </form>
+      </section>
+      <div class="grid2" style="margin-top:12px">
+        <section class="sheet"><h3>So funktioniert das Geld</h3>
+          <ul class="small" style="padding-left:1.2em;margin:0">
+            <li>Die Kunden zahlen bei Ankunft der Pumpen in US-Dollar oder britischen Pfund. Die Herstellung der Pumpen kostet ${pct(ED.PRODUCTION)} des Auftragswerts.</li>
+            <li>Verspätete Lieferung kostet ${pct(ED.LATE_RATE)} des Auftragswerts je Verspätungstag, höchstens ${pct(ED.LATE_CAP)}.</li>
+            <li>Die Wechselkurse bewegen sich, während Ihre Pumpen unterwegs sind. Ein <b>Devisentermingeschäft</b> sichert den heutigen Kurs abzüglich ${pct(ED.FORWARD_COST)}.</li>
+            <li>Eine <b>Transportversicherung</b> kostet ${pct(ED.INSURE_RATE)} des Auftragswerts und zahlt jeden Schaden unterwegs. Beschädigte Ware verliert ${pct(ED.DAMAGE_LOSS)} ihres Werts.</li>
+          </ul></section>
+        <section class="sheet"><h3>Transportwege</h3>
+          <ul class="small" style="padding-left:1.2em;margin:0">
+            <li><b>See über Suez:</b> am günstigsten nach Indien und China, aber ein einziger Kanal kann alles aufhalten.</li>
+            <li><b>See über das Kap der Guten Hoffnung:</b> etwa 10 Tage länger, aber ohne Kanal.</li>
+            <li><b>See bis Dubai, dann Luft:</b> schneller, kostet mehr als das Doppelte.</li>
+            <li><b>Luftfracht:</b> am schnellsten und sichersten, aber vier- bis fünfmal so teuer wie Seefracht.</li>
+          </ul></section>
+      </div>
+      <p class="footer">Unternehmen, Kunden, Preise und Ereignisse in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) { formError = 'Geben Sie Ihren Namen ein, um zu starten.'; renderStart(); document.getElementById('name').focus(); return; }
+      formError = '';
+      S = ED.newGame(document.getElementById('code').value, name);
+      resetChoice(); save(); go('order');
+    });
+    document.getElementById('name').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar(now) {
+    const n = now === undefined ? S.i : now;
+    const total = S.history.reduce((a, r) => a + r.profit, 0);
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.name)}</span><span class="small muted">Code ${esc(S.code)}</span>
+      <div class="steps8" aria-label="Aufträge">${ED.ORDERS.map((o, i) => { const h = S.history[i]; return `<span class="${i === n ? 'now' : h ? (h.late ? 'late' : 'ok') : ''}">${i + 1}</span>`; }).join('')}</div>
+      <span class="score" title="Bisheriger Gewinn">${lakh(total)}</span></div></div>`;
+  }
+
+  function renderOrder() {
+    const i = S.i;
+    const o = ED.ORDERS[i];
+    const d = ED.DEST[o.dest];
+    const cur = ED.CUR[d.cur];
+    const value = o.amount * cur.rate;
+    const making = value * ED.PRODUCTION;
+    const warns = ED.warnings(S.code, i);
+    const fwd = cur.rate * (1 - ED.FORWARD_COST);
+    const routeOpts = d.routes.map((r) => {
+      const cost = ED.routeCost(S.code, i, r);
+      const spare = o.deadline - r.days;
+      const tag = spare >= 4 ? `<span class="tag ok">${spare} Tage Puffer</span>` : spare >= 0 ? `<span class="tag risk">${spare === 0 ? 'kein' : spare + (spare === 1 ? ' Tag' : ' Tage')} Puffer</span>` : `<span class="tag late">etwa ${-spare} Tage zu spät</span>`;
+      return `<label class="opt"><input type="radio" name="route" value="${r.id}" ${choice.route === r.id ? 'checked' : ''}>
+        <span><b>${r.name}</b><br><span class="meta">Etwa ${r.days} Tage. Schadensrisiko ${pct(ED.DAMAGE[r.mode])}.</span> ${tag}</span>
+        <span class="right">${lakh(cost)}${cost !== r.cost ? '<br><span class="tag late" style="font-family:var(--body)">teurer</span>' : ''}</span></label>`;
+    }).join('');
+    const insureCost = Math.round(value * ED.INSURE_RATE);
+    const ready = choice.route && choice.hedge !== null;
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        <div class="order">
+          <section class="sheet">
+            <p class="kicker" style="margin:0">Auftrag ${i + 1} von ${ED.ORDERS.length}</p>
+            <h2>${d.city}, ${d.country}</h2>
+            <p style="font-size:18px">${esc(o.customer.charAt(0).toUpperCase() + o.customer.slice(1))} bestellt Pumpen im Wert von <b>${fcy(d.cur, o.amount)}</b>, Lieferung innerhalb von <b>${o.deadline} Tagen</b>.</p>
+            <div class="facts">
+              <div><b>${lakh(value)}</b><span>Auftragswert zum heutigen Kurs (${rate(cur.rate)} je ${cur.symbol})</span></div>
+              <div><b>${lakh(making)}</b><span>Herstellkosten der Pumpen</span></div>
+              <div><b>${o.deadline} Tage</b><span>Lieferfrist</span></div>
+            </div>
+          </section>
+          <section class="sheet"><h3>Schifffahrtsnachrichten</h3>
+            ${warns.length ? `<ul class="news">${warns.map((w) => `<li class="${w.kind}">${esc(w.text)}</li>`).join('')}</ul>` : '<p class="muted">Nichts Besonderes in dieser Woche.</p>'}
+          </section>
+        </div>
+        <section class="sheet"><h3>1. Wie verschicken Sie den Auftrag?</h3><div class="choices" role="radiogroup" aria-label="Route">${routeOpts}</div></section>
+        <section class="sheet section"><h3>2. Wie gehen Sie mit dem ${cur.name} um?</h3>
+          <p class="small muted" style="margin:0">Der Kunde zahlt ${fcy(d.cur, o.amount)} bei Ankunft der Pumpen. Heute gilt 1 ${cur.symbol} = ${rate(cur.rate)}.</p>
+          <div class="choices" role="radiogroup" aria-label="Currency">
+            <label class="opt"><input type="radio" name="hedge" value="no" ${choice.hedge === false ? 'checked' : ''}><span><b>Abwarten und am Zahltag umtauschen</b><br><span class="meta">Sie erhalten den dann gültigen Kurs. Er kann besser oder schlechter sein.</span></span><span class="right">?</span></label>
+            <label class="opt"><input type="radio" name="hedge" value="yes" ${choice.hedge === true ? 'checked' : ''}><span><b>Kurs jetzt per Devisentermingeschäft absichern</b><br><span class="meta">1 ${cur.symbol} = ${rate(fwd)} am Zahltag, was auch passiert.</span></span><span class="right">${lakh(o.amount * fwd)}</span></label>
+          </div></section>
+        <section class="sheet section"><h3>3. Fracht versichern?</h3>
+          <div class="choices"><label class="opt"><input type="checkbox" id="insure" ${choice.insure ? 'checked' : ''}><span><b>Transportversicherung abschließen</b><br><span class="meta">Zahlt jeden Schaden unterwegs in voller Höhe.</span></span><span class="right">${inr(insureCost)}</span></label></div></section>
+      </div>
+      <div class="actionbar"><div class="wrap"><span class="muted small">${ready ? 'Bereit zum Versand.' : 'Wählen Sie eine Route und den Umgang mit der Währung.'}</span><button class="btn primary" data-act="ship" ${ready ? '' : 'disabled'}>Auftrag ${i + 1} versenden</button></div></div>
+      <div class="wrap footer">${confirmRestart ? `<span style="color:var(--red)">Damit wird das Spiel auf diesem Gerät gelöscht.</span> <button class="btn small dark" data-act="restart-yes">Löschen und neu beginnen</button> <button class="btn small" data-act="restart-no">Weiterspielen</button>` : `<button class="btn ghost small" data-act="restart">Neu beginnen</button>`}</div>`;
+  }
+
+  function renderResult() {
+    const r = S.history[S.history.length - 1];
+    const o = ED.ORDERS[r.i];
+    const d = ED.DEST[o.dest];
+    const cur = ED.CUR[d.cur];
+    const rows = [
+      ['Zahlung des Kunden, in Euro', r.received],
+      ['Herstellkosten der Pumpen', -r.making],
+      ['Fracht', -r.freight],
+      ['Versicherung', -r.insurance],
+      ['Vertragsstrafe für Verspätung', -r.penalty],
+      ['Beschädigte Ware', -r.damageLoss],
+      ['Versicherungsleistung', r.claim]
+    ].filter(([, v]) => v !== 0);
+    const fxMove = r.payRate / r.todayRate - 1;
+    app.innerHTML = bar(r.i) + `
+      <div class="wrap" style="padding-bottom:40px">
+        <h2 style="margin-top:22px">Auftrag ${r.i + 1}: ${d.city}</h2>
+        <div class="kpis">
+          <div class="kpi ${r.late ? 'bad' : 'good'}"><div class="small muted">Angekommen nach</div><div class="bignum">${r.days} Tagen</div><div class="small">${r.late ? r.late + (r.late === 1 ? ' Tag' : ' Tage') + ' zu spät' : 'Pünktlich (Frist ' + r.deadline + ' Tage)'}</div></div>
+          <div class="kpi"><div class="small muted">1 ${cur.symbol} am Zahltag</div><div class="bignum">${rate(r.payRate)}</div><div class="small">${fxMove >= 0 ? 'gestiegen' : 'gefallen'} um ${pct(Math.abs(fxMove))} gegenüber ${rate(r.todayRate)}${r.hedge ? '. Sie hatten ' + rate(r.usedRate) + ' abgesichert' : ''}</div></div>
+          <div class="kpi ${r.damaged ? 'bad' : ''}"><div class="small muted">Fracht</div><div class="bignum">${r.damaged ? 'Beschädigt' : 'Unversehrt'}</div><div class="small">${r.damaged ? (r.insure ? 'Die Versicherung hat den Schaden bezahlt' : 'Nicht versichert: Sie verloren ' + lakh(r.damageLoss)) : 'In gutem Zustand angekommen'}</div></div>
+          <div class="kpi ${r.profit < 0 ? 'bad' : 'good'}"><div class="small muted">Gewinn aus diesem Auftrag</div><div class="bignum">${lakh(r.profit)}</div></div>
+        </div>
+        ${r.delays.length ? `<ul style="font-size:18px">${r.delays.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+        <section class="sheet" style="max-width:600px"><h3>Wohin das Geld ging</h3>
+          <table class="small pl"><tbody>${rows.map(([k, v]) => `<tr><td>${k}</td><td>${inr(v)}</td></tr>`).join('')}<tr class="total"><td>Profit</td><td>${inr(r.profit)}</td></tr></tbody></table></section>
+        <div class="row" style="margin-top:20px"><button class="btn primary" data-act="${S.done ? 'final' : 'next'}">${S.done ? 'Zum Abschlussbericht' : 'Nächster Auftrag'}</button></div>
+      </div>`;
+    app.querySelector('[data-act=next],[data-act=final]')?.focus({ preventScroll: true });
+  }
+
+  function renderFinal() {
+    const you = ED.summary(S);
+    const bench = ED.STRATEGIES.map((st) => ({ st, s: ED.summary(ED.runStrategy(S.code, st)) }));
+    const rank = [{ n: 'you', p: you.profit }].concat(bench.map((b) => ({ n: b.st.id, p: b.s.profit }))).sort((a, b) => b.p - a.p);
+    const pos = rank.findIndex((r) => r.n === 'you') + 1;
+    const orderRows = S.history.map((r) => {
+      const o = ED.ORDERS[r.i], d = ED.DEST[o.dest];
+      return `<tr><td>${r.i + 1}. ${d.city}</td><td>${esc(r.routeName)}</td><td class="r">${r.days} / ${r.deadline}</td><td>${r.hedge ? 'Abgesichert' : 'Abgewartet'}</td><td>${r.insure ? 'Ja' : 'Nein'}${r.damaged ? ' (beschädigt)' : ''}</td><td class="r"><b>${lakh(r.profit)}</b></td></tr>`;
+    }).join('');
+    const benchRows = [{ name: S.name + ' (Sie)', desc: 'Ihre Entscheidungen', s: you }].concat(bench.map((b) => ({ name: b.st.name, desc: b.st.desc, s: b.s })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td class="r"><b>${lakh(r.s.profit)}</b></td><td class="r">${r.s.onTime} von 8</td><td class="r">${lakh(r.s.freight)}</td><td class="r">${lakh(r.s.penalty)}</td><td class="r">${lakh(r.s.damageLoss)}</td></tr>`).join('');
+    const result = `Export Desk | ${S.name} | Code ${S.code} | Gewinn ${lakh(you.profit)} | pünktlich ${you.onTime} von 8`;
+    app.innerHTML = bar(ED.ORDERS.length) + `
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 6px">
+        <p class="kicker">Abschlussbericht für ${esc(S.name)}, Spielcode ${esc(S.code)}</p>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${lakh(you.profit)}</h1>
+        <p style="font-size:20px;max-width:40em">Gesamtgewinn aus acht Exportaufträgen. Sie haben ${you.onTime} von 8 pünktlich geliefert. Im Vergleich mit den drei Standardstrategien unten belegen Sie Platz ${pos} von 4.</p>
+      </section>
+      <div class="kpis">
+        <div class="kpi"><div class="small muted">Ausgaben für Fracht</div><div class="bignum">${lakh(you.freight)}</div></div>
+        <div class="kpi ${you.penalty ? 'bad' : ''}"><div class="small muted">Vertragsstrafen</div><div class="bignum">${lakh(you.penalty)}</div></div>
+        <div class="kpi ${you.fxGain < 0 ? 'bad' : 'good'}"><div class="small muted">Währungsgewinn oder -verlust</div><div class="bignum">${lakh(you.fxGain)}</div></div>
+        <div class="kpi ${you.damageLoss ? 'bad' : ''}"><div class="small muted">Unversicherte Schäden</div><div class="bignum">${lakh(you.damageLoss)}</div></div>
+      </div>
+      <section class="sheet tablewrap"><h3>Ihre Aufträge</h3>
+        <table class="small"><thead><tr><th>Auftrag</th><th>Route</th><th class="r">Tage / Frist</th><th>Währung</th><th>Versichert</th><th class="r">Gewinn</th></tr></thead><tbody>${orderRows}</tbody></table></section>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>Die Strategien im Vergleich</h3>
+        <table class="small"><thead><tr><th>Strategie</th><th class="r">Gewinn</th><th class="r">Pünktlich</th><th class="r">Fracht</th><th class="r">Vertragsstrafen</th><th class="r">Unversicherte Schäden</th></tr></thead><tbody>${benchRows}</tbody></table>
+        <p class="tiny muted" style="margin-top:8px">Alle vier hatten dieselben Verzögerungen, Schäden und Kursbewegungen.</p></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Zur Diskussion</h3>
+          <ol class="questions small">
+            <li>Wann hat sich Luftfracht gelohnt, und wann war sie rausgeworfenes Geld?</li>
+            <li>Haben die Schifffahrtsnachrichten Ihre Entscheidungen verändert? Was geschah, wenn Sie sie ignoriert haben?</li>
+            <li>Die Kursabsicherung kostete jedes Mal etwas. Wann hat sie Sie gerettet, und wann hat sie Sie Geld gekostet?</li>
+            <li>Eine Transportversicherung kostet 0,4% des Auftragswerts. Warum schließen die meisten Exporteure sie trotzdem ab?</li>
+            <li>Die günstigste Strategie gewinnt manchmal und verliert manchmal deutlich. Was sagt Ihnen das über Risiko?</li>
+          </ol></section>
+        <section class="sheet"><h3>Ergebnis teilen</h3>
+          <p class="small">Kopieren Sie diese Zeile, um Ihr Ergebnis zu teilen.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Ergebnis kopieren</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Noch einmal spielen</button></section>
+      </div>
+      <p class="footer">Unternehmen, Kunden, Preise und Ereignisse in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+  }
+
+  app.addEventListener('change', (e) => {
+    const t = e.target;
+    if (view !== 'order') return;
+    if (t.name === 'route') choice.route = t.value;
+    if (t.name === 'hedge') choice.hedge = t.value === 'yes';
+    if (t.id === 'insure') choice.insure = t.checked;
+    const id = t.id, name = t.name, val = t.value;
+    keepScroll(renderOrder);
+    const el = id ? document.getElementById(id) : app.querySelector(`input[name="${name}"][value="${val}"]`);
+    if (el) el.focus({ preventScroll: true });
+  });
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t) return;
+    const act = t.dataset.act;
+    if (act === 'newcode') { document.getElementById('code').value = ED.randomCode(); return; }
+    if (act === 'resume') { S = store.get(SAVE_KEY); resetChoice(); go('order'); return; }
+    if (act === 'ship') { S = ED.play(S, choice); save(); go('result'); return; }
+    if (act === 'next') { resetChoice(); go('order'); return; }
+    if (act === 'final') { go('final'); return; }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderOrder); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderOrder); return; }
+    if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Kopiert.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Markieren Sie die Zeile oben und kopieren Sie sie.'; }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

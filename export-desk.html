@@ -48,10 +48,17 @@ button { font: inherit; color: inherit; }
 .topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
 .topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
 .topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
-.topbar a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
 .topbar a:hover { text-decoration: underline; }
 .topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
 .topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
 .lane { display: none; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -150,7 +157,7 @@ td.r { white-space: nowrap; }
 </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Export Desk</span></div></header>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Export Desk</span><div class="versions"><nav class="switch" aria-label="Version"><a aria-current="page">India</a><a href="export-desk-eu.html">Europe</a></nav></div></div></header>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Export Desk engine: shipping route, currency hedging and cargo insurance for export orders */

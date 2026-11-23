@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Factory Footprint – Produktionsnetzwerk</title>
+<meta name="description" content="Ein Entscheidungsspiel für eine Person zur globalen Produktion: Wo sollen Werke für Europa, die Golfstaaten, Großbritannien und die USA entstehen, wenn sich Fracht, Zölle und CO₂-Abgaben ändern?">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
+.topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
+.lane { display: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
+}
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], input[type=password], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
+}
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.steps6 { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; flex: 1 1 300px; }
+.steps6 span { font-size: 12px; text-align: center; padding: 3px 0 4px; border-bottom: 5px solid var(--concrete-2); color: var(--muted); }
+.steps6 span.now { border-bottom-color: var(--yellow); color: var(--ink); font-weight: 600; }
+.steps6 span.done { border-bottom-color: var(--green); }
+.score { font-family: var(--display); font-weight: 600; font-size: 22px; }
+td.r, th.r { text-align: right; }
+td.r { white-space: nowrap; }
+.lc td { white-space: nowrap; }
+.lc td.best { background: var(--green-soft); }
+.lc td.loss { color: var(--red); }
+.lc .m { display: block; font-size: 12px; color: var(--muted); }
+.lc td.best .m { color: var(--green); font-weight: 600; }
+.sites { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+@media (max-width: 700px) { .sites { grid-template-columns: 1fr; } }
+.site { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
+.site-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); border-top: 6px solid var(--ink-2); }
+.site-head h3 { margin: 0; font-size: 26px; }
+.site.has .site-head { border-top-color: var(--yellow); }
+.site-body { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.sfacts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.sfacts div { background: var(--concrete); border-radius: 4px; padding: 6px 8px; }
+.sfacts b { display: block; font-family: var(--display); font-size: 20px; line-height: 1.05; }
+.sfacts span { font-size: 12px; color: var(--muted); }
+.stepper { display: flex; align-items: center; gap: 10px; margin-top: auto; }
+.stepper .btn { width: 48px; padding: 0; font-size: 24px; line-height: 1; }
+.stepper .count { font-family: var(--display); font-weight: 700; font-size: 34px; min-width: 1.4em; text-align: center; }
+.stepper .lbl { font-size: 14px; line-height: 1.25; }
+.chg { font-size: 14px; font-weight: 600; }
+.chg.build { color: var(--blue); }
+.chg.close { color: var(--red); }
+.plantdots { display: flex; gap: 4px; flex-wrap: wrap; min-height: 14px; }
+.plantdots i { width: 14px; height: 14px; border-radius: 3px; background: var(--ink-2); display: inline-block; }
+.plantdots i.new { background: transparent; border: 2px dashed var(--blue); }
+.plantdots i.gone { background: transparent; border: 2px dashed var(--red); }
+.newsbox { list-style: none; padding: 0; margin: 0; }
+.newsbox li { padding: 10px 12px; border-left: 5px solid var(--blue); background: var(--blue-soft); margin-bottom: 8px; }
+.newsbox li.bad { border-left-color: var(--red); background: var(--red-soft); }
+.newsbox li.good { border-left-color: var(--green); background: var(--green-soft); }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.actionbar .neg { color: #FFB4AA; font-weight: 600; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 36px; line-height: 1; }
+.kpi.bad .bignum { color: var(--red); }
+.kpi.good .bignum { color: var(--green); }
+.capbar { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 12px; align-items: center; font-size: 15px; }
+.capbar .track { height: 14px; background: var(--concrete-2); border-radius: 7px; position: relative; overflow: hidden; }
+.capbar .fill { position: absolute; inset: 0 auto 0 0; background: var(--ink-2); }
+.capbar .fill.cap { background: var(--yellow); }
+.capbar .dem { position: absolute; top: -3px; bottom: -3px; width: 3px; background: var(--ink); }
+.capbar .track { overflow: visible; }
+.capbar .short { color: var(--red); font-weight: 600; }
+.capbar .spare { color: var(--muted); }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
+.legend span::before { content: ''; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); vertical-align: middle; margin-right: 6px; }
+.legend span.dash::before { border-top-style: dashed; }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+tr.tot td { font-weight: 600; border-top: 2px solid var(--ink-2); }
+.grid2 > * { min-width: 0; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index-de.html">Supply Chain Games</a><span class="here">Factory Footprint</span><div class="versions"><nav class="switch" aria-label="Version"><a href="factory-footprint.html" hreflang="en">Indien</a><a aria-current="page">Europa</a></nav><nav class="switch" aria-label="Sprache"><a href="factory-footprint-eu.html" lang="en" hreflang="en">English</a><a aria-current="page">Deutsch</a></nav></div></div></header>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Factory Footprint engine: where to make the tiles for four markets */
+const FF = (() => {
+  const ROUNDS = 6;
+  const ROUND_LABELS = ['Jahr 1', 'Jahr 2', 'Jahr 3', 'Jahr 4', 'Jahr 5', 'Jahr 6'];
+  const START_CASH = 150;       // units of €250,000
+  const PLANT_CAP = 25;         // units of 100,000 boxes a year per plant
+  const PLANT_FIXED = 6;        // units of €250,000 a year to run one plant
+  const CLOSE_COST = 15;        // units of €250,000 to close one plant
+  const MARKETS = [
+    { id: 'in', name: 'Europa', demand: 70, growth: 0.07, price: 420, note: 'Ihr Heimatmarkt in der EU. Groß und wachsend, aber mit niedrigen Preisen.' },
+    { id: 'gu', name: 'Golfstaaten', demand: 20, growth: 0.05, price: 560, note: 'VAE, Saudi-Arabien und Oman.' },
+    { id: 'eu', name: 'Großbritannien', demand: 30, growth: 0.02, price: 700, note: 'Hohe Preise, langsames Wachstum, strenge CO₂-Regeln.' },
+    { id: 'us', name: 'USA', demand: 35, growth: 0.04, price: 760, note: 'Die besten Preise, aber weit von Spanien entfernt.' }
+  ];
+  const SITES = [
+    { id: 'in', name: 'Castellón, Spanien', short: 'Spanien', place: 'Castellón', make: 260, build: 60, overhead: 0, max: 9, start: 6, note: 'Ihr Heimatstandort. Hier lassen sich Fliesen am günstigsten herstellen.' },
+    { id: 'ae', name: 'Ras al-Chaima, VAE', short: 'VAE', place: 'Ras al-Chaima', make: 300, build: 80, overhead: 8, max: 3, start: 0, note: 'Günstiges Gas und eine Freihandelszone zwischen Europa, Asien und den USA.' },
+    { id: 'pl', name: 'Stoke-on-Trent, Großbritannien', short: 'GB', place: 'Stoke-on-Trent', make: 360, build: 110, overhead: 6, max: 3, start: 0, note: 'In Großbritannien: kein Zoll und keine CO₂-Abgabe für Großbritannien, aber teuer im Betrieb.' },
+    { id: 'mx', name: 'Monterrey, Mexiko', short: 'Mexiko', place: 'Monterrey', make: 400, build: 90, overhead: 10, max: 3, start: 0, note: 'Direkt neben den USA, zollfrei dank Handelsabkommen.' }
+  ];
+  // freight per box in units of €0.025, from site to market
+  const FREIGHT = {
+    in: { in: 20, gu: 45, eu: 120, us: 170 },
+    ae: { in: 50, gu: 15, eu: 100, us: 160 },
+    pl: { in: 130, gu: 100, eu: 25, us: 110 },
+    mx: { in: 180, gu: 160, eu: 110, us: 35 }
+  };
+  // import duty, as a share of the cost of the goods plus freight
+  const DUTY = { in: 0.20, gu: 0.05, eu: 0.05, us: 0.05 };
+  const LOCAL = { in: 'in', ae: 'gu', pl: 'eu', mx: 'us' };       // which market counts as home for each site
+  const US_TARIFF = 0.30;       // extra US duty on tiles from Spain
+  const CARBON_FEE = 100;       // per box into the UK from outside the UK
+  const FREIGHT_SPIKE = 2;      // freight multiplier in the expensive-shipping year
+  const BOOM = 0.2;             // extra European demand once the renovation boom starts
+  const BOOM_GULF = 0.5;        // extra Gulf demand if the boom is in the Gulf instead
+  const OUTAGE = 0.25;          // share of capacity left at a site hit by the gas cut
+
+  const siteById = (id) => SITES.find((s) => s.id === id);
+  const marketById = (id) => MARKETS.find((m) => m.id === id);
+
+  function hash(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  }
+  function rand(seed) {
+    let a = hash(seed);
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'PRACTICE';
+  const pick = (code, tag, arr) => arr[Math.floor(rand(code + '|' + tag) * arr.length)];
+
+  /* the news, the same for everyone with the same code. Each event starts in its round (0 = year 1). */
+  function schedule(code) {
+    const c = normCode(code);
+    const out = pick(c, 'outsite', ['in', 'in', 'ae', 'pl', 'mx', 'mx']);
+    const boomIn = rand(c + '|boomwhere') < 0.6;
+    return [
+      { id: 'ustariff', round: pick(c, 'ust', [1, 2, 3]), title: 'USA erheben ' + Math.round(US_TARIFF * 100) + '% Zusatzzoll auf Fliesen aus Spanien', text: 'Ein Antidumpingzoll von ' + Math.round(US_TARIFF * 100) + '% gilt nun für Fliesen aus Spanien in die USA, zusätzlich zum normalen Zoll, für den Rest des Spiels.' },
+      { id: 'carbon', round: pick(c, 'cbn', [2, 3, 4]), title: 'Großbritannien führt eine CO₂-Grenzabgabe ein', text: 'Für Fliesen, die von außerhalb nach Großbritannien kommen, fällt nun eine Abgabe von ' + (CARBON_FEE * 0.025).toFixed(2).replace('.', ',') + ' € je Karton an, für den Rest des Spiels.' },
+      { id: 'freight', round: pick(c, 'frt', [1, 2, 3, 4]), title: 'Containerfrachtraten verdoppeln sich', text: 'Überlastete Häfen verdoppeln in diesem Jahr die Frachtkosten auf allen Routen.' },
+      { id: 'outage', round: pick(c, 'out', [1, 2, 3, 4, 5]), site: out, title: 'Gasversorgung gekürzt in ' + siteById(out).place, text: 'Die Werke in ' + siteById(out).name + ' laufen in diesem Jahr nur mit einem Viertel ihrer Kapazität.' },
+      boomIn ? { id: 'boom', market: 'in', round: pick(c, 'boom', [2, 3, 4]), title: 'Renovierungsboom in Europa', text: 'Die Nachfrage nach Fliesen in Europa steigt um 20%, für den Rest des Spiels.' }
+             : { id: 'boom', market: 'gu', round: pick(c, 'boom', [2, 3, 4]), title: 'Bauboom in den Golfstaaten', text: 'Die Nachfrage nach Fliesen in den Golfstaaten steigt um 50%, für den Rest des Spiels.' }
+    ];
+  }
+  const active = (sched, id, r) => sched.find((e) => e.id === id && e.round <= r);
+
+  /* demand in million boxes for round r, with small ups and downs fixed by the code */
+  function demand(code, r, withEvents) {
+    const c = normCode(code);
+    const sched = schedule(c);
+    const out = {};
+    MARKETS.forEach((m) => {
+      let d = m.demand * Math.pow(1 + m.growth, r);
+      if (withEvents) {
+        d *= 1 + (rand(c + '|d|' + m.id + '|' + r) * 2 - 1) * 0.05;
+        const b = active(sched, 'boom', r); if (b && b.market === m.id) d *= 1 + (m.id === 'in' ? BOOM : BOOM_GULF);
+      }
+      out[m.id] = Math.round(d * 10) / 10;
+    });
+    return out;
+  }
+
+  /* the forecast shown before deciding: normal growth plus any boom already announced */
+  function forecast(code, r) {
+    const base = demand(code, r, false);
+    const b = schedule(code).find((e) => e.id === 'boom' && e.round < r);
+    if (b) base[b.market] = Math.round(base[b.market] * (1 + (b.market === 'in' ? BOOM : BOOM_GULF)) * 10) / 10;
+    return base;
+  }
+
+  /* cost of one box made at site s and sold in market m, given the events known in round r */
+  function landed(code, s, m, r, known) {
+    const sched = schedule(code).filter((e) => e.round < r || (!known && e.round === r));
+    const has = (id) => sched.find((e) => e.id === id && e.round <= r);
+    const make = siteById(s).make;
+    let freight = FREIGHT[s][m];
+    if (sched.find((e) => e.id === 'freight' && e.round === r)) freight *= FREIGHT_SPIKE;
+    let dutyRate = LOCAL[s] === m ? 0 : DUTY[m];
+    if (s === 'in' && m === 'us' && has('ustariff')) dutyRate += US_TARIFF;
+    const duty = Math.round((make + freight) * dutyRate);
+    const carbon = m === 'eu' && s !== 'pl' && has('carbon') ? CARBON_FEE : 0;
+    const total = make + freight + duty + carbon;
+    return { make, freight, duty, carbon, total, margin: marketById(m).price - total };
+  }
+
+  /* send boxes from sites to markets to earn the most (a small min-cost flow) */
+  function allocate(cap, dem, marginOf) {
+    const S = SITES.map((s) => s.id), M = MARKETS.map((m) => m.id);
+    const n = 2 + S.length + M.length, src = 0, snk = n - 1;
+    const edges = [], adj = Array.from({ length: n }, () => []);
+    const add = (u, v, c, w) => { adj[u].push(edges.length); edges.push({ u, v, c, w }); adj[v].push(edges.length); edges.push({ u: v, v: u, c: 0, w: -w }); };
+    S.forEach((s, i) => add(src, 1 + i, cap[s] || 0, 0));
+    M.forEach((m, j) => add(1 + S.length + j, snk, dem[m] || 0, 0));
+    S.forEach((s, i) => M.forEach((m, j) => { const g = marginOf(s, m); if (g > 0) add(1 + i, 1 + S.length + j, 1e9, -g); }));
+    for (let iter = 0; iter < 50; iter++) {
+      const dist = Array(n).fill(Infinity), prev = Array(n).fill(-1);
+      dist[src] = 0;
+      for (let k = 0; k < n; k++) {
+        let changed = false;
+        edges.forEach((e, idx) => { if (e.c > 1e-9 && dist[e.u] + e.w < dist[e.v] - 1e-9) { dist[e.v] = dist[e.u] + e.w; prev[e.v] = idx; changed = true; } });
+        if (!changed) break;
+      }
+      if (!(dist[snk] < -1e-9)) break;
+      let f = Infinity, v = snk;
+      while (v !== src) { const e = edges[prev[v]]; f = Math.min(f, e.c); v = e.u; }
+      v = snk;
+      while (v !== src) { const idx = prev[v]; edges[idx].c -= f; edges[idx ^ 1].c += f; v = edges[idx].u; }
+    }
+    const flow = {};
+    S.forEach((s, i) => { flow[s] = {}; M.forEach((m) => { flow[s][m] = 0; }); adj[1 + i].forEach((idx) => { const e = edges[idx]; if (idx % 2 === 0 && e.v > S.length) { flow[s][M[e.v - 1 - S.length]] = Math.round(edges[idx ^ 1].c * 10) / 10; } }); });
+    return flow;
+  }
+
+  function newGame(code, name) {
+    const plants = {}; SITES.forEach((s) => { plants[s.id] = s.start; });
+    return { code: normCode(code), name: String(name || '').slice(0, 24), round: 0, cash: START_CASH, plants, building: {}, history: [], done: false };
+  }
+
+  function changeCost(s, choice) {
+    let build = 0, close = 0;
+    SITES.forEach((st) => {
+      const want = choice[st.id] === undefined ? s.plants[st.id] : choice[st.id];
+      const d = want - s.plants[st.id];
+      if (d > 0) build += d * st.build;
+      if (d < 0) close += -d * CLOSE_COST;
+    });
+    return { build, close, total: build + close };
+  }
+
+  /* one year: choice = target number of plants at each site. New plants start producing next year. */
+  function playRound(state, choice) {
+    const s = JSON.parse(JSON.stringify(state));
+    const r = s.round, sched = schedule(s.code);
+    const lastRound = r === ROUNDS - 1;
+    const opened = {}, closed = {};
+    SITES.forEach((st) => {
+      let want = choice[st.id] === undefined ? s.plants[st.id] : Math.max(0, Math.min(st.max, Math.round(choice[st.id])));
+      if (lastRound && want > s.plants[st.id]) want = s.plants[st.id];
+      if (want > s.plants[st.id]) opened[st.id] = want - s.plants[st.id];
+      if (want < s.plants[st.id]) { closed[st.id] = s.plants[st.id] - want; s.plants[st.id] = want; }
+    });
+    const cost = { build: 0, close: 0 };
+    SITES.forEach((st) => { cost.build += (opened[st.id] || 0) * st.build; cost.close += (closed[st.id] || 0) * CLOSE_COST; });
+    cost.total = cost.build + cost.close;
+    s.cash -= cost.total;
+    const outage = sched.find((e) => e.id === 'outage' && e.round === r);
+    const cap = {};
+    SITES.forEach((st) => { cap[st.id] = s.plants[st.id] * PLANT_CAP * (outage && outage.site === st.id ? OUTAGE : 1); });
+    const dem = demand(s.code, r, true);
+    const flow = allocate(cap, dem, (a, b) => landed(s.code, a, b, r, false).margin);
+    let gross = 0;
+    const sites = {}, markets = {};
+    MARKETS.forEach((m) => { markets[m.id] = { demand: dem[m.id], served: 0, lost: 0 }; });
+    SITES.forEach((st) => {
+      let made = 0, profit = 0;
+      MARKETS.forEach((m) => { const q = flow[st.id][m.id]; if (q > 0) { made += q; const g = q * landed(s.code, st.id, m.id, r, false).margin / 100; profit += g; markets[m.id].served += q; } });
+      const fixed = s.plants[st.id] * PLANT_FIXED + (s.plants[st.id] > 0 ? st.overhead : 0);
+      sites[st.id] = { plants: s.plants[st.id], cap: cap[st.id], made: Math.round(made * 10) / 10, gross: Math.round(profit * 100) / 100, fixed, profit: Math.round((profit - fixed) * 100) / 100 };
+      gross += profit - fixed;
+    });
+    MARKETS.forEach((m) => { markets[m.id].served = Math.round(markets[m.id].served * 10) / 10; markets[m.id].lost = Math.max(0, Math.round((dem[m.id] - markets[m.id].served) * 10) / 10); });
+    const operating = Math.round(gross * 100) / 100;
+    s.cash = Math.round((s.cash + operating) * 100) / 100;
+    SITES.forEach((st) => { if (opened[st.id]) s.plants[st.id] += opened[st.id]; });
+    s.history.push({ round: r, opened, closed, build: cost.build, close: cost.close, flow, sites, markets, operating, cash: s.cash, events: sched.filter((e) => e.round === r).map((e) => e.id) });
+    s.round = r + 1;
+    if (s.round >= ROUNDS) s.done = true;
+    return s;
+  }
+
+  function summary(s) {
+    const last = s.history[s.history.length - 1] || { operating: 0 };
+    const sold = s.history.reduce((a, h) => a + MARKETS.reduce((b, m) => b + h.markets[m.id].served, 0), 0);
+    const lost = s.history.reduce((a, h) => a + MARKETS.reduce((b, m) => b + h.markets[m.id].lost, 0), 0);
+    const built = s.history.reduce((a, h) => a + h.build, 0);
+    const plants = SITES.reduce((a, st) => a + s.plants[st.id], 0);
+    const sites = SITES.filter((st) => s.plants[st.id] > 0).length;
+    return { cash: Math.round(s.cash * 10) / 10, runRate: Math.round(last.operating * 10) / 10, worth: Math.round((s.cash + 2 * last.operating) * 10) / 10, sold: Math.round(sold), lost: Math.round(lost), built, plants, sites };
+  }
+
+  const STRATEGIES = [
+    { id: 'home', name: 'In Spanien bleiben', desc: 'Baut nur in Castellón neue Werke, wenn die Nachfrage wächst, und liefert alles aus Spanien.',
+      plan: () => [{ in: 7 }, { in: 8 }, {}, { in: 9 }, {}, {}] },
+    { id: 'all', name: 'Ein Werk in jeder Region', desc: 'Baut ein Werk in Mexiko, dann je eines in den VAE und in Großbritannien, sodass jede Region ein nahes Werk hat.',
+      plan: () => [{ mx: 1 }, { ae: 1, pl: 1 }, {}, {}, {}, {}] },
+    { id: 'hubs', name: 'Werke dort, wo die Lücke bei den Einstandskosten am größten ist', desc: 'Baut zuerst in Mexiko für die USA, dann ein zweites Werk in Mexiko und eines in Großbritannien. Die spanischen Werke beliefern dann den wachsenden europäischen Markt.',
+      plan: () => [{ mx: 1 }, { mx: 2, pl: 1 }, {}, {}, {}, {}] }
+  ];
+  function runStrategy(code, st) {
+    let s = newGame(code, st.name);
+    const plan = st.plan();
+    for (let r = 0; r < ROUNDS; r++) {
+      const ch = Object.assign({}, s.plants, plan[r] || {});
+      s = playRound(s, changeCost(s, ch).total <= s.cash ? ch : {});
+    }
+    return s;
+  }
+  function randomCode() {
+    const w = ['KILN', 'GLAZE', 'CASTELLON', 'FURNACE', 'MOSAIC', 'PORCELAIN', 'TERRACOTTA', 'QUARRY'];
+    return w[Math.floor(Math.random() * w.length)] + (10 + Math.floor(Math.random() * 90));
+  }
+  return { ROUNDS, ROUND_LABELS, START_CASH, PLANT_CAP, PLANT_FIXED, CLOSE_COST, MARKETS, SITES, FREIGHT, DUTY, LOCAL, US_TARIFF, CARBON_FEE, FREIGHT_SPIKE, BOOM, BOOM_GULF, OUTAGE, siteById, marketById, schedule, demand, forecast, landed, allocate, newGame, changeCost, playRound, summary, STRATEGIES, runStrategy, normCode, randomCode };
+})();
+if (typeof module !== 'undefined') module.exports = FF;
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'ff-game-v1-de';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const cr = (n) => (n < 0 ? '−' : '') + Math.abs(n * 0.25).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + '\u00A0Mio.\u00A0€';
+  const cr1 = (n) => (n < 0 ? '−' : '') + Math.abs(n * 0.25).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00A0Mio.\u00A0€';
+  const rs = (n) => (n < 0 ? '−' : '') + Math.abs(n * 0.025).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00A0€';
+  const lb = (n) => (n / 10).toLocaleString('de-DE', { maximumFractionDigits: 2 });
+  const L = FF.ROUND_LABELS;
+
+  let view = 'start', S = null, choice = {}, formError = '', confirmRestart = false;
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+  function save() { if (S) store.set(SAVE_KEY, S); }
+  function resetChoice() { choice = Object.assign({}, S.plants); }
+
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'round') return renderRound();
+    if (view === 'result') return renderResult();
+    if (view === 'final') return renderFinal();
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && !saved.done && saved.history && saved.history.length > 0;
+    app.innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <p class="kicker">Ein Entscheidungsspiel zur globalen Produktion für eine Person, 6 Jahre</p>
+          <h1>Factory Footprint</h1>
+          <p style="font-size:20px;max-width:34em">Sie leiten die Produktion bei Levante Ceramics, einem Fliesenhersteller in Castellón (Spanien) mit sechs Werken. Sie verkaufen Fliesen in Europa, den Golfstaaten, Großbritannien und den USA und liefern alles aus Castellón. Jedes Jahr entscheiden Sie, wo Sie Werke bauen oder schließen: in Castellón, den VAE, Großbritannien oder Mexiko. Zölle, CO₂-Abgaben und Frachtkosten werden sich unterwegs ändern. Bauen Sie in sechs Jahren das wertvollste Unternehmen auf.</p>
+        </div>
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Spiel starten</h3>
+          <label for="name">Ihr Name</label>
+          <input type="text" id="name" maxlength="24" autocomplete="off" placeholder="Zum Beispiel Lena">
+          <div style="height:12px"></div>
+          <label for="code">Spielcode</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(FF.randomCode())}" style="text-transform:uppercase">
+            <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">Neuer Code</button>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">Wer denselben Code nutzt, hat dieselbe Nachfrage und dieselben Ereignisse. So lassen sich Ergebnisse vergleichen.</p>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Spiel starten</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">${esc(saved.name)} fortsetzen (${esc(L[saved.round])})</button>` : ''}
+        </form>
+      </section>
+      <div class="grid2" style="margin-top:12px">
+        <section class="sheet tablewrap"><h3>Ihre Märkte</h3>
+          <table class="small"><thead><tr><th>Markt</th><th class="r">Nachfrage in Jahr 1</th><th class="r">Wachstum pro Jahr</th><th class="r">Preis je Karton</th></tr></thead>
+          <tbody>${FF.MARKETS.map((m) => `<tr><td><b>${m.name}</b><br><span class="tiny muted">${esc(m.note)}</span></td><td class="r">${lb(m.demand)} Mio. Kartons</td><td class="r">${Math.round(m.growth * 100)}%</td><td class="r">${rs(m.price)}</td></tr>`).join('')}</tbody></table></section>
+        <section class="sheet tablewrap"><h3>Wo Sie Fliesen herstellen können</h3>
+          <table class="small"><thead><tr><th>Standort</th><th class="r">Herstellkosten je Karton</th><th class="r">Kosten für ein Werk</th><th class="r">Jährliche Kosten</th></tr></thead>
+          <tbody>${FF.SITES.map((st) => `<tr><td><b>${st.name}</b><br><span class="tiny muted">${esc(st.note)}</span></td><td class="r">${rs(st.make)}</td><td class="r">${cr(st.build)}</td><td class="r">${cr(FF.PLANT_FIXED)} je Werk${st.overhead ? `<br>+ ${cr(st.overhead)} für den Standort` : ''}</td></tr>`).join('')}</tbody></table></section>
+      </div>
+      <section class="sheet" style="margin-top:16px"><h3>So funktioniert es</h3>
+        <ul class="small" style="margin:0;padding-left:1.2em">
+          <li>Jedes Werk produziert bis zu ${lb(FF.PLANT_CAP)} Mio. Kartons im Jahr. Der Bau eines Werks dauert ein Jahr: Werke, die Sie in diesem Jahr beginnen, produzieren ab dem nächsten Jahr. Eine Schließung kostet ${cr(FF.CLOSE_COST)} und gilt sofort.</li>
+          <li>Die <b>Einstandskosten</b> sind das, was ein Karton kostet, wenn er beim Kunden ankommt: Herstellkosten plus Fracht plus Einfuhrzoll (${Math.round(FF.DUTY.in * 100)}% in die EU, ${Math.round(FF.DUTY.gu * 100)}% in andere Märkte, keiner aus einem Werk in derselben Region) plus weitere Abgaben.</li>
+          <li>Jedes Jahr liefern Ihre Werke in die Märkte, in denen sie am meisten verdienen. Nachfrage, die Sie nicht decken können, geht verloren.</li>
+          <li>Sie starten mit ${cr(FF.START_CASH)}. Ihr Ergebnis ist der <b>Unternehmenswert</b>: Kassenbestand am Ende plus zwei Jahresgewinne auf dem Niveau des letzten Jahres.</li>
+        </ul></section>
+      <p class="footer">Unternehmen, Märkte, Zahlen und Ereignisse in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) { formError = 'Geben Sie Ihren Namen ein, um zu starten.'; renderStart(); document.getElementById('name').focus(); return; }
+      formError = '';
+      S = FF.newGame(document.getElementById('code').value, name);
+      resetChoice(); save(); go('round');
+    });
+    document.getElementById('name').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar(now) {
+    const n = now === undefined ? S.round : now;
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.name)}</span><span class="small muted">Code ${esc(S.code)}</span>
+      <div class="steps6" aria-label="Jahre">${L.map((l, i) => `<span class="${i === n ? 'now' : S.history[i] ? 'done' : ''}">${esc(l)}</span>`).join('')}</div>
+      <span class="score" title="Kasse">${cr(S.cash)}</span></div></div>`;
+  }
+
+  function lastingNews() {
+    const out = [];
+    FF.schedule(S.code).forEach((e) => {
+      if (e.round >= S.round) return;
+      if (['ustariff', 'carbon', 'boom'].includes(e.id)) out.push({ kind: e.id === 'boom' ? 'good' : 'bad', text: e.title + '. ' + e.text });
+    });
+    return out;
+  }
+
+  function landedTable(r) {
+    const best = {};
+    FF.MARKETS.forEach((m) => { best[m.id] = FF.SITES.reduce((a, st) => (FF.landed(S.code, st.id, m.id, r, true).total < FF.landed(S.code, a, m.id, r, true).total ? st.id : a), 'in'); });
+    return `<table class="small lc"><thead><tr><th>Hergestellt in</th>${FF.MARKETS.map((m) => `<th class="r">Nach ${m.name}<br><span class="tiny muted">Preis ${rs(m.price)}</span></th>`).join('')}</tr></thead><tbody>
+      ${FF.SITES.map((st) => `<tr><td><b>${st.short}</b></td>${FF.MARKETS.map((m) => {
+        const c = FF.landed(S.code, st.id, m.id, r, true);
+        const parts = [`Herstellung ${rs(c.make)}`, `Fracht ${rs(c.freight)}`].concat(c.duty ? [`Zoll ${rs(c.duty)}`] : []).concat(c.carbon ? [`CO₂-Abgabe ${rs(c.carbon)}`] : []);
+        return `<td class="r ${best[m.id] === st.id ? 'best' : ''} ${c.margin <= 0 ? 'loss' : ''}" title="${esc(parts.join(' + '))}"><b>${rs(c.total)}</b><span class="m">${c.margin > 0 ? 'bringt ' + rs(c.margin) : c.margin === 0 ? 'bringt nichts' : 'verliert ' + rs(-c.margin)}</span></td>`;
+      }).join('')}</tr>`).join('')}
+    </tbody></table>`;
+  }
+
+  function capRow(label, cap, dem) {
+    const max = Math.max(cap, dem, 1);
+    const gap = cap - dem;
+    return `<span>${label}</span><div class="track" aria-hidden="true"><div class="fill cap" style="width:${(cap / max) * 100}%"></div><div class="dem" style="left:calc(${(dem / max) * 100}% - 1px)"></div></div><span>${gap < -0.05 ? `<span class="short">${lb(-gap)} fehlen</span>` : `<span class="spare">${lb(gap)} frei</span>`}</span>`;
+  }
+
+  function renderRound() {
+    const r = S.round, last = r === FF.ROUNDS - 1;
+    const cc = FF.changeCost(S, choice);
+    const after = S.cash - cc.total;
+    const prev = S.history[S.history.length - 1];
+    const news = lastingNews();
+    const fc = FF.forecast(S.code, r), fcNext = r + 1 < FF.ROUNDS ? FF.forecast(S.code, r + 1) : null;
+    const totalFc = FF.MARKETS.reduce((a, m) => a + fc[m.id], 0);
+    const capNow = FF.SITES.reduce((a, st) => a + Math.min(choice[st.id], S.plants[st.id]) * FF.PLANT_CAP, 0);
+    const capNext = FF.SITES.reduce((a, st) => a + choice[st.id] * FF.PLANT_CAP, 0);
+    const totalNext = fcNext ? FF.MARKETS.reduce((a, m) => a + fcNext[m.id], 0) : 0;
+    const cards = FF.SITES.map((st) => {
+      const have = S.plants[st.id], want = choice[st.id];
+      const d = want - have;
+      const dots = Array.from({ length: Math.max(have, want) }, (_, i) => `<i class="${i >= have ? 'new' : i >= want ? 'gone' : ''}"></i>`).join('');
+      const ps = prev && prev.sites[st.id];
+      const canAdd = !last && want < st.max;
+      return `<section class="site ${have || want ? 'has' : ''}" aria-labelledby="sh-${st.id}">
+        <div class="site-head"><h3 id="sh-${st.id}">${st.name}</h3><span class="small muted">${esc(st.note)}</span></div>
+        <div class="site-body">
+          <div class="sfacts">
+            <div><b>${rs(st.make)}</b><span>Herstellung je Karton</span></div>
+            <div><b>${cr(st.build)}</b><span>Bau eines Werks</span></div>
+            <div><b>${cr(FF.PLANT_FIXED)}</b><span>Jährlich je Werk${st.overhead ? `, plus ${cr(st.overhead)} für den Standort` : ''}</span></div>
+          </div>
+          ${ps && ps.plants ? `<p class="small" style="margin:0">Letztes Jahr: ${lb(ps.made)} von ${lb(ps.cap)} Mio. Kartons hergestellt, Gewinn ${cr1(ps.profit)}.</p>` : ''}
+          <div class="plantdots" aria-hidden="true">${dots}</div>
+          <div class="stepper">
+            <button class="btn" data-act="plant" data-site="${st.id}" data-d="-1" ${want <= 0 ? 'disabled' : ''} aria-label="Ein Werk weniger in ${esc(st.short)}">&minus;</button>
+            <span class="count" aria-live="polite">${want}</span>
+            <button class="btn" data-act="plant" data-site="${st.id}" data-d="1" ${canAdd ? '' : 'disabled'} aria-label="Ein Werk mehr in ${esc(st.short)}">+</button>
+            <span class="lbl">Werk${want === 1 ? '' : 'e'}<br>${d > 0 ? `<span class="chg build">${d} bauen: ${cr(d * st.build)}</span>` : d < 0 ? `<span class="chg close">${-d} schließen: ${cr(-d * FF.CLOSE_COST)}</span>` : '<span class="muted small">Keine Änderung</span>'}</span>
+          </div>
+        </div>
+      </section>`;
+    }).join('');
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        <h2 style="margin-top:22px">${esc(L[r])}</h2>
+        <p class="muted">Runde ${r + 1} von ${FF.ROUNDS}. ${last ? 'Dies ist das letzte Jahr: Ein jetzt begonnenes Werk würde vor Spielende nicht mehr produzieren, daher können Sie nur noch Werke schließen.' : 'Werke, die Sie in diesem Jahr beginnen, produzieren ab dem nächsten Jahr. Nachrichten kommen erst nach Ihrer Entscheidung.'}</p>
+        ${news.length ? `<section class="sheet" style="margin-top:12px"><h3>Weiterhin in Kraft</h3><ul class="newsbox">${news.map((n) => `<li class="${n.kind}">${esc(n.text)}</li>`).join('')}</ul></section>` : ''}
+        <div class="grid2" style="margin-top:16px">
+          <section class="sheet"><h3>Kapazität und Nachfrage</h3>
+            <div class="capbar">
+              ${capRow(esc(L[r]), capNow, totalFc)}
+              ${fcNext ? capRow(esc(L[r + 1]), capNext, totalNext) : ''}
+            </div>
+            <p class="tiny muted" style="margin-top:10px">Goldener Balken: was Ihre Werke herstellen können. Schwarze Linie: prognostizierte Nachfrage in allen vier Märkten. In Mio. Kartons. ${fcNext ? 'Das nächste Jahr enthält die Änderungen, die Sie jetzt vornehmen.' : ''}</p>
+            <div class="tablewrap"><table class="small" style="margin-top:6px"><thead><tr><th>Mio. Kartons</th><th class="r">Kapazität</th>${FF.MARKETS.map((m) => `<th class="r">Nachfrage ${m.name}</th>`).join('')}</tr></thead>
+              <tbody><tr><td>${esc(L[r])}</td><td class="r"><b>${lb(capNow)}</b></td>${FF.MARKETS.map((m) => `<td class="r">${lb(fc[m.id])}</td>`).join('')}</tr>
+              ${fcNext ? `<tr><td>${esc(L[r + 1])}</td><td class="r"><b>${lb(capNext)}</b></td>${FF.MARKETS.map((m) => `<td class="r">${lb(fcNext[m.id])}</td>`).join('')}</tr>` : ''}</tbody></table></div>
+          </section>
+          <section class="sheet tablewrap"><h3>Einstandskosten je Karton</h3>
+            ${landedTable(r)}
+            <p class="tiny muted" style="margin-top:8px">Herstellung + Fracht + Zoll + Abgaben, mit den jetzt geltenden Zöllen und Abgaben. Grün ist die günstigste Quelle je Markt. &bdquo;Bringt&ldquo; ist der Preis minus Einstandskosten.</p>
+          </section>
+        </div>
+        <div class="sites">${cards}</div>
+      </div>
+      <div class="actionbar"><div class="wrap">
+        <div><b>Kasse jetzt:</b> ${cr(S.cash)}. <b>Änderungen in diesem Jahr:</b> ${cr(cc.total)}. <span class="${after < 0 ? 'neg' : ''}"><b>Kasse nach Änderungen:</b> ${cr(after)}</span></div>
+        <div class="row">${after < 0 ? '<span class="neg small">Nicht genug Geld für diese Werke</span>' : ''}<button class="btn primary" data-act="run" ${after < 0 ? 'disabled' : ''}>${esc(L[r])} durchspielen</button></div>
+      </div></div>
+      <div class="wrap footer">${confirmRestart ? `<span style="color:var(--red)">Damit wird das Spiel auf diesem Gerät gelöscht.</span> <button class="btn small dark" data-act="restart-yes">Löschen und neu beginnen</button> <button class="btn small" data-act="restart-no">Weiterspielen</button>` : `<button class="btn ghost small" data-act="restart">Neu beginnen</button>`}</div>`;
+  }
+
+  function eventLine(e) {
+    const good = e.id === 'boom';
+    return `<li class="${good ? 'good' : 'bad'}"><b>${esc(e.title)}.</b> ${esc(e.text)}</li>`;
+  }
+
+  function renderResult() {
+    const h = S.history[S.history.length - 1];
+    const sched = FF.schedule(S.code).filter((e) => e.round === h.round);
+    const lost = FF.MARKETS.reduce((a, m) => a + h.markets[m.id].lost, 0);
+    const openedList = Object.entries(h.opened || {}).map(([k, v]) => `${v} in ${FF.siteById(k).short}`);
+    const openedN = Object.values(h.opened || {}).reduce((a, b) => a + b, 0);
+    const opened = openedList.length ? openedList.slice(0, -1).join(', ') + (openedList.length > 1 ? ' und ' : '') + openedList[openedList.length - 1] : '';
+    const rows = FF.SITES.filter((st) => h.sites[st.id].plants > 0).map((st) => {
+      const x = h.sites[st.id];
+      return `<tr><td><b>${st.short}</b><br><span class="tiny muted">${x.plants} Werk${x.plants > 1 ? 'e' : ''}</span></td><td class="r">${lb(x.cap)}</td>${FF.MARKETS.map((m) => `<td class="r">${h.flow[st.id][m.id] ? lb(h.flow[st.id][m.id]) : '&ndash;'}</td>`).join('')}<td class="r"><b>${cr1(x.profit)}</b></td></tr>`;
+    }).join('');
+    app.innerHTML = bar(h.round) + `
+      <div class="wrap" style="padding-bottom:40px">
+        <h2 style="margin-top:22px">${esc(L[h.round])}: Ergebnisse</h2>
+        ${sched.length ? `<section class="sheet"><h3>Weltnachrichten in diesem Jahr</h3><ul class="newsbox">${sched.map(eventLine).join('')}</ul></section>` : '<p class="muted">Ein ruhiges Jahr ohne größere Nachrichten.</p>'}
+        <div class="kpis">
+          <div class="kpi"><div class="small muted">Ausgaben für Werke</div><div class="bignum">${cr(h.build + h.close)}</div></div>
+          <div class="kpi ${h.operating < 0 ? 'bad' : 'good'}"><div class="small muted">Gewinn aus dem Fliesenverkauf</div><div class="bignum">${cr(h.operating)}</div></div>
+          <div class="kpi ${lost > 0.5 ? 'bad' : ''}"><div class="small muted">Nicht gedeckte Nachfrage</div><div class="bignum">${lb(lost)}</div><div class="tiny muted">Mio. Kartons</div></div>
+          <div class="kpi"><div class="small muted">Kasse jetzt</div><div class="bignum">${cr(h.cash)}</div></div>
+        </div>
+        ${opened ? `<p>Im Bau: ${openedN} neue${openedN > 1 ? '' : 's'} Werk${openedN > 1 ? 'e' : ''} (${esc(opened)}), ab nächstem Jahr bereit.</p>` : ''}
+        <section class="sheet tablewrap"><h3>Wohin Ihre Fliesen gingen (Mio. Kartons)</h3>
+          <table class="small"><thead><tr><th>Werke in</th><th class="r">Kapazität</th>${FF.MARKETS.map((m) => `<th class="r">Nach ${m.name}</th>`).join('')}<th class="r">Gewinn nach Werkskosten</th></tr></thead>
+          <tbody>${rows}
+            <tr class="tot"><td>Nachfrage</td><td></td>${FF.MARKETS.map((m) => `<td class="r">${lb(h.markets[m.id].demand)}</td>`).join('')}<td></td></tr>
+            <tr><td>Nicht gedeckt</td><td></td>${FF.MARKETS.map((m) => `<td class="r" style="${h.markets[m.id].lost > 0.05 ? 'color:var(--red);font-weight:600' : ''}">${h.markets[m.id].lost > 0.05 ? lb(h.markets[m.id].lost) : '&ndash;'}</td>`).join('')}<td></td></tr>
+          </tbody></table>
+          <p class="tiny muted" style="margin-top:8px">Ihre Werke lieferten dorthin, wo sie am meisten verdienten. Ist die Kapazität knapp, bleibt zuerst die am wenigsten lohnende Nachfrage ungedeckt.</p></section>
+        <div class="row" style="margin-top:20px"><button class="btn primary" data-act="${S.done ? 'final' : 'next'}">${S.done ? 'Zum Abschlussbericht' : esc(L[S.round]) + ' planen'}</button></div>
+      </div>`;
+    app.querySelector('[data-act=next],[data-act=final]')?.focus({ preventScroll: true });
+  }
+
+  function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = (raw || 1) / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function cashChart(series) {
+    const W = 680, H = 280, Lm = 56, R = 110, T = 14, B = 30;
+    const all = series.flatMap((s) => s.values);
+    const lo = Math.min(0, ...all), hi = Math.max(1, ...all) * 1.08;
+    const n = series[0].values.length;
+    const x = (i) => Lm + (i * (W - Lm - R)) / (n - 1);
+    const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
+    const step = niceStep((hi - lo) / 5);
+    let g = '';
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1B2A41' : '#D5DAE1'}"/><text x="${Lm - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${v.toLocaleString('de-DE')}</text>`;
+    const xl = ['Start'].concat(L.map((l) => l.replace('Jahr ', 'J'))).map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#5B6676">${l}</text>`).join('');
+    const ends = [];
+    const lines = series.map((s) => { ends.push({ y: y(s.values[n - 1]), x: x(n - 1), name: s.short, c: s.color }); return `<path d="${s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.5}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`; }).join('');
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Kasse in Millionen Euro nach jedem Jahr">${g}${xl}${lines}${ends.map((e) => `<text x="${e.x + 8}" y="${e.y + 4}" font-size="13" font-weight="600" fill="${e.c}">${esc(e.name)}</text>`).join('')}</svg>`;
+  }
+
+  function renderFinal() {
+    const you = FF.summary(S);
+    const bench = FF.STRATEGIES.map((st) => { const run = FF.runStrategy(S.code, st); return { st, run, s: FF.summary(run) }; });
+    const rank = [{ n: 'you', w: you.worth }].concat(bench.map((b) => ({ n: b.st.id, w: b.s.worth }))).sort((a, b) => b.w - a.w);
+    const pos = rank.findIndex((r) => r.n === 'you') + 1;
+    const cash = (st) => [FF.START_CASH * 0.25].concat(st.history.map((h) => Math.round(h.cash * 25) / 100));
+    const colors = { home: '#A93A34', all: '#2C6B4C', hubs: '#3A4A63' };
+    const dashes = { home: '7 5', all: '2 5', hubs: '12 4 2 4' };
+    const shorts = { home: 'In Spanien', all: 'Jede Region', hubs: 'Größte Lücken' };
+    const series = [{ name: S.name, short: 'You', values: cash(S), color: '#1F4E8C', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cash(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
+    const net = (st) => FF.SITES.filter((x) => st.plants[x.id] > 0).map((x) => `${x.short} ${st.plants[x.id]}`).join(', ');
+    const plantRows = FF.SITES.map((st) => {
+      const changes = [];
+      S.history.forEach((h) => { if (h.opened[st.id]) changes.push(`${h.opened[st.id]} gebaut in ${L[h.round]}`); if (h.closed[st.id]) changes.push(`${h.closed[st.id]} geschlossen in ${L[h.round]}`); });
+      const made = S.history.reduce((a, h) => a + h.sites[st.id].made, 0);
+      const profit = S.history.reduce((a, h) => a + h.sites[st.id].profit, 0);
+      return `<tr><td><b>${st.short}</b></td><td class="r">${st.start}</td><td>${changes.length ? esc(changes.join(', ')) : '<span class="muted">Keine Änderung</span>'}</td><td class="r"><b>${S.plants[st.id]}</b></td><td class="r">${lb(made)}</td><td class="r">${cr(profit)}</td></tr>`;
+    }).join('');
+    const benchRows = [{ name: S.name + ' (Sie)', desc: 'Ihre Entscheidungen', s: you, net: net(S) }].concat(bench.map((b) => ({ name: b.st.name, desc: b.st.desc, s: b.s, net: net(b.run) })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td>${esc(r.net)}</td><td class="r"><b>${cr(r.s.worth)}</b></td><td class="r">${cr(r.s.cash)}</td><td class="r">${cr(r.s.runRate)}</td><td class="r">${lb(r.s.lost)}</td></tr>`).join('');
+    const result = `Factory Footprint | ${S.name} | Code ${S.code} | Unternehmenswert ${cr(you.worth)} | Werke: ${net(S)}`;
+    app.innerHTML = bar(FF.ROUNDS) + `
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 6px">
+        <p class="kicker">Abschlussbericht für ${esc(S.name)}, Spielcode ${esc(S.code)}</p>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${cr(you.worth)}</h1>
+        <p style="font-size:20px;max-width:40em">Unternehmenswert nach sechs Jahren: ${cr(you.cash)} Kasse plus zwei Jahresgewinne auf Ihrem letzten Niveau von ${cr(you.runRate)} pro Jahr. Im Vergleich mit den drei Standardstrategien unten belegen Sie Platz ${pos} von 4.</p>
+      </section>
+      <section class="sheet chart"><h3>Kasse nach jedem Jahr</h3>
+        ${cashChart(series)}
+        <div class="legend">${series.map((s) => `<span class="${s.dash ? 'dash' : ''}" style="--c:${s.color}">${esc(s.name)}</span>`).join('')}</div>
+        <p class="tiny muted">Werte in Mio. €. Alle Strategien hatten dieselbe Nachfrage und dieselben Ereignisse.</p></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet tablewrap"><h3>Ihre Werke, Jahr für Jahr</h3>
+          <table class="small"><thead><tr><th>Standort</th><th class="r">Werke zu Beginn</th><th>Änderungen</th><th class="r">Werke am Ende</th><th class="r">Hergestellt (Mio. Kartons)</th><th class="r">Gewinn</th></tr></thead><tbody>${plantRows}</tbody></table></section>
+        <section class="sheet"><h3>Die Weltnachrichten dieses Spiels</h3>
+          <table class="small"><tbody>${FF.schedule(S.code).sort((a, b) => a.round - b.round).map((e) => `<tr><td style="white-space:nowrap">${esc(L[e.round])}</td><td>${esc(e.title)}</td></tr>`).join('')}</tbody></table></section>
+      </div>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>Die Strategien im Vergleich</h3>
+        <table class="small"><thead><tr><th>Strategie</th><th>Werke am Ende</th><th class="r">Unternehmenswert</th><th class="r">Kasse</th><th class="r">Jahresgewinn am Ende</th><th class="r">Ungedeckte Nachfrage (Mio. Kartons)</th></tr></thead><tbody>${benchRows}</tbody></table></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Zur Diskussion</h3>
+          <ol class="questions small">
+            <li>Fliesen lassen sich in Spanien am günstigsten herstellen. Warum kann es sich trotzdem lohnen, sie an einem teureren Ort zu produzieren?</li>
+            <li>Welche Änderung hat den Exporten aus Spanien am meisten geschadet: der US-Zoll, die CO₂-Abgabe oder der Frachtkostensprung? Wie haben Werke im Ausland geholfen?</li>
+            <li>Ein Werk braucht ein Jahr bis zur Fertigstellung. Haben Sie vorausschauend gebaut oder abgewartet und reagiert? Was hat Sie beides gekostet?</li>
+            <li>Hat es sich gelohnt, Werke in mehreren Regionen zu haben, obwohl ein Standort günstiger war? Denken Sie an die Gaskürzung.</li>
+            <li>Wo hätten Sie gebaut, wenn es die Zölle und die CO₂-Abgabe nie gegeben hätte?</li>
+          </ol></section>
+        <section class="sheet"><h3>Ergebnis teilen</h3>
+          <p class="small">Kopieren Sie diese Zeile, um Ihr Ergebnis zu teilen.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Ergebnis kopieren</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Noch einmal spielen</button></section>
+      </div>
+      <p class="footer">Unternehmen, Märkte, Zahlen und Ereignisse in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+  }
+
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t || t.disabled) return;
+    const act = t.dataset.act;
+    if (act === 'newcode') { document.getElementById('code').value = FF.randomCode(); return; }
+    if (act === 'resume') { S = store.get(SAVE_KEY); resetChoice(); go('round'); return; }
+    if (act === 'plant') {
+      const id = t.dataset.site, d = Number(t.dataset.d), st = FF.siteById(id);
+      const last = S.round === FF.ROUNDS - 1;
+      const nv = Math.max(0, Math.min(last ? S.plants[id] : st.max, choice[id] + d));
+      choice[id] = nv;
+      keepScroll(renderRound);
+      const again = app.querySelector(`[data-act=plant][data-site="${id}"][data-d="${d}"]`);
+      (again && !again.disabled ? again : app.querySelector(`[data-act=plant][data-site="${id}"]:not([disabled])`))?.focus({ preventScroll: true });
+      return;
+    }
+    if (act === 'run') { if (FF.changeCost(S, choice).total > S.cash + 1e-9) return; S = FF.playRound(S, choice); save(); go('result'); return; }
+    if (act === 'next') { resetChoice(); go('round'); return; }
+    if (act === 'final') { go('final'); return; }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderRound); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderRound); return; }
+    if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Kopiert.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Markieren Sie die Zeile oben und kopieren Sie sie.'; }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

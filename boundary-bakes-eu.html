@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halftime Bakes</title>
+<meta name="description" content="A solo decision game about fresh stock: how many brownies and sandwiches should a bakery stall make each morning when demand is uncertain?">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
+.topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
+.lane { display: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
+}
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], input[type=password], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
+}
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.days { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; flex: 1 1 380px; }
+.days span { font-size: 12px; text-align: center; padding: 3px 0 4px; border-bottom: 5px solid var(--concrete-2); color: var(--muted); }
+.days span.now { border-bottom-color: var(--yellow); color: var(--ink); font-weight: 600; }
+.days span.done { border-bottom-color: var(--green); }
+.score { font-family: var(--display); font-weight: 600; font-size: 22px; }
+.prods { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+@media (max-width: 760px) { .prods { grid-template-columns: 1fr; } }
+.prod { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.prod-head { padding: 14px 16px 10px; border-top: 8px solid var(--pc); border-bottom: 1px solid var(--line); }
+.prod-head h2 { margin: 0; font-size: 34px; }
+.prod-body { padding: 14px 16px 16px; }
+.money { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.money div { background: var(--concrete); border-radius: 4px; padding: 8px 10px; }
+.money b { display: block; font-family: var(--display); font-size: 26px; line-height: 1.05; }
+.money span { font-size: 13px; color: var(--muted); }
+.fc { background: var(--blue-soft); border-radius: 4px; padding: 10px 12px; margin-bottom: 12px; }
+.fc b.big { font-family: var(--display); font-size: 30px; }
+.past { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+.past b { color: var(--ink); }
+.qty { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.qty input { width: 110px; font-family: var(--display); font-size: 30px; font-weight: 700; text-align: center; padding: 4px 8px; margin: 0; }
+.qty .step { width: 48px; height: 48px; border: 2px solid var(--ink); background: var(--sheet); border-radius: 6px; font-weight: 700; cursor: pointer; }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.actionbar .muted { color: #C5CDD8; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; }
+.kpi.bad .bignum { color: var(--red); }
+.kpi.good .bignum { color: var(--green); }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
+.legend span::before { content: ''; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); vertical-align: middle; margin-right: 6px; }
+.legend span.dash::before { border-top-style: dashed; }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.formula { font-family: var(--display); font-size: 20px; background: var(--yellow-soft); border-left: 5px solid var(--yellow); padding: 10px 14px; margin: 10px 0; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index-eu.html">Supply Chain Games</a><span class="here">Halftime Bakes</span><div class="versions"><nav class="switch" aria-label="Version"><a href="boundary-bakes.html">India</a><a aria-current="page">Europe</a></nav><nav class="switch" aria-label="Language"><a aria-current="page">English</a><a href="boundary-bakes-de.html" lang="de" hreflang="de">Deutsch</a></nav></div></div></header>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Halftime Bakes engine: how much fresh stock to make each day (the newsvendor problem) */
+const FS = (() => {
+  const DAYS = 10;
+  const DAY_LABELS = ['Opening match', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Quarter-finals', 'Semi-finals', 'The final'];
+  const PRODUCTS = [
+    { id: 'brownie', name: 'Brownie box', unit: 'box', cost: 120, price: 260, salvage: 60, salvageText: 'sold next morning to a caf\u00e9 at \u20AC3.00', mean: [30, 32, 35, 38, 42, 46, 52, 60, 72, 85], cv: 0.3 },
+    { id: 'sandwich', name: 'Fresh sandwich', unit: 'sandwich', cost: 80, price: 100, salvage: 0, salvageText: 'can\u2019t be sold the next day and is thrown away', mean: [50, 50, 52, 55, 55, 58, 60, 62, 65, 70], cv: 0.3 }
+  ];
+
+  function hash(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  }
+  function rng(seed) {
+    let a = hash(seed);
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'PRACTICE';
+
+  const sigma = (p, d) => p.mean[d] * p.cv;
+  function demand(code, p, d) {
+    const r = rng(normCode(code) + '|' + p.id + '|' + d);
+    const u1 = Math.max(1e-9, r()), u2 = r();
+    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    return Math.max(0, Math.round(p.mean[d] + z * sigma(p, d)));
+  }
+
+  /* inverse of the standard normal distribution (Acklam's approximation) */
+  function zFor(pr) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const pl = 0.02425;
+    if (pr < pl) { const q = Math.sqrt(-2 * Math.log(pr)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+    if (pr > 1 - pl) { const q = Math.sqrt(-2 * Math.log(1 - pr)); return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+    const q = pr - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  const under = (p) => p.price - p.cost;     // profit lost per box short
+  const over = (p) => p.cost - p.salvage;     // money lost per box left over
+  const ratio = (p) => under(p) / (under(p) + over(p));
+  const bestQty = (p, d) => Math.max(0, Math.round(p.mean[d] + zFor(ratio(p)) * sigma(p, d)));
+
+  function dayResult(p, q, dem) {
+    const sold = Math.min(q, dem);
+    const left = q - sold;
+    const short = dem - sold;
+    const revenue = sold * p.price + left * p.salvage;
+    const cost = q * p.cost;
+    return { made: q, demand: dem, sold, left, short, revenue, cost, profit: revenue - cost, lostProfit: short * under(p), wasteCost: left * over(p) };
+  }
+
+  function newGame(code, name) { return { v: 1, code: normCode(code), name: name || 'Player', day: 0, history: [], done: false }; }
+
+  function playDay(s0, qty) {
+    const s = JSON.parse(JSON.stringify(s0));
+    const d = s.day;
+    const res = { day: d, products: {} , profit: 0 };
+    PRODUCTS.forEach((p, i) => {
+      const r = dayResult(p, Math.max(0, Math.round(qty[i] || 0)), demand(s.code, p, d));
+      res.products[p.id] = r;
+      res.profit += r.profit;
+    });
+    s.history.push(res);
+    s.day = d + 1;
+    if (s.day >= DAYS) s.done = true;
+    return s;
+  }
+
+  const STRATEGIES = [
+    { id: 'forecast', name: 'Make the forecast', desc: 'Makes exactly the expected number every day.', qty: (p, d) => p.mean[d] },
+    { id: 'ratio', name: 'Critical ratio', desc: 'Makes more of the high-margin brownies and fewer of the sandwiches that spoil, using the critical ratio.', qty: (p, d) => bestQty(p, d) },
+    { id: 'perfect', name: 'Perfect foresight', desc: 'Knows tomorrow’s demand in advance. Impossible in real life, but the best anyone could do.', qty: null }
+  ];
+  function runStrategy(code, st) {
+    let s = newGame(code, st.name);
+    for (let d = 0; d < DAYS; d++) s = playDay(s, PRODUCTS.map((p) => (st.qty ? st.qty(p, d) : demand(s.code, p, d))));
+    return s;
+  }
+  function summary(s) {
+    const tot = { profit: 0 };
+    PRODUCTS.forEach((p) => {
+      const rows = s.history.map((h) => h.products[p.id]);
+      const sum = (k) => rows.reduce((a, r) => a + r[k], 0);
+      tot[p.id] = { profit: sum('profit'), made: sum('made'), demand: sum('demand'), sold: sum('sold'), left: sum('left'), short: sum('short'), lostProfit: sum('lostProfit'), wasteCost: sum('wasteCost'), fill: sum('demand') ? sum('sold') / sum('demand') : 1 };
+      tot.profit += tot[p.id].profit;
+    });
+    return tot;
+  }
+  function randomCode() {
+    const w = ['KICKOFF', 'HALFTIME', 'CORNER', 'BROWNIE', 'PENALTY', 'STADIUM', 'CRUMB', 'TOAST'];
+    return w[Math.floor(Math.random() * w.length)] + (10 + Math.floor(Math.random() * 90));
+  }
+  return { DAYS, DAY_LABELS, PRODUCTS, sigma, demand, zFor, under, over, ratio, bestQty, newGame, playDay, STRATEGIES, runStrategy, summary, normCode, randomCode };
+})();
+if (typeof module !== 'undefined') module.exports = FS;
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'fs-game-v1-eu';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const int = (n) => Math.round(n).toLocaleString('en-IE');
+  const inr = (n) => { const v = Math.abs(n) * 0.05; const d = v < 1000 ? 2 : 0; return (n < 0 ? '−' : '') + '€' + v.toLocaleString('en-IE', { minimumFractionDigits: d, maximumFractionDigits: d }); };
+  const P = FS.PRODUCTS;
+  const PC = ['#6B4226', '#2C6B4C'];
+  const plural = (p, n) => (n === 1 ? p.unit : /(x|ch|sh|s)$/.test(p.unit) ? p.unit + 'es' : p.unit + 's');
+
+  let view = 'start', S = null, drafts = {}, errs = {}, formError = '', confirmRestart = false;
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+  function save() { if (S) store.set(SAVE_KEY, S); }
+  function resetDrafts() { drafts = {}; errs = {}; P.forEach((p, i) => { drafts[i] = String(p.mean[S.day]); }); }
+
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'day') return renderDay();
+    if (view === 'result') return renderResult();
+    if (view === 'final') return renderFinal();
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && !saved.done && saved.history && saved.history.length > 0;
+    app.innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <p class="kicker">A solo decision game about fresh stock, 10 days</p>
+          <h1>Halftime Bakes</h1>
+          <p style="font-size:20px;max-width:34em">You run a bakery stall outside a football stadium in Munich during a 10-day summer tournament. Every morning you bake brownies and make fresh sandwiches before the gates open. Make too few and hungry fans walk away. Make too many and you lose money on the leftovers. Crowds grow as the tournament heads for the final.</p>
+        </div>
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Start a game</h3>
+          <label for="name">Your name</label>
+          <input type="text" id="name" maxlength="24" autocomplete="off" placeholder="For example, Lena">
+          <div style="height:12px"></div>
+          <label for="code">Game code</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(FS.randomCode())}" style="text-transform:uppercase">
+            <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">New code</button>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">Players with the same code get the same crowds, so results can be compared.</p>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start the game</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">Continue ${esc(saved.name)} (${esc(FS.DAY_LABELS[saved.day])})</button>` : ''}
+        </form>
+      </section>
+      <section class="sheet tablewrap" style="margin-top:12px">
+        <h3>Your two products</h3>
+        <table class="small"><thead><tr><th>Product</th><th class="r">Costs you to make</th><th class="r">You sell it for</th><th>If it doesn&rsquo;t sell that day</th></tr></thead>
+        <tbody>${P.map((p) => `<tr><td><b>${p.name}</b></td><td class="r">${inr(p.cost)}</td><td class="r">${inr(p.price)}</td><td>${esc(p.salvageText)}</td></tr>`).join('')}</tbody></table>
+        <p class="small" style="margin-top:10px">Each morning you see a forecast for the day. Real crowds are never exactly the forecast. Whatever you make is all you can sell that day. Finish the tournament with the most profit.</p>
+      </section>
+      <p class="footer">The stall, prices and crowds in this game are made up for teaching.</p>
+    </div>`;
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) { formError = 'Enter your name to start.'; renderStart(); document.getElementById('name').focus(); return; }
+      formError = '';
+      S = FS.newGame(document.getElementById('code').value, name);
+      resetDrafts(); save(); go('day');
+    });
+    document.getElementById('name').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar(viewDay) {
+    const now = viewDay === undefined ? S.day : viewDay;
+    const total = S.history.reduce((a, h) => a + h.profit, 0);
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.name)}</span><span class="small muted">Code ${esc(S.code)}</span>
+      <div class="days" aria-label="Tournament days">${FS.DAY_LABELS.map((l, i) => `<span class="${i === now ? 'now' : i < S.history.length ? 'done' : ''}" title="${esc(l)}">${i + 1}</span>`).join('')}</div>
+      <span class="score" title="Profit so far">${inr(total)}</span></div></div>`;
+  }
+
+  function renderDay() {
+    const d = S.day;
+    const cards = P.map((p, i) => {
+      const sd = FS.sigma(p, d);
+      const lo = Math.max(0, Math.round(p.mean[d] - sd)), hi = Math.round(p.mean[d] + sd);
+      const past = S.history.slice(-4).map((h) => `${FS.DAY_LABELS[h.day]}: made <b>${h.products[p.id].made}</b>, wanted <b>${h.products[p.id].demand}</b>`).join('<br>');
+      const q = Number(drafts[i]);
+      return `<section class="prod" style="--pc:${PC[i]}" aria-labelledby="ph${i}">
+        <div class="prod-head"><h2 id="ph${i}">${p.name}</h2></div>
+        <div class="prod-body">
+          <div class="money"><div><b>${inr(p.cost)}</b><span>Cost to make</span></div><div><b>${inr(p.price)}</b><span>Selling price</span></div><div><b>${inr(p.salvage)}</b><span>Worth if left over</span></div></div>
+          <div class="fc">Forecast for today: about <b class="big">${int(p.mean[d])}</b> ${plural(p, 2)}.<br><span class="small">On two days out of three, fans want between ${int(lo)} and ${int(hi)}.</span></div>
+          ${past ? `<p class="past">${past}</p>` : ''}
+          <label for="q${i}">How many ${plural(p, 2)} do you make today?</label>
+          <div class="qty" style="margin-top:6px">
+            <button class="step" type="button" data-act="minus" data-i="${i}" aria-label="5 fewer">&minus;5</button>
+            <input type="number" id="q${i}" data-i="${i}" min="0" max="999" inputmode="numeric" value="${esc(drafts[i])}">
+            <button class="step" type="button" data-act="plus" data-i="${i}" aria-label="5 more">+5</button>
+            <span class="small muted" id="cost${i}">${isFinite(q) && drafts[i] !== '' ? 'Costs ' + inr(q * p.cost) : ''}</span>
+          </div>
+          ${errs[i] ? `<p class="err" role="alert">${esc(errs[i])}</p>` : ''}
+        </div>
+      </section>`;
+    }).join('');
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        <h2 style="margin-top:22px">${esc(FS.DAY_LABELS[d])}</h2>
+        <p class="muted">${/^Day \d/.test(FS.DAY_LABELS[d]) ? '' : 'Day ' + (d + 1) + ' of ' + FS.DAYS + '. '}Decide how much to make before the gates open.</p>
+        <div class="prods">${cards}</div>
+      </div>
+      <div class="actionbar"><div class="wrap"><span class="muted small">Leftover brownies are worth ${inr(P[0].salvage)} each tomorrow. Leftover sandwiches are worth nothing.</span><button class="btn primary" data-act="open">Open the stall</button></div></div>
+      <div class="wrap footer">${confirmRestart ? `<span class="confirm" style="color:var(--red)">This deletes the game on this device.</span> <button class="btn small dark" data-act="restart-yes">Delete and start over</button> <button class="btn small" data-act="restart-no">Keep playing</button>` : `<button class="btn ghost small" data-act="restart">Start over</button>`}</div>`;
+  }
+
+  function renderResult() {
+    const h = S.history[S.history.length - 1];
+    const rows = P.map((p, i) => {
+      const r = h.products[p.id];
+      return `<tr><td><b style="color:${PC[i]}">${p.name}</b></td><td class="r">${int(r.made)}</td><td class="r">${int(r.demand)}</td><td class="r">${int(r.sold)}</td><td class="r">${int(r.left)}</td><td class="r">${int(r.short)}</td><td class="r"><b>${inr(r.profit)}</b></td></tr>`;
+    }).join('');
+    const notes = P.map((p) => {
+      const r = h.products[p.id];
+      if (r.short > 0) return `You sold out of ${p.name.toLowerCase()}. ${int(r.short)} fans went away, which cost you ${inr(r.lostProfit)} in missed profit.`;
+      if (r.left > 0) return `${int(r.left)} ${plural(p, r.left)} of ${p.name.toLowerCase()} left over, which cost you ${inr(r.wasteCost)}.`;
+      return `You made exactly the right number of ${p.name.toLowerCase()}.`;
+    });
+    app.innerHTML = bar(h.day) + `
+      <div class="wrap" style="padding-bottom:40px">
+        <h2 style="margin-top:22px">${esc(FS.DAY_LABELS[h.day])}: results</h2>
+        <div class="kpis">
+          ${P.map((p, i) => `<div class="kpi"><div class="small muted">${p.name} wanted</div><div class="bignum">${int(h.products[p.id].demand)}</div><div class="small">You made ${int(h.products[p.id].made)}</div></div>`).join('')}
+          <div class="kpi ${h.profit < 0 ? 'bad' : 'good'}"><div class="small muted">Profit today</div><div class="bignum" style="font-size:34px">${inr(h.profit)}</div></div>
+          <div class="kpi"><div class="small muted">Profit so far</div><div class="bignum" style="font-size:34px">${inr(S.history.reduce((a, x) => a + x.profit, 0))}</div></div>
+        </div>
+        <ul style="font-size:18px">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>
+        <section class="sheet tablewrap"><table class="small"><thead><tr><th>Product</th><th class="r">Made</th><th class="r">Fans wanted</th><th class="r">Sold</th><th class="r">Left over</th><th class="r">Turned away</th><th class="r">Profit</th></tr></thead><tbody>${rows}</tbody></table></section>
+        <div class="row" style="margin-top:20px"><button class="btn primary" data-act="${S.done ? 'final' : 'next'}">${S.done ? 'See the final report' : 'Next day: ' + esc(FS.DAY_LABELS[S.day])}</button></div>
+      </div>`;
+    app.querySelector('[data-act]')?.focus({ preventScroll: true });
+  }
+
+  function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = (raw || 1) / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function lineChart(series, labels, label) {
+    const W = 680, H = 260, L = 44, R = 90, T = 12, B = 30;
+    const all = series.flatMap((s) => s.values);
+    const hi = Math.max(1, ...all) * 1.08, lo = 0;
+    const x = (i) => L + (i * (W - L - R)) / (labels.length - 1);
+    const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
+    const step = niceStep(hi / 5);
+    let grid = '';
+    for (let v = 0; v <= hi; v += step) grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1B2A41' : '#D5DAE1'}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${int(v)}</text>`;
+    const xl = labels.map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#5B6676">${l}</text>`).join('');
+    const ends = [];
+    const lines = series.map((s) => {
+      ends.push({ y: y(s.values[s.values.length - 1]), x: x(s.values.length - 1), name: s.short, c: s.color });
+      return `<path d="${s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="3" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''} stroke-linejoin="round"/>` +
+        s.values.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="${s.color}"><title>${esc(s.name)}, day ${i + 1}: ${v}</title></circle>`).join('');
+    }).join('');
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${grid}${xl}${lines}${ends.map((e) => `<text x="${e.x + 8}" y="${e.y + 4}" font-size="13" font-weight="600" fill="${e.c}">${esc(e.name)}</text>`).join('')}</svg>`;
+  }
+
+  function renderFinal() {
+    const you = FS.summary(S);
+    const bench = FS.STRATEGIES.map((st) => ({ st, s: FS.summary(FS.runStrategy(S.code, st)) }));
+    const rank = [{ n: 'you', p: you.profit }].concat(bench.filter((b) => b.st.id !== 'perfect').map((b) => ({ n: b.st.id, p: b.s.profit }))).sort((a, b) => b.p - a.p);
+    const pos = rank.findIndex((r) => r.n === 'you') + 1;
+    const perfect = bench.find((b) => b.st.id === 'perfect').s.profit;
+    const charts = P.map((p, i) => {
+      const made = S.history.map((h) => h.products[p.id].made);
+      const dem = S.history.map((h) => h.products[p.id].demand);
+      const best = S.history.map((h) => FS.bestQty(p, h.day));
+      return `<section class="sheet chart"><h3>${p.name}: what you made and what fans wanted</h3>
+        ${lineChart([{ name: 'Fans wanted', short: 'Wanted', values: dem, color: '#1B2A41', dash: '6 5' }, { name: 'You made', short: 'You made', values: made, color: PC[i] }, { name: 'Critical ratio amount', short: 'Critical ratio', values: best, color: '#C99F00', dash: '2 4' }], S.history.map((_, k) => String(k + 1)), p.name + ': made against wanted, by day')}
+        <div class="legend"><span class="dash" style="--c:#1B2A41">Fans wanted</span><span style="--c:${PC[i]}">You made</span><span class="dash" style="--c:#C99F00">Critical ratio amount</span></div></section>`;
+    }).join('');
+    const prodRows = P.map((p, i) => {
+      const t = you[p.id];
+      return `<tr><td><b style="color:${PC[i]}">${p.name}</b></td><td class="r">${int(t.made)}</td><td class="r">${int(t.sold)}</td><td class="r">${int(t.left)}</td><td class="r">${int(t.short)}</td><td class="r">${Math.round(t.fill * 100)}%</td><td class="r">${inr(t.wasteCost)}</td><td class="r">${inr(t.lostProfit)}</td><td class="r"><b>${inr(t.profit)}</b></td></tr>`;
+    }).join('');
+    const benchRows = [{ name: S.name + ' (you)', desc: 'Your decisions', s: you }].concat(bench.map((b) => ({ name: b.st.name, desc: b.st.desc, s: b.s })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td class="r"><b>${inr(r.s.profit)}</b></td>${P.map((p) => `<td class="r">${Math.round(r.s[p.id].fill * 100)}%</td>`).join('')}</tr>`).join('');
+    const crRows = P.map((p) => {
+      const z = FS.zFor(FS.ratio(p));
+      return `<li><b>${p.name}:</b> one short costs ${inr(FS.under(p))} in missed profit; one left over costs ${inr(FS.over(p))}. Critical ratio = ${inr(FS.under(p))} &divide; (${inr(FS.under(p))} + ${inr(FS.over(p))}) = <b>${FS.ratio(p).toFixed(2)}</b>. So make enough to cover demand on about ${Math.round(FS.ratio(p) * 100)}% of days: ${z >= 0 ? 'a little <b>above</b>' : 'well <b>below</b>'} the forecast.</li>`;
+    }).join('');
+    const result = `Halftime Bakes | ${S.name} | code ${S.code} | profit ${inr(you.profit)} | best possible ${inr(perfect)}`;
+    app.innerHTML = bar(FS.DAYS) + `
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 6px">
+        <p class="kicker">Final report for ${esc(S.name)}, game code ${esc(S.code)}</p>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${inr(you.profit)}</h1>
+        <p style="font-size:20px;max-width:40em">Total profit over the 10-day tournament. With perfect foresight the best possible was ${inr(perfect)}. Against the two realistic strategies below, you placed ${pos} of 3.</p>
+      </section>
+      <section class="sheet tablewrap"><h3>Your products</h3>
+        <table class="small"><thead><tr><th>Product</th><th class="r">Made</th><th class="r">Sold</th><th class="r">Left over</th><th class="r">Turned away</th><th class="r">Fans served</th><th class="r">Cost of leftovers</th><th class="r">Missed profit</th><th class="r">Profit</th></tr></thead><tbody>${prodRows}</tbody></table></section>
+      <div class="grid2" style="margin-top:16px">${charts}</div>
+      <section class="sheet" style="margin-top:16px"><h3>The idea behind it: the critical ratio</h3>
+        <p>When you can&rsquo;t know tomorrow&rsquo;s demand, compare what one too few costs you with what one too many costs you.</p>
+        <div class="formula">Critical ratio = cost of one too few &divide; (cost of one too few + cost of one too many)</div>
+        <ul class="small">${crRows}</ul>
+        <p class="small">That is why the best stall makes more brownies than the forecast but fewer sandwiches than the forecast, and accepts turning some sandwich customers away.</p></section>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>How the strategies compare</h3>
+        <table class="small"><thead><tr><th>Strategy</th><th class="r">Profit</th>${P.map((p) => `<th class="r">${p.name} fans served</th>`).join('')}</tr></thead><tbody>${benchRows}</tbody></table></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Talk it over</h3>
+          <ol class="questions small">
+            <li>Did you make more or less than the forecast? Was that the same for both products? Why?</li>
+            <li>Turning a fan away and throwing food away both lose money. Which loss did you feel more? Which costs more for each product?</li>
+            <li>The critical-ratio stall turns away about one sandwich customer in four on purpose. Why is that the right decision?</li>
+            <li>What would change if leftover sandwiches could be sold the next morning for ${inr(40)}?</li>
+            <li>Where else does this problem appear? Think of newspapers, flowers, fashion, airline seats, vaccines.</li>
+          </ol></section>
+        <section class="sheet"><h3>Share your result</h3>
+          <p class="small">Copy this line to share your result.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Play again</button></section>
+      </div>
+      <p class="footer">The stall, prices and crowds in this game are made up for teaching.</p>
+    </div>`;
+  }
+
+  function readQty(i) { const raw = String(drafts[i] ?? '').trim(); return /^\d{1,3}$/.test(raw) ? Number(raw) : null; }
+
+  app.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.id && /^q\d$/.test(t.id)) {
+      const i = Number(t.dataset.i);
+      drafts[i] = t.value;
+      const c = document.getElementById('cost' + i);
+      const q = readQty(i);
+      if (c) c.textContent = q === null ? '' : 'Costs ' + inr(q * P[i].cost);
+      if (errs[i]) { delete errs[i]; t.closest('.prod-body').querySelector('.err')?.remove(); }
+    }
+  });
+  app.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id && /^q\d$/.test(e.target.id)) { e.preventDefault(); app.querySelector('[data-act=open]')?.click(); } });
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t) return;
+    const act = t.dataset.act;
+    if (act === 'newcode') { document.getElementById('code').value = FS.randomCode(); return; }
+    if (act === 'resume') { S = store.get(SAVE_KEY); resetDrafts(); go('day'); return; }
+    if (act === 'plus' || act === 'minus') {
+      const i = Number(t.dataset.i);
+      const cur = readQty(i) ?? P[i].mean[S.day];
+      drafts[i] = String(Math.max(0, Math.min(999, cur + (act === 'plus' ? 5 : -5))));
+      delete errs[i];
+      keepScroll(renderDay);
+      app.querySelector(`[data-act="${act}"][data-i="${i}"]`)?.focus({ preventScroll: true });
+      return;
+    }
+    if (act === 'open') {
+      let bad = false;
+      P.forEach((p, i) => { if (readQty(i) === null) { errs[i] = 'Enter a whole number from 0 to 999.'; bad = true; } });
+      if (bad) { keepScroll(renderDay); return; }
+      S = FS.playDay(S, P.map((p, i) => readQty(i)));
+      save(); go('result'); return;
+    }
+    if (act === 'next') { resetDrafts(); go('day'); return; }
+    if (act === 'final') { go('final'); return; }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderDay); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderDay); return; }
+    if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine');
+      const msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

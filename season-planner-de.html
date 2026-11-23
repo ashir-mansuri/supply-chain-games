@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Season Planner – Saisonplanung</title>
+<meta name="description" content="Ein Entscheidungsspiel für eine Person zur aggregierten Planung: einstellen, Überstunden, Fremdvergabe oder Lageraufbau, um eine Saisonspitze zu den niedrigsten Kosten zu bedienen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
+.topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
+.lane { display: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
+}
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], input[type=password], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
+}
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.months { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; flex: 1 1 360px; }
+.months span { font-size: 12px; text-align: center; padding: 3px 0 4px; border-bottom: 5px solid var(--concrete-2); color: var(--muted); }
+.months span.now { border-bottom-color: var(--yellow); color: var(--ink); font-weight: 600; }
+.months span.done { border-bottom-color: var(--green); }
+.score { font-family: var(--display); font-weight: 600; font-size: 22px; }
+.plan { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0; }
+@media (max-width: 860px) { .plan { grid-template-columns: 1fr; } }
+.fcbars { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; align-items: end; height: 190px; margin-top: 10px; }
+.fcbars .col { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-end; height: 100%; text-align: center; font-size: 13px; }
+.fcbars .b { background: var(--concrete-2); border-radius: 4px 4px 0 0; position: relative; }
+.fcbars .col.now .b { background: var(--yellow); }
+.fcbars .col.past .b { background: var(--blue-soft); }
+.fcbars .v { font-family: var(--display); font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+.fcbars .m { margin-top: 4px; color: var(--muted); }
+.status { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.status div { background: var(--concrete); border-radius: 4px; padding: 8px 10px; }
+.status b { display: block; font-family: var(--display); font-size: 30px; line-height: 1.05; }
+.status span { font-size: 13px; color: var(--muted); }
+.lever { border-top: 1px solid var(--line); padding: 14px 0; }
+.lever:first-of-type { border-top: 0; padding-top: 4px; }
+.lever h3 { margin: 0 0 2px; font-size: 22px; }
+.ctrl { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.ctrl .step { min-width: 48px; height: 46px; border: 2px solid var(--ink); background: var(--sheet); border-radius: 6px; font-weight: 700; cursor: pointer; padding: 0 8px; }
+.ctrl .step:disabled { opacity: .3; cursor: not-allowed; }
+.ctrl output { min-width: 80px; text-align: center; font-family: var(--display); font-weight: 700; font-size: 30px; }
+.seg { display: inline-flex; border: 2px solid var(--ink); border-radius: 6px; overflow: hidden; flex-wrap: wrap; }
+.seg button { border: 0; border-right: 1px solid var(--ink); background: var(--sheet); padding: 10px 16px; cursor: pointer; font-weight: 600; min-height: 44px; }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed=true] { background: var(--ink); color: #fff; }
+.preview td:last-child { text-align: right; }
+.preview tr.total td { font-weight: 700; border-top: 2px solid var(--ink); }
+.good { color: var(--green); font-weight: 600; }
+.bad { color: var(--red); font-weight: 600; }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.actionbar .muted { color: #C5CDD8; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; }
+.kpi.bad .bignum { color: var(--red); }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
+.legend span::before { content: ''; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); vertical-align: middle; margin-right: 6px; }
+.legend span.dash::before { border-top-style: dashed; }
+.legend span.blk::before { border-top-width: 10px; }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index-de.html">Supply Chain Games</a><span class="here">Season Planner</span><div class="versions"><nav class="switch" aria-label="Version"><a href="season-planner.html" hreflang="en">Indien</a><a aria-current="page">Europa</a></nav><nav class="switch" aria-label="Sprache"><a href="season-planner-eu.html" lang="en" hreflang="en">English</a><a aria-current="page">Deutsch</a></nav></div></div></header>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Season Planner engine: aggregate production planning for a garden furniture maker */
+const FP = (() => {
+  const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni'];
+  const FORECAST = [7000, 8000, 10000, 14000, 18000, 9000];
+  const PER_WORKER = 400;       // furniture sets per worker per month, regular time
+  const WAGE = 16000;           // per worker per month, paid whether busy or not
+  const OT_LEVELS = [0, 10, 20, 25];  // overtime as % of regular capacity
+  const OT_COST = 60;           // per set made on overtime
+  const SUB_COST = 90;          // per set from a subcontractor
+  const SUB_MAX = 5000;
+  const SUB_STEP = 250;
+  const HIRE_COST = 10000;      // per worker hired
+  const FIRE_COST = 15000;      // per worker laid off
+  const HIRE_MAX = 20;          // most workers you can hire in one month
+  const HOLD_COST = 8;          // per set in stock at month end
+  const SHORT_COST = 150;       // per set of lost sales
+  const CLEAR_COST = 50;        // per set left after June, cleared at a loss
+  const START_WORKERS = 20;
+  const START_STOCK = 2000;
+
+  function hash(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  }
+  function rand(seed) {
+    let a = hash(seed);
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'PRACTICE';
+  /* actual orders: within 8% of the forecast, the same for everyone with the same code */
+  const actual = (code, m) => Math.round((FORECAST[m] * (1 + (rand(normCode(code) + '|fp|' + m) * 2 - 1) * 0.08)) / 50) * 50;
+
+  /* cost of one month's plan */
+  function month(m, startWorkers, startStock, plan, dem) {
+    const workers = Math.max(0, Math.round(plan.workers));
+    const ot = OT_LEVELS.includes(plan.ot) ? plan.ot : 0;
+    const sub = Math.max(0, Math.min(SUB_MAX, Math.round(plan.sub / SUB_STEP) * SUB_STEP));
+    const hired = Math.max(0, workers - startWorkers);
+    const fired = Math.max(0, startWorkers - workers);
+    const regular = workers * PER_WORKER;
+    const overtime = Math.round((regular * ot) / 100);
+    const made = regular + overtime + sub;
+    const available = startStock + made;
+    const sold = Math.min(available, dem);
+    const short = dem - sold;
+    let stock = available - sold;
+    const cost = {
+      wages: workers * WAGE,
+      overtime: overtime * OT_COST,
+      sub: sub * SUB_COST,
+      hiring: hired * HIRE_COST,
+      layoffs: fired * FIRE_COST,
+      storage: stock * HOLD_COST,
+      lost: short * SHORT_COST,
+      clearance: m === MONTHS.length - 1 ? stock * CLEAR_COST : 0
+    };
+    cost.total = Object.values(cost).reduce((a, b) => a + b, 0);
+    return { month: m, workers, ot, sub, hired, fired, regular, overtime, made, demand: dem, sold, short, stock, cost };
+  }
+
+  function newGame(code, name) { return { v: 1, code: normCode(code), name: name || 'Player', m: 0, workers: START_WORKERS, stock: START_STOCK, history: [], done: false }; }
+
+  function playMonth(s0, plan) {
+    const s = JSON.parse(JSON.stringify(s0));
+    if (s.done) return s;
+    const hireCap = s.workers + HIRE_MAX;
+    const p = { workers: Math.min(hireCap, plan.workers), ot: plan.ot, sub: plan.sub };
+    const r = month(s.m, s.workers, s.stock, p, actual(s.code, s.m));
+    s.history.push(r);
+    s.workers = r.workers; s.stock = r.stock; s.m += 1;
+    if (s.m >= MONTHS.length) s.done = true;
+    return s;
+  }
+
+  function summary(s) {
+    const keys = ['wages', 'overtime', 'sub', 'hiring', 'layoffs', 'storage', 'lost', 'clearance', 'total'];
+    const cost = {};
+    keys.forEach((k) => { cost[k] = s.history.reduce((a, r) => a + r.cost[k], 0); });
+    const demand = s.history.reduce((a, r) => a + r.demand, 0);
+    const sold = s.history.reduce((a, r) => a + r.sold, 0);
+    const changes = s.history.reduce((a, r) => a + r.hired + r.fired, 0);
+    return { cost, demand, sold, fill: demand ? sold / demand : 1, changes, perSet: sold ? cost.total / sold : 0 };
+  }
+
+  /* fixed plans, made from the forecast in advance */
+  const LEVEL = (() => {
+    const total = FORECAST.reduce((a, b) => a + b, 0) - START_STOCK;
+    const w = Math.ceil(total / FORECAST.length / PER_WORKER);
+    return FORECAST.map(() => ({ workers: w, ot: 0, sub: 0 }));
+  })();
+  const CHASE = (() => {
+    let stock = START_STOCK;
+    return FORECAST.map((f) => {
+      const need = Math.max(0, f - stock);
+      const w = Math.ceil(need / PER_WORKER);
+      stock = Math.max(0, stock + w * PER_WORKER - f);
+      return { workers: w, ot: 0, sub: 0 };
+    });
+  })();
+  // the cheapest plan for the forecast, worked out in advance with findBest()
+  let BEST = [{ workers: 21, ot: 0, sub: 0 }, { workers: 26, ot: 0, sub: 0 }, { workers: 26, ot: 0, sub: 0 }, { workers: 27, ot: 10, sub: 0 }, { workers: 27, ot: 25, sub: 0 }, { workers: 23, ot: 0, sub: 0 }];
+  function findBest() {
+    // dynamic programming over workers and stock, using the forecast
+    const STOCK_STEP = 250, MAX_STOCK = 20000, MAX_W = 60;
+    let layer = new Map(); layer.set(START_WORKERS + '|' + START_STOCK, { cost: 0, plan: [] });
+    for (let m = 0; m < MONTHS.length; m++) {
+      const next = new Map();
+      layer.forEach((v, key) => {
+        const [w0, s0] = key.split('|').map(Number);
+        for (let w = 0; w <= Math.min(MAX_W, w0 + HIRE_MAX); w++) {
+          for (const ot of OT_LEVELS) {
+            for (let sub = 0; sub <= SUB_MAX; sub += SUB_STEP) {
+              const r = month(m, w0, s0, { workers: w, ot, sub }, FORECAST[m]);
+              if (r.short > 0 && sub > 0) continue;
+              const st = Math.min(MAX_STOCK, Math.round(r.stock / STOCK_STEP) * STOCK_STEP);
+              const k = w + '|' + st;
+              const c = v.cost + r.cost.total;
+              const e = next.get(k);
+              if (!e || c < e.cost) next.set(k, { cost: c, plan: v.plan.concat([{ workers: w, ot, sub }]) });
+            }
+          }
+        }
+      });
+      layer = next;
+    }
+    let best = null;
+    layer.forEach((v) => { if (!best || v.cost < best.cost) best = v; });
+    return best.plan;
+  }
+  const STRATEGIES = [
+    { id: 'level', name: 'Gleichmäßiger Plan', desc: 'Jeden Monat dieselbe Belegschaft, Lageraufbau vor der Spitze.', plan: () => LEVEL },
+    { id: 'chase', name: 'Synchroner Plan', desc: 'Stellt jeden Monat ein oder entlässt, damit die Produktion der Prognose folgt.', plan: () => CHASE },
+    { id: 'mixed', name: 'Bester Mischplan', desc: 'Die günstigste Kombination aus Belegschaft, Lager, Überstunden und Fremdvergabe für die Prognose, vom Computer ermittelt.', plan: () => BEST }
+  ];
+  function setBest(plan) { BEST = plan; }
+  function runStrategy(code, st) {
+    let s = newGame(code, st.name);
+    st.plan().forEach((p) => { s = playMonth(s, p); });
+    return s;
+  }
+  function randomCode() {
+    const w = ['GARDEN', 'TERRACE', 'PATIO', 'BENCH', 'TABLE', 'CHAIR', 'PARASOL', 'SPRING'];
+    return w[Math.floor(Math.random() * w.length)] + (10 + Math.floor(Math.random() * 90));
+  }
+  return {
+    MONTHS, FORECAST, PER_WORKER, WAGE, OT_LEVELS, OT_COST, SUB_COST, SUB_MAX, SUB_STEP, HIRE_COST, FIRE_COST, HIRE_MAX, HOLD_COST, SHORT_COST, CLEAR_COST, START_WORKERS, START_STOCK,
+    actual, month, newGame, playMonth, summary, LEVEL, CHASE, findBest, setBest, STRATEGIES, runStrategy, normCode, randomCode
+  };
+})();
+if (typeof module !== 'undefined') module.exports = FP;
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'fp-game-v1-de';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const int = (n) => Math.round(n).toLocaleString('de-DE');
+  const inr = (n) => { const v = Math.abs(n) * 0.2; const d = v < 100 ? 2 : 0; return (n < 0 ? '−' : '') + v.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d }) + '\u00A0€'; };
+  const lakh = (n) => Math.round(n * 0.2).toLocaleString('de-DE') + '\u00A0€';
+  const M = FP.MONTHS;
+  const COST_LABELS = [['wages', 'Löhne'], ['overtime', 'Überstunden'], ['sub', 'Fremdvergabe'], ['hiring', 'Einstellungen'], ['layoffs', 'Entlassungen'], ['storage', 'Lagerhaltung'], ['lost', 'Entgangene Umsätze'], ['clearance', 'Abverkauf zum Saisonende']];
+
+  let view = 'start', S = null, plan = null, formError = '', confirmRestart = false;
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+  function save() { if (S) store.set(SAVE_KEY, S); }
+  function resetPlan() { plan = { workers: S.workers, ot: 0, sub: 0 }; }
+
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'month') return renderMonth();
+    if (view === 'result') return renderResult();
+    if (view === 'final') return renderFinal();
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && !saved.done && saved.history && saved.history.length > 0;
+    app.innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <p class="kicker">Ein Entscheidungsspiel zur aggregierten Planung für eine Person, 6 Monate</p>
+          <h1>Season Planner</h1>
+          <p style="font-size:20px;max-width:34em">Sie leiten die Produktion eines Gartenmöbelherstellers in Bielefeld, der Sets aus Tisch und Stühlen fertigt. Die Bestellungen der Gartencenter steigen von Januar bis zu einer großen Spitze im Mai, wenn der Frühling kommt, und fallen im Juni wieder. Jeden Monat entscheiden Sie, wie viele Beschäftigte Sie haben, wie viele Überstunden gefahren werden und wie viel Sie an einen Fremdfertiger vergeben. Erfüllen Sie die Bestellungen zu den niedrigsten Gesamtkosten.</p>
+        </div>
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Spiel starten</h3>
+          <label for="name">Ihr Name</label>
+          <input type="text" id="name" maxlength="24" autocomplete="off" placeholder="Zum Beispiel Lena">
+          <div style="height:12px"></div>
+          <label for="code">Spielcode</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(FP.randomCode())}" style="text-transform:uppercase">
+            <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">Neuer Code</button>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">Wer denselben Code nutzt, erhält dieselben Bestellungen. So lassen sich Ergebnisse vergleichen.</p>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Spiel starten</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">${esc(saved.name)} fortsetzen (${M[saved.m]})</button>` : ''}
+        </form>
+      </section>
+      <div class="grid2" style="margin-top:12px">
+        <section class="sheet"><h3>Ihre Stellhebel</h3>
+          <ul class="small" style="padding-left:1.2em;margin:0">
+            <li><b>Beschäftigte:</b> Jede Person stellt ${int(FP.PER_WORKER)} Sets im Monat her und kostet ${inr(FP.WAGE)} im Monat, ob ausgelastet oder nicht. Eine Einstellung kostet ${inr(FP.HIRE_COST)} (bis zu ${FP.HIRE_MAX} im Monat), eine Entlassung ${inr(FP.FIRE_COST)}.</li>
+            <li><b>Überstunden:</b> bis zu 25% mehr Ausstoß, für ${inr(FP.OT_COST)} je Set.</li>
+            <li><b>Fremdvergabe:</b> bis zu ${int(FP.SUB_MAX)} Sets im Monat, für ${inr(FP.SUB_COST)} je Set.</li>
+            <li><b>Lager:</b> Früh gefertigte Sets warten im Lager, für ${inr(FP.HOLD_COST)} je Set und Monat.</li>
+          </ul></section>
+        <section class="sheet"><h3>Was schiefgehen kann</h3>
+          <ul class="small" style="padding-left:1.2em;margin:0">
+            <li>Nicht erfüllbare Bestellungen gehen verloren: ${inr(FP.SHORT_COST)} je Set an entgangenem Gewinn und Ansehen.</li>
+            <li>Die tatsächlichen Bestellungen können bis zu 8% über oder unter der Prognose liegen.</li>
+            <li>Sets, die nach Juni übrig sind, werden billig abverkauft, mit ${inr(FP.CLEAR_COST)} Verlust je Set.</li>
+            <li>Sie starten mit ${FP.START_WORKERS} Beschäftigten und ${int(FP.START_STOCK)} Sets auf Lager.</li>
+          </ul></section>
+      </div>
+      <p class="footer">Unternehmen, Kosten und Bestellungen in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) { formError = 'Geben Sie Ihren Namen ein, um zu starten.'; renderStart(); document.getElementById('name').focus(); return; }
+      formError = '';
+      S = FP.newGame(document.getElementById('code').value, name);
+      resetPlan(); save(); go('month');
+    });
+    document.getElementById('name').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar(viewM) {
+    const now = viewM === undefined ? S.m : viewM;
+    const total = S.history.reduce((a, r) => a + r.cost.total, 0);
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.name)}</span><span class="small muted">Code ${esc(S.code)}</span>
+      <div class="months" aria-label="Monate">${M.map((n, i) => `<span class="${i === now ? 'now' : i < S.history.length ? 'done' : ''}">${n.slice(0, 3)}</span>`).join('')}</div>
+      <span class="score" title="Bisherige Gesamtkosten">${lakh(total)}</span></div></div>`;
+  }
+
+  function renderMonth() {
+    const m = S.m;
+    const max = Math.max(...FP.FORECAST);
+    const cols = FP.FORECAST.map((f, i) => {
+      const h = S.history[i];
+      const v = h ? h.demand : f;
+      return `<div class="col ${i === m ? 'now' : i < m ? 'past' : ''}"><span class="v">${int(v)}</span><div class="b" style="height:${(v / max) * 140}px" title="${M[i]}: ${h ? 'tatsächliche Bestellungen' : 'Prognose'} ${int(v)}"></div><span class="m">${M[i].slice(0, 3)}</span></div>`;
+    }).join('');
+    const p = FP.month(m, S.workers, S.stock, plan, FP.FORECAST[m]);
+    const hireCap = S.workers + FP.HIRE_MAX;
+    const endText = p.short > 0 ? `<span class="bad">${int(p.short)} Sets fehlen, wenn die Bestellungen der Prognose entsprechen</span>` : `<span class="good">${int(p.stock)} Sets bleiben auf Lager, wenn die Bestellungen der Prognose entsprechen</span>`;
+    const remaining = FP.FORECAST.slice(m + 1).reduce((a, b) => a + b, 0);
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        <h2 style="margin-top:22px">Plan für ${M[m]}</h2>
+        <div class="plan">
+          <section class="sheet">
+            <h3>Bestellungen: Prognose je Monat</h3>
+            <p class="small muted" style="margin:0">Vergangene Monate zeigen die tatsächlichen Bestellungen. Der goldene Balken ist dieser Monat.</p>
+            <div class="fcbars" aria-hidden="true">${cols}</div>
+            <div class="status">
+              <div><b>${S.workers}</b><span>Beschäftigte jetzt</span></div>
+              <div><b>${int(S.stock)}</b><span>Sets auf Lager</span></div>
+            </div>
+            <p class="small" style="margin-top:10px">Prognose für ${M[m]}: <b>${int(FP.FORECAST[m])}</b> Sets. Nach ${M[m]} kommen noch: <b>${int(remaining)}</b> Sets.</p>
+          </section>
+          <section class="sheet">
+            <div class="lever"><h3>Beschäftigte</h3><span class="small muted">Jede Person stellt ${int(FP.PER_WORKER)} Sets im Monat her. Sie können diesen Monat bis zu ${FP.HIRE_MAX} einstellen.</span>
+              <div class="ctrl" role="group" aria-label="Beschäftigte">
+                <button class="step" data-act="w" data-d="-5" ${plan.workers < 5 ? 'disabled' : ''}>&minus;5</button><button class="step" data-act="w" data-d="-1" ${plan.workers < 1 ? 'disabled' : ''}>&minus;1</button>
+                <output aria-live="polite">${plan.workers}</output>
+                <button class="step" data-act="w" data-d="1" ${plan.workers >= hireCap ? 'disabled' : ''}>+1</button><button class="step" data-act="w" data-d="5" ${plan.workers + 5 > hireCap ? 'disabled' : ''}>+5</button>
+                <span class="small">${p.hired ? `${p.hired} einstellen: ${inr(p.cost.hiring)}` : p.fired ? `${p.fired} entlassen: ${inr(p.cost.layoffs)}` : 'Keine Änderung'}</span>
+              </div></div>
+            <div class="lever"><h3>Überstunden</h3><span class="small muted">Zusätzlicher Ausstoß Ihrer eigenen Beschäftigten, für ${inr(FP.OT_COST)} je Set.</span>
+              <div class="ctrl"><div class="seg" role="group" aria-label="Überstunden">${FP.OT_LEVELS.map((o) => `<button type="button" data-act="ot" data-v="${o}" aria-pressed="${plan.ot === o}">${o === 0 ? 'Keine' : '+' + o + '%'}</button>`).join('')}</div></div></div>
+            <div class="lever"><h3>Fremdvergabe</h3><span class="small muted">Sets aus einem anderen Werk, für je ${inr(FP.SUB_COST)}, bis zu ${int(FP.SUB_MAX)}.</span>
+              <div class="ctrl" role="group" aria-label="Fremdvergabe">
+                <button class="step" data-act="sub" data-d="-1000" ${plan.sub < 1000 ? 'disabled' : ''}>&minus;1.000</button><button class="step" data-act="sub" data-d="-250" ${plan.sub < 250 ? 'disabled' : ''}>&minus;250</button>
+                <output aria-live="polite">${int(plan.sub)}</output>
+                <button class="step" data-act="sub" data-d="250" ${plan.sub + 250 > FP.SUB_MAX ? 'disabled' : ''}>+250</button><button class="step" data-act="sub" data-d="1000" ${plan.sub + 1000 > FP.SUB_MAX ? 'disabled' : ''}>+1.000</button>
+              </div></div>
+          </section>
+        </div>
+        <section class="sheet">
+          <h3>Wenn die Bestellungen im ${M[m]} der Prognose entsprechen</h3>
+          <div class="grid2">
+            <table class="small preview"><tbody>
+              <tr><td>Lager zu Beginn</td><td>${int(S.stock)}</td></tr>
+              <tr><td>In regulärer Arbeitszeit gefertigt</td><td>${int(p.regular)}</td></tr>
+              <tr><td>In Überstunden gefertigt</td><td>${int(p.overtime)}</td></tr>
+              <tr><td>Vom Fremdfertiger</td><td>${int(plan.sub)}</td></tr>
+              <tr><td>Prognostizierte Bestellungen</td><td>&minus;${int(FP.FORECAST[m])}</td></tr>
+              <tr class="total"><td>Monatsende</td><td>${endText}</td></tr>
+            </tbody></table>
+            <table class="small preview"><tbody>
+              ${COST_LABELS.filter(([k]) => p.cost[k] > 0).map(([k, l]) => `<tr><td>${l}</td><td>${inr(p.cost[k])}</td></tr>`).join('')}
+              <tr class="total"><td>Erwartete Kosten diesen Monat</td><td>${inr(p.cost.total)}</td></tr>
+            </tbody></table>
+          </div>
+        </section>
+      </div>
+      <div class="actionbar"><div class="wrap"><span class="muted small">Die tatsächlichen Bestellungen zeigen sich, nachdem Sie den Monat durchgespielt haben.</span><button class="btn primary" data-act="run">${M[m]} durchspielen</button></div></div>
+      <div class="wrap footer">${confirmRestart ? `<span style="color:var(--red)">Damit wird das Spiel auf diesem Gerät gelöscht.</span> <button class="btn small dark" data-act="restart-yes">Löschen und neu beginnen</button> <button class="btn small" data-act="restart-no">Weiterspielen</button>` : `<button class="btn ghost small" data-act="restart">Neu beginnen</button>`}</div>`;
+  }
+
+  function renderResult() {
+    const r = S.history[S.history.length - 1];
+    const diff = r.demand - FP.FORECAST[r.month];
+    app.innerHTML = bar(r.month) + `
+      <div class="wrap" style="padding-bottom:40px">
+        <h2 style="margin-top:22px">Ergebnisse ${M[r.month]}</h2>
+        <div class="kpis">
+          <div class="kpi"><div class="small muted">Tatsächliche Bestellungen</div><div class="bignum">${int(r.demand)}</div><div class="small">${diff === 0 ? 'Genau die Prognose' : (diff > 0 ? int(diff) + ' über' : int(-diff) + ' unter') + ' der Prognose'}</div></div>
+          <div class="kpi"><div class="small muted">Gefertigte Sets</div><div class="bignum">${int(r.made)}</div><div class="small">${r.workers} Beschäftigte${r.ot ? ', +' + r.ot + '% Überstunden' : ''}${r.sub ? ', ' + int(r.sub) + ' fremdvergeben' : ''}</div></div>
+          <div class="kpi ${r.short ? 'bad' : ''}"><div class="small muted">Verlorene Bestellungen</div><div class="bignum">${int(r.short)}</div></div>
+          <div class="kpi"><div class="small muted">Lager am Monatsende</div><div class="bignum">${int(r.stock)}</div></div>
+        </div>
+        <section class="sheet" style="max-width:560px"><h3>Kosten im ${M[r.month]}</h3>
+          <table class="small preview"><tbody>${COST_LABELS.filter(([k]) => r.cost[k] > 0).map(([k, l]) => `<tr><td>${l}</td><td>${inr(r.cost[k])}</td></tr>`).join('')}
+          <tr class="total"><td>Summe</td><td>${inr(r.cost.total)}</td></tr></tbody></table></section>
+        <div class="row" style="margin-top:20px"><button class="btn primary" data-act="${S.done ? 'final' : 'next'}">${S.done ? 'Zum Abschlussbericht' : M[S.m] + ' planen'}</button></div>
+      </div>`;
+    app.querySelector('[data-act=next],[data-act=final]')?.focus({ preventScroll: true });
+  }
+
+  function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = (raw || 1) / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function chart(hist) {
+    const W = 680, H = 280, L = 56, R = 20, T = 14, B = 30;
+    const n = hist.length;
+    const hi = Math.max(...hist.map((r) => Math.max(r.demand, r.made, r.stock))) * 1.1;
+    const x = (i) => L + ((i + 0.5) * (W - L - R)) / n;
+    const y = (v) => T + ((hi - v) * (H - T - B)) / hi;
+    const step = niceStep(hi / 5);
+    let g = '';
+    for (let v = 0; v <= hi; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1B2A41' : '#D5DAE1'}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${int(v)}</text>`;
+    const bw = ((W - L - R) / n) * 0.35;
+    const bars = hist.map((r, i) => `<rect x="${x(i) - bw / 2}" y="${y(r.stock)}" width="${bw}" height="${y(0) - y(r.stock)}" fill="#DCE7F4" stroke="#1F4E8C"><title>${M[i]}: Lager am Monatsende ${int(r.stock)}</title></rect>`).join('');
+    const line = (k, c, dash) => `<path d="${hist.map((r, i) => `${i ? 'L' : 'M'}${x(i)},${y(r[k])}`).join(' ')}" fill="none" stroke="${c}" stroke-width="3" ${dash ? `stroke-dasharray="${dash}"` : ''}/>` + hist.map((r, i) => `<circle cx="${x(i)}" cy="${y(r[k])}" r="4" fill="${c}"><title>${M[i]}: ${int(r[k])}</title></circle>`).join('');
+    const xl = hist.map((r, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#5B6676">${M[i].slice(0, 3)}</text>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bestellungen, Produktion und Lager je Monat">${g}${bars}${line('demand', '#1B2A41', '6 5')}${line('made', '#A93A34')}${xl}</svg>`;
+  }
+
+  function renderFinal() {
+    const you = FP.summary(S);
+    const bench = FP.STRATEGIES.map((st) => ({ st, run: FP.runStrategy(S.code, st) })).map((b) => Object.assign(b, { s: FP.summary(b.run) }));
+    const rank = [{ n: 'you', c: you.cost.total }].concat(bench.map((b) => ({ n: b.st.id, c: b.s.cost.total }))).sort((a, b) => a.c - b.c);
+    const pos = rank.findIndex((r) => r.n === 'you') + 1;
+    const rows = [{ name: S.name + ' (Sie)', desc: S.history.map((r) => r.workers).join(', ') + ' Beschäftigte', s: you }].concat(bench.map((b) => ({ name: b.st.name, desc: b.st.desc + ' Beschäftigte: ' + b.run.history.map((r) => r.workers).join(', ') + '.', s: b.s })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td class="r" style="white-space:nowrap"><b>${lakh(r.s.cost.total)}</b></td><td class="r">${inr(r.s.perSet)}</td><td class="r">${(r.s.fill * 100).toFixed(1).replace('.', ',')}%</td><td class="r">${r.s.changes}</td></tr>`).join('');
+    const costRows = COST_LABELS.map(([k, l]) => `<tr><td>${l}</td><td class="r">${inr(you.cost[k])}</td>${bench.map((b) => `<td class="r">${inr(b.s.cost[k])}</td>`).join('')}</tr>`).join('');
+    const result = `Season Planner | ${S.name} | Code ${S.code} | Gesamtkosten ${lakh(you.cost.total)} | Lieferquote ${(you.fill * 100).toFixed(1).replace('.', ',')}%`;
+    app.innerHTML = bar(M.length) + `
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 6px">
+        <p class="kicker">Abschlussbericht für ${esc(S.name)}, Spielcode ${esc(S.code)}</p>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${lakh(you.cost.total)}</h1>
+        <p style="font-size:20px;max-width:40em">Gesamtkosten der Saison von Januar bis Juni. Sie haben ${(you.fill * 100).toFixed(1).replace('.', ',')}% der Bestellungen geliefert, für ${inr(you.perSet)} je Set. Im Vergleich mit den drei Standardplänen unten belegen Sie Platz ${pos} von 4. Niedrigere Kosten sind besser.</p>
+      </section>
+      <section class="sheet chart"><h3>Bestellungen, Produktion und Lager</h3>
+        ${chart(S.history)}
+        <div class="legend"><span class="dash" style="--c:#1B2A41">Bestellungen</span><span style="--c:#A93A34">Gefertigte Sets</span><span class="blk" style="--c:#9DB8DA">Lager am Monatsende</span></div></section>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>Die Pläne im Vergleich</h3>
+        <table class="small"><thead><tr><th>Plan</th><th class="r">Gesamtkosten</th><th class="r">Kosten je verkauftem Set</th><th class="r">Lieferquote</th><th class="r">Eingestellt oder entlassen</th></tr></thead><tbody>${rows}</tbody></table>
+        <p class="tiny muted" style="margin-top:8px">Alle vier Pläne hatten dieselben tatsächlichen Bestellungen. Die drei Standardpläne wurden vorab aus der Prognose festgelegt.</p></section>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>Wohin das Geld ging</h3>
+        <table class="small"><thead><tr><th>Kosten</th><th class="r">Sie</th>${bench.map((b) => `<th class="r">${esc(b.st.name)}</th>`).join('')}</tr></thead><tbody>${costRows}
+        <tr><td><b>Total</b></td><td class="r"><b>${inr(you.cost.total)}</b></td>${bench.map((b) => `<td class="r"><b>${inr(b.s.cost.total)}</b></td>`).join('')}</tr></tbody></table></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Zur Diskussion</h3>
+          <ol class="questions small">
+            <li>War Ihr Plan eher gleichmäßig oder eher synchron zur Nachfrage? Warum haben Sie ihn so gewählt?</li>
+            <li>Früher Lageraufbau kostet Lagerhaltung. Einstellen für die Spitze kostet Einstellungen und Entlassungen. Was war für Sie teurer?</li>
+            <li>Wann waren Überstunden oder Fremdvergabe sinnvoll und wann zu teuer?</li>
+            <li>Entlassungen nach der Spitze sparen Löhne, schaden aber den Menschen und dem Ruf des Unternehmens. Wie würde das Ihren Plan in der Praxis ändern?</li>
+            <li>Die Bestellungen wichen bis zu 8% von der Prognose ab. Wie haben Sie sich dagegen abgesichert?</li>
+          </ol></section>
+        <section class="sheet"><h3>Ergebnis teilen</h3>
+          <p class="small">Kopieren Sie diese Zeile, um Ihr Ergebnis zu teilen.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Ergebnis kopieren</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Noch einmal spielen</button></section>
+      </div>
+      <p class="footer">Unternehmen, Kosten und Bestellungen in diesem Spiel sind für den Unterricht erfunden.</p>
+    </div>`;
+  }
+
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t) return;
+    const act = t.dataset.act;
+    if (act === 'newcode') { document.getElementById('code').value = FP.randomCode(); return; }
+    if (act === 'resume') { S = store.get(SAVE_KEY); resetPlan(); go('month'); return; }
+    const refocus = (sel) => { keepScroll(renderMonth); const el = app.querySelector(sel); if (el && !el.disabled) el.focus({ preventScroll: true }); };
+    if (act === 'w') { plan.workers = Math.max(0, Math.min(S.workers + FP.HIRE_MAX, plan.workers + Number(t.dataset.d))); refocus(`[data-act=w][data-d="${t.dataset.d}"]`); return; }
+    if (act === 'ot') { plan.ot = Number(t.dataset.v); refocus(`[data-act=ot][data-v="${t.dataset.v}"]`); return; }
+    if (act === 'sub') { plan.sub = Math.max(0, Math.min(FP.SUB_MAX, plan.sub + Number(t.dataset.d))); refocus(`[data-act=sub][data-d="${t.dataset.d}"]`); return; }
+    if (act === 'run') { S = FP.playMonth(S, plan); save(); go('result'); return; }
+    if (act === 'next') { resetPlan(); go('month'); return; }
+    if (act === 'final') { go('final'); return; }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderMonth); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderMonth); return; }
+    if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine');
+      const msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Kopiert.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Markieren Sie die Zeile oben und kopieren Sie sie.'; }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

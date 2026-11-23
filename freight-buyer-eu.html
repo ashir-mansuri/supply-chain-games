@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freight Buyer</title>
+<meta name="description" content="A solo decision game about buying container space: sign contracts with carriers or buy on the spot market while freight rates swing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar .wrap > a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
+.topbar .spacer { flex: 1; }
+.topbar .versions { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 0; }
+.switch { display: inline-flex; border: 1px solid #5A6B85; border-radius: 4px; overflow: hidden; }
+.switch a { padding: 4px 12px; font-size: 14px; font-weight: 600; color: #C5CDD8; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.switch a + a { border-left: 1px solid #5A6B85; }
+.switch a:hover { color: #fff; text-decoration: none; background: #2A3D5C; }
+.switch a[aria-current] { background: #fff; color: var(--ink); }
+@media (max-width: 560px) { .topbar .versions { margin-left: 0; width: 100%; padding-top: 0; } }
+.lane { display: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
+}
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], input[type=password], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
+}
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+.grid2 > * { min-width: 0; }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.steps8 { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 3px; flex: 1 1 340px; }
+.steps8 span { font-size: 12px; text-align: center; padding: 3px 0 4px; border-bottom: 5px solid var(--concrete-2); color: var(--muted); }
+.steps8 span.now { border-bottom-color: var(--yellow); color: var(--ink); font-weight: 600; }
+.steps8 span.calm { border-bottom-color: var(--green); }
+.steps8 span.tight { border-bottom-color: var(--yellow); }
+.steps8 span.crunch { border-bottom-color: var(--red); }
+.score { font-family: var(--display); font-weight: 600; font-size: 22px; }
+td.r, th.r { text-align: right; }
+td.r { white-space: nowrap; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+@media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
+.card-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); border-top: 6px solid var(--ink-2); }
+.card-head h3 { margin: 0; font-size: 26px; }
+.card.seabird .card-head { border-top-color: var(--blue); }
+.card.spot .card-head { border-top-color: var(--yellow); }
+.card-body { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.rate { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; }
+.rate small { font-family: var(--body); font-weight: 400; font-size: 14px; color: var(--muted); }
+.keeps { width: 100%; border-collapse: collapse; font-size: 14px; }
+.keeps td { padding: 4px 0; border-bottom: 1px solid var(--line); }
+.keeps td.r b { font-family: var(--display); font-size: 18px; }
+.stepper { display: flex; align-items: center; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+.stepper .btn { width: 56px; padding: 0; }
+.stepper input { width: 84px; text-align: center; font-family: var(--display); font-weight: 700; font-size: 26px; margin: 0; padding: 4px 6px; }
+.stepper .lbl { font-size: 14px; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.facts div { background: var(--concrete); border-radius: 4px; padding: 8px 10px; }
+.facts b { display: block; font-family: var(--display); font-size: 26px; line-height: 1.05; }
+.facts span { font-size: 13px; color: var(--muted); }
+.mstate { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.mstate.calm { background: var(--green-soft); color: var(--green); }
+.mstate.tight { background: var(--yellow-soft); color: #6B5200; }
+.mstate.crunch { background: var(--red-soft); color: var(--red); }
+.newsbox { list-style: none; padding: 0; margin: 0; }
+.newsbox li { padding: 10px 12px; border-left: 5px solid var(--blue); background: var(--blue-soft); margin-bottom: 8px; }
+.newsbox li.bad { border-left-color: var(--red); background: var(--red-soft); }
+.newsbox li.good { border-left-color: var(--green); background: var(--green-soft); }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 36px; line-height: 1; }
+.kpi.bad .bignum { color: var(--red); }
+.kpi.good .bignum { color: var(--green); }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
+.legend span::before { content: ''; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); vertical-align: middle; margin-right: 6px; }
+.legend span.dash::before { border-top-style: dashed; }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+tr.tot td { font-weight: 600; border-top: 2px solid var(--ink-2); }
+.neg { color: var(--red); font-weight: 600; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index-eu.html">Supply Chain Games</a><span class="here">Freight Buyer</span><div class="versions"><nav class="switch" aria-label="Version"><a href="freight-buyer.html">India</a><a aria-current="page">Europe</a></nav><nav class="switch" aria-label="Language"><a aria-current="page">English</a><a href="freight-buyer-de.html" lang="de" hreflang="de">Deutsch</a></nav></div></div></header>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Freight Buyer engine: booking container space on contract or on the spot market */
+const FB = (() => {
+  const ROUNDS = 8;
+  const ROUND_LABELS = ['Year 1, Jan–Mar', 'Year 1, Apr–Jun', 'Year 1, Jul–Sep', 'Year 1, Oct–Dec', 'Year 2, Jan–Mar', 'Year 2, Apr–Jun', 'Year 2, Jul–Sep', 'Year 2, Oct–Dec'];
+  const SHORT_LABELS = ['Y1 Q1', 'Y1 Q2', 'Y1 Q3', 'Y1 Q4', 'Y2 Q1', 'Y2 Q2', 'Y2 Q3', 'Y2 Q4'];
+  const BASE_RATE = 1.6;        // in thousand euros per 40-foot container in a normal market
+  const BASE_NEED = 40;         // containers a quarter
+  const SEASON = [0.9, 1.0, 1.15, 1.05];
+  const NEED_SWING = 0.15;      // actual need can be up to 15% above or below the forecast
+  const NO_SHOW = 0.5;          // share of the contract rate paid for a booked container you don't use
+  const DELAY_COST = 2;         // in thousand euros per container per quarter that it waits (storage, customer discounts)
+  const CARRIERS = [
+    { id: 'anchor', name: 'Anchor Line', kind: 'Large carrier', factor: 1.0,
+      about: 'One of the biggest lines. Higher rates, but it keeps its promises when ships are full.',
+      honour: { calm: 1, tight: 1, crunch: 0.85 } },
+    { id: 'seabird', name: 'Seabird Line', kind: 'Small carrier', factor: 0.93,
+      about: 'A smaller line with lower rates. When space gets scarce it gives your space to customers paying more.',
+      honour: { calm: 1, tight: 0.5, crunch: 0.3 } }
+  ];
+  const SPOT_SPACE = { calm: Infinity, tight: 0.4, crunch: 0.1 };   // share of the quarter's need you can find on the spot market
+
+  function hash(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  }
+  function rand(seed) {
+    let a = hash(seed);
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'PRACTICE';
+  const pick = (code, tag, arr) => arr[Math.floor(rand(code + '|' + tag) * arr.length)];
+  const r2 = (n) => Math.round(n * 100) / 100;
+
+  /* the market for this code: when the squeeze starts, and the spot rate each quarter */
+  function market(code) {
+    const c = normCode(code);
+    const start = pick(c, 'spike', [2, 3, 4]);
+    const level = pick(c, 'level', ['severe', 'severe', 'severe', 'severe', 'moderate', 'moderate', 'mild', 'mild']);
+    const severe = level === 'severe';
+    const shape = { severe: [1.7, 3.0, 2.3, 1.3], moderate: [1.3, 1.8, 1.5, 1.1], mild: [1.1, 1.3, 1.2, 1.0] }[level];
+    const spot = [];
+    for (let q = 0; q < ROUNDS; q++) {
+      const k = q - start;
+      const m = k < 0 ? 1 : k < shape.length ? shape[k] : severe ? 0.75 : 0.9;
+      spot.push(r2(BASE_RATE * m * (1 + (rand(c + '|s|' + q) * 2 - 1) * 0.08)));
+    }
+    const warned = rand(c + '|warn') < 0.7;
+    const falseAlarm = pick(c, 'false', [0, 1, null, null]);
+    return { start, level, severe, spot, warned, falseAlarm };
+  }
+  function state(rate) { const m = rate / BASE_RATE; return m >= 2.2 ? 'crunch' : m >= 1.5 ? 'tight' : 'calm'; }
+
+  function forecast(code, q) { return Math.round(BASE_NEED * SEASON[q % 4] * (1 + 0.05 * Math.floor(q / 4))); }
+  function need(code, q) { return Math.round(forecast(code, q) * (1 + (rand(normCode(code) + '|n|' + q) * 2 - 1) * NEED_SWING)); }
+
+  /* contract quotes follow the market slowly: half last quarter's spot rate, half the normal rate */
+  function quote(code, q) {
+    const mk = market(code);
+    const last = q === 0 ? BASE_RATE : mk.spot[q - 1];
+    const a = r2(0.5 * last + 0.5 * BASE_RATE * 1.2);
+    const out = {}; CARRIERS.forEach((c) => { out[c.id] = r2(a * c.factor); });
+    return out;
+  }
+  function lastSpot(code, q) { return q === 0 ? BASE_RATE : market(code).spot[q - 1]; }
+
+  /* the shipping news shown before deciding, for quarter q */
+  function news(code, q) {
+    const mk = market(code), out = [];
+    const prev = q > 0 ? state(mk.spot[q - 1]) : 'calm';
+    if (q === mk.start - 1 && mk.warned) out.push({ kind: 'bad', text: mk.severe ? 'Ports in Europe are badly congested and ships are filling up fast. Analysts expect rates to rise sharply.' : 'Ports in Europe are getting busier. Some analysts expect rates to rise.' });
+    if (mk.falseAlarm !== null && q === mk.falseAlarm && q !== mk.start - 1) out.push({ kind: 'bad', text: 'A few analysts warn that freight rates could rise soon. Others expect a calm quarter.' });
+    if (prev === 'crunch') out.push({ kind: 'bad', text: 'Ships are full. Carriers are cancelling bookings for anyone not paying top rates, and spot space is very hard to find.' });
+    else if (prev === 'tight') out.push({ kind: 'bad', text: 'Space is tight. Smaller carriers are cancelling some contract bookings, and spot space is limited.' });
+    if (q > mk.start + 3 && q <= mk.start + 5) out.push({ kind: 'good', text: 'New ships are arriving and demand has cooled. Spot rates have fallen below normal.' });
+    return out;
+  }
+
+  function newGame(code, name) {
+    return { code: normCode(code), name: String(name || '').slice(0, 24), round: 0, backlog: 0, history: [], done: false, total: 0 };
+  }
+
+  /* one quarter: book = { anchor: n, seabird: n } containers on contract */
+  function playRound(st, book) {
+    const s = JSON.parse(JSON.stringify(st));
+    const q = s.round, mk = market(s.code), rate = mk.spot[q], st8 = state(rate), qt = quote(s.code, q);
+    const fresh = need(s.code, q);
+    let left = fresh + s.backlog;
+    const lines = {};
+    let freight = 0, noShow = 0, rolledTotal = 0;
+    // cheaper contract space is used first
+    const order = CARRIERS.slice().sort((a, b) => qt[a.id] - qt[b.id]);
+    order.forEach((c) => {
+      const booked = Math.max(0, Math.round(book[c.id] || 0));
+      const kept = Math.round(booked * c.honour[st8]);
+      const used = Math.min(kept, left);
+      const unused = kept - used;
+      left -= used;
+      const cost = r2(used * qt[c.id]), fee = r2(unused * qt[c.id] * NO_SHOW);
+      freight += cost; noShow += fee; rolledTotal += booked - kept;
+      lines[c.id] = { booked, kept, rolled: booked - kept, used, unused, rate: qt[c.id], cost, fee };
+    });
+    const space = SPOT_SPACE[st8] === Infinity ? Infinity : Math.round(SPOT_SPACE[st8] * fresh);
+    const spotUsed = Math.min(left, space);
+    left -= spotUsed;
+    const spotCost = r2(spotUsed * rate);
+    freight += spotCost;
+    const delayed = left;
+    const delay = r2(delayed * DELAY_COST);
+    const shipped = fresh + s.backlog - delayed;
+    const cost = r2(freight + noShow + delay);
+    s.total = r2(s.total + cost);
+    s.history.push({ round: q, need: fresh, backlogIn: s.backlog, lines, spot: { rate, used: spotUsed, cost: spotCost, space }, market: st8, rolled: rolledTotal, delayed, delay, freight: r2(freight), noShow: r2(noShow), shipped, cost, total: s.total });
+    s.backlog = delayed;
+    s.round = q + 1;
+    if (s.round >= ROUNDS) {
+      // anything still waiting at the end ships at the last spot rate and pays one more delay charge
+      const endCost = r2(s.backlog * (rate + DELAY_COST));
+      s.endCost = endCost;
+      s.total = r2(s.total + endCost);
+      s.done = true;
+    }
+    return s;
+  }
+
+  function summary(s) {
+    const h = s.history;
+    const sum = (f) => r2(h.reduce((a, x) => a + f(x), 0));
+    const shipped = h.reduce((a, x) => a + x.shipped, 0) + (s.done ? s.backlog : 0);
+    const freight = sum((x) => x.freight) + (s.endCost ? r2(s.backlog * h[h.length - 1].spot.rate) : 0);
+    return {
+      total: s.total, freight: r2(freight), noShow: sum((x) => x.noShow), delay: r2(sum((x) => x.delay) + (s.endCost ? s.backlog * DELAY_COST : 0)),
+      shipped, perBox: shipped ? r2(s.total / shipped) : 0,
+      delayedBoxes: h.reduce((a, x) => a + x.delayed, 0), rolled: h.reduce((a, x) => a + x.rolled, 0),
+      spotShare: shipped ? Math.round((h.reduce((a, x) => a + x.spot.used, 0) / shipped) * 100) : 0
+    };
+  }
+
+  const STRATEGIES = [
+    { id: 'spot', name: 'Spot only', desc: 'Signs no contracts and books every container at the going spot rate.',
+      book: () => ({}) },
+    { id: 'cheap', name: 'Cheapest contract', desc: 'Books the whole forecast with Seabird Line, the cheaper carrier.',
+      book: (code, q) => ({ seabird: forecast(code, q) }) },
+    { id: 'base', name: 'Reliable base, spot top-up', desc: 'Books about 80% of the forecast with Anchor Line and buys the rest on the spot market.',
+      book: (code, q) => ({ anchor: Math.round(forecast(code, q) * 0.8) }) }
+  ];
+  function runStrategy(code, st) {
+    let s = newGame(code, st.name);
+    for (let q = 0; q < ROUNDS; q++) s = playRound(s, st.book(s.code, q));
+    return s;
+  }
+  function randomCode() {
+    const w = ['HARBOUR', 'BERTH', 'CONTAINER', 'COMPASS', 'MERIDIAN', 'TIDE', 'ANCHOR', 'CARGO'];
+    return w[Math.floor(Math.random() * w.length)] + (10 + Math.floor(Math.random() * 90));
+  }
+  return { ROUNDS, ROUND_LABELS, SHORT_LABELS, BASE_RATE, BASE_NEED, NEED_SWING, NO_SHOW, DELAY_COST, CARRIERS, SPOT_SPACE, market, state, forecast, need, quote, lastSpot, news, newGame, playRound, summary, STRATEGIES, runStrategy, normCode, randomCode };
+})();
+if (typeof module !== 'undefined') module.exports = FB;
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'fb-game-v1-eu';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const lk = (n) => '€' + Math.round(n * 1000).toLocaleString('en-IE');
+  const lk0 = (n) => '€' + Math.round(n * 1000).toLocaleString('en-IE');
+  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const L = FB.ROUND_LABELS, SL = FB.SHORT_LABELS;
+  const STATE_NAME = { calm: 'Normal', tight: 'Tight', crunch: 'Ships full' };
+  const MAX_BOOK = 90;
+
+  let view = 'start', S = null, book = { anchor: 0, seabird: 0 }, formError = '', confirmRestart = false;
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+  function save() { if (S) store.set(SAVE_KEY, Object.assign({}, S, { lastBook: book })); }
+
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'round') return renderRound();
+    if (view === 'result') return renderResult();
+    if (view === 'final') return renderFinal();
+  }
+
+  function honourText(c) {
+    return `<table class="keeps"><tbody>
+      <tr><td>Normal market</td><td class="r"><b>${Math.round(c.honour.calm * 100)}%</b></td></tr>
+      <tr><td>Tight market</td><td class="r"><b>${Math.round(c.honour.tight * 100)}%</b></td></tr>
+      <tr><td>Ships full</td><td class="r"><b>${Math.round(c.honour.crunch * 100)}%</b></td></tr></tbody></table>`;
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && !saved.done && saved.history && saved.history.length > 0;
+    app.innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <p class="kicker">A solo decision game about buying freight, 2 years</p>
+          <h1>Freight Buyer</h1>
+          <p style="font-size:20px;max-width:34em">You buy shipping for Nordhaus Home, a homeware importer in Hamburg. Every quarter about ${FB.BASE_NEED} containers of towels and bed linen come from Shanghai to Hamburg. Before each quarter you book space on contract with two shipping lines; anything left over goes on the spot market at whatever the rate is then. Freight rates will swing. Ship everything at the lowest total cost.</p>
+        </div>
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Start a game</h3>
+          <label for="name">Your name</label>
+          <input type="text" id="name" maxlength="24" autocomplete="off" placeholder="For example, Lena">
+          <div style="height:12px"></div>
+          <label for="code">Game code</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(FB.randomCode())}" style="text-transform:uppercase">
+            <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">New code</button>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">Players with the same code face the same orders and freight market, so results can be compared.</p>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start the game</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">Continue ${esc(saved.name)} (${esc(L[saved.round])})</button>` : ''}
+        </form>
+      </section>
+      <div class="grid2" style="margin-top:12px">
+        <section class="sheet tablewrap"><h3>Two shipping lines</h3>
+          <table class="small"><thead><tr><th>Line</th><th class="r">Contract rate</th><th class="r">Share of your booking it keeps</th></tr></thead>
+          <tbody>${FB.CARRIERS.map((c) => `<tr><td><b>${c.name}</b><br><span class="tiny muted">${esc(c.about)}</span></td><td class="r">${c.factor === 1 ? 'Standard' : Math.round((1 - c.factor) * 100) + '% lower'}</td><td class="r">Normal ${Math.round(c.honour.calm * 100)}%<br>Tight ${Math.round(c.honour.tight * 100)}%<br>Ships full ${Math.round(c.honour.crunch * 100)}%</td></tr>`).join('')}</tbody></table></section>
+        <section class="sheet"><h3>How it works</h3>
+          <ul class="small" style="margin:0;padding-left:1.2em">
+            <li>Each quarter you see a forecast of how many containers you&rsquo;ll need. The real number can be up to ${Math.round(FB.NEED_SWING * 100)}% higher or lower.</li>
+            <li>Contract rates are fixed before the quarter. They follow the market slowly. The spot rate is the going price during the quarter, and you only learn it afterwards.</li>
+            <li>Your booked contract space is used first. If you book more than you need, you pay ${Math.round(FB.NO_SHOW * 100)}% of the rate for each empty slot.</li>
+            <li>Containers not covered go on the spot market. When ships are full, spot space is scarce: containers that can&rsquo;t ship wait for next quarter and cost ${lk(FB.DELAY_COST)} each for every quarter they wait.</li>
+            <li>Your score is the <b>total cost</b> over eight quarters. Lower is better.</li>
+          </ul></section>
+      </div>
+      <p class="footer">The company, shipping lines, rates and events in this game are made up for teaching.</p>
+    </div>`;
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) { formError = 'Enter your name to start.'; renderStart(); document.getElementById('name').focus(); return; }
+      formError = '';
+      S = FB.newGame(document.getElementById('code').value, name);
+      book = { anchor: 0, seabird: 0 };
+      save(); go('round');
+    });
+    document.getElementById('name').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar(now) {
+    const n = now === undefined ? S.round : now;
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.name)}</span><span class="small muted">Code ${esc(S.code)}</span>
+      <div class="steps8" aria-label="Quarters">${SL.map((l, i) => { const h = S.history[i]; return `<span class="${i === n ? 'now' : h ? h.market : ''}" title="${esc(L[i])}${h ? ': ' + STATE_NAME[h.market] : ''}">${l}</span>`; }).join('')}</div>
+      <span class="score" title="Total cost so far">${lk0(S.total)}</span></div></div>`;
+  }
+
+  function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = (raw || 1) / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function lineChart(series, labels, opts) {
+    const W = opts.w || 480, H = opts.h || 300, Lm = 58, R = opts.r || 100, T = 14, B = 30;
+    const all = series.flatMap((s) => s.values.filter((v) => v !== null));
+    const lo = 0, hi = Math.max(1, ...all) * 1.1;
+    const n = labels.length;
+    const x = (i) => Lm + (i * (W - Lm - R)) / Math.max(1, n - 1);
+    const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
+    const step = niceStep((hi - lo) / 5);
+    let g = '';
+    for (let v = 0; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1B2A41' : '#D5DAE1'}"/><text x="${Lm - 6}" y="${y(v) + 5}" text-anchor="end" font-size="14" fill="#5B6676">${opts.fmt ? opts.fmt(v) : v}</text>`;
+    const xl = labels.map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="13" fill="#5B6676">${l.replace('Y1 ', '').replace('Y2 ', '')}</text>`).join('');
+    const ends = [];
+    const lines = series.map((s) => {
+      const pts = s.values.map((v, i) => (v === null ? null : [x(i), y(v)])).filter(Boolean);
+      if (!pts.length) return '';
+      const lastPt = pts[pts.length - 1];
+      ends.push({ y: lastPt[1], x: lastPt[0], name: s.short, c: s.color });
+      return `<path d="${pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.5}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>` + (s.dots ? pts.map((p) => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${s.color}"/>`).join('') : '');
+    }).join('');
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+    const yr = n === 8 ? `<line x1="${(x(3) + x(4)) / 2}" x2="${(x(3) + x(4)) / 2}" y1="${T}" y2="${H - B}" stroke="#D5DAE1" stroke-dasharray="3 4"/><text x="${x(0)}" y="${T + 12}" font-size="13" fill="#5B6676">Year 1</text><text x="${x(4)}" y="${T + 12}" font-size="13" fill="#5B6676">Year 2</text>` : '';
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label)}">${g}${yr}${xl}${lines}${ends.map((e) => `<text x="${e.x + 8}" y="${e.y + 5}" font-size="15" font-weight="600" fill="${e.c}">${esc(e.name)}</text>`).join('')}</svg>`;
+  }
+
+  function rateChart(upTo) {
+    const mk = FB.market(S.code);
+    const n = FB.ROUNDS;
+    const spot = Array.from({ length: n }, (_, i) => (i < upTo ? mk.spot[i] : null));
+    const anchor = Array.from({ length: n }, (_, i) => (i <= Math.min(upTo, n - 1) ? FB.quote(S.code, i).anchor : null));
+    const seabird = Array.from({ length: n }, (_, i) => (i <= Math.min(upTo, n - 1) ? FB.quote(S.code, i).seabird : null));
+    return lineChart([
+      { short: 'Spot', values: spot, color: '#A93A34', width: 3, dots: true },
+      { short: 'Anchor', values: anchor, color: '#3A4A63', dash: '7 5' },
+      { short: 'Seabird', values: seabird, color: '#1F4E8C', dash: '2 5' }
+    ], SL, { label: 'Spot rate and contract rates, in euros per container', fmt: (v) => Math.round(v * 1000).toLocaleString('en-IE'), r: 76 });
+  }
+
+  function renderRound() {
+    const q = S.round;
+    const fc = FB.forecast(S.code, q), qt = FB.quote(S.code, q), news = FB.news(S.code, q);
+    const last = S.history[S.history.length - 1];
+    const lastSpot = FB.lastSpot(S.code, q);
+    const lastState = last ? last.market : 'calm';
+    const totalBooked = (book.anchor || 0) + (book.seabird || 0);
+    const needNow = fc + S.backlog;
+    const lo = Math.round(fc * (1 - FB.NEED_SWING)) + S.backlog, hi = Math.round(fc * (1 + FB.NEED_SWING)) + S.backlog;
+    const cards = FB.CARRIERS.map((c) => `
+      <section class="card ${c.id}" aria-labelledby="ch-${c.id}">
+        <div class="card-head"><h3 id="ch-${c.id}">${c.name}</h3><span class="small muted">${c.kind}. ${esc(c.about)}</span></div>
+        <div class="card-body">
+          <div class="rate">${lk(qt[c.id])} <small>per container, fixed for this quarter</small></div>
+          <div><div class="small muted" style="margin-bottom:2px">Share of your booking it keeps</div>${honourText(c)}</div>
+          <div class="stepper">
+            <button class="btn" data-act="bk" data-c="${c.id}" data-d="-5" ${book[c.id] <= 0 ? 'disabled' : ''} aria-label="5 fewer containers with ${esc(c.name)}">&minus;5</button>
+            <input type="number" inputmode="numeric" min="0" max="${MAX_BOOK}" step="1" id="in-${c.id}" data-c="${c.id}" value="${book[c.id]}" aria-label="Containers to book with ${esc(c.name)}">
+            <button class="btn" data-act="bk" data-c="${c.id}" data-d="5" ${book[c.id] >= MAX_BOOK ? 'disabled' : ''} aria-label="5 more containers with ${esc(c.name)}">+5</button>
+            <span class="lbl">containers<br><span class="muted">${lk0(book[c.id] * qt[c.id])} if all used</span></span>
+          </div>
+        </div>
+      </section>`).join('');
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        <h2 style="margin-top:22px">${esc(L[q])}</h2>
+        <p class="muted">Quarter ${q + 1} of ${FB.ROUNDS}. Book contract space now. The spot rate and your real needs are revealed after you book.</p>
+        <div class="grid2" style="margin-top:16px">
+          <section class="sheet"><h3>This quarter</h3>
+            <div class="facts">
+              <div><b>${fc}</b><span>Containers forecast (${Math.round(fc * (1 - FB.NEED_SWING))} to ${Math.round(fc * (1 + FB.NEED_SWING))})</span></div>
+              <div><b class="${S.backlog ? 'neg' : ''}">${S.backlog}</b><span>Waiting from last quarter</span></div>
+              <div><b>${lk(lastSpot)}</b><span>Spot rate last quarter ${q ? `<span class="mstate ${lastState}">${STATE_NAME[lastState]}</span>` : ''}</span></div>
+            </div>
+            ${news.length ? `<h3 style="margin-top:16px">Shipping news</h3><ul class="newsbox">${news.map((n) => `<li class="${n.kind}">${esc(n.text)}</li>`).join('')}</ul>` : '<p class="small muted" style="margin-top:14px">No shipping news this quarter.</p>'}
+          </section>
+          <section class="sheet chart"><h3>Rates so far (€ per container)</h3>
+            ${rateChart(q)}
+            <p class="tiny muted">Red: the spot rate each quarter. Dashed: the contract rates each line offered.</p></section>
+        </div>
+        <div class="cards">${cards}
+          <section class="card spot" aria-labelledby="ch-spot">
+            <div class="card-head"><h3 id="ch-spot">Spot market</h3><span class="small muted">Book later, at the going rate.</span></div>
+            <div class="card-body">
+              <p class="small" style="margin:0">Any container not covered by your contracts goes on the spot market at this quarter&rsquo;s rate. You don&rsquo;t know that rate yet: last quarter it was ${lk(lastSpot)}.</p>
+              <table class="keeps"><tbody>
+                <tr><td>Normal market</td><td class="r"><b>Plenty of space</b></td></tr>
+                <tr><td>Tight market</td><td class="r"><b>${Math.round(FB.SPOT_SPACE.tight * 100)}% of your need</b></td></tr>
+                <tr><td>Ships full</td><td class="r"><b>${Math.round(FB.SPOT_SPACE.crunch * 100)}% of your need</b></td></tr></tbody></table>
+              <p class="tiny muted" style="margin:0">Containers that can&rsquo;t ship wait for next quarter, costing ${lk(FB.DELAY_COST)} each per quarter.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+      <div class="actionbar"><div class="wrap">
+        <div><b>Booked:</b> ${plural(totalBooked, 'container')} on contract. <b>Likely need:</b> ${lo}&ndash;${hi}${S.backlog ? ` (including ${S.backlog} waiting)` : ''}. ${totalBooked < needNow ? `About ${needNow - totalBooked} would go on spot.` : totalBooked > hi ? '<span style="color:#FFB4AA">You may pay for empty slots.</span>' : ''}</div>
+        <button class="btn primary" data-act="run">Book and ship ${esc(L[q])}</button>
+      </div></div>
+      <div class="wrap footer">${confirmRestart ? `<span style="color:var(--red)">This deletes the game on this device.</span> <button class="btn small dark" data-act="restart-yes">Delete and start over</button> <button class="btn small" data-act="restart-no">Keep playing</button>` : `<button class="btn ghost small" data-act="restart">Start over</button>`}</div>`;
+  }
+
+  function renderResult() {
+    const h = S.history[S.history.length - 1];
+    const perBox = h.shipped ? h.cost / h.shipped : 0;
+    const rows = FB.CARRIERS.map((c) => {
+      const x = h.lines[c.id];
+      if (!x.booked) return `<tr><td><b>${c.name}</b></td><td class="r">0</td><td class="r">&ndash;</td><td class="r">&ndash;</td><td class="r">&ndash;</td><td class="r">&ndash;</td><td class="r">&ndash;</td></tr>`;
+      return `<tr><td><b>${c.name}</b><br><span class="tiny muted">${lk(x.rate)} each</span></td><td class="r">${x.booked}</td><td class="r ${x.rolled ? 'neg' : ''}">${x.rolled || '&ndash;'}</td><td class="r">${x.used}</td><td class="r">${x.unused || '&ndash;'}</td><td class="r">${lk(x.cost)}</td><td class="r">${x.fee ? lk(x.fee) : '&ndash;'}</td></tr>`;
+    }).join('');
+    const spaceNote = h.spot.space === null || h.spot.space === Infinity || h.spot.space === undefined ? '' : ` (space for only ${h.spot.space})`;
+    app.innerHTML = bar(h.round) + `
+      <div class="wrap" style="padding-bottom:40px">
+        <h2 style="margin-top:22px">${esc(L[h.round])}: results</h2>
+        <section class="sheet"><h3>The market this quarter</h3>
+          <p style="margin:0;font-size:18px">Spot rate: <b>${lk(h.spot.rate)}</b> per container. <span class="mstate ${h.market}">${STATE_NAME[h.market]}</span></p>
+          <p class="small" style="margin:6px 0 0">You needed <b>${h.need}</b> container${h.need === 1 ? '' : 's'} this quarter${h.backlogIn ? `, plus <b>${h.backlogIn}</b> waiting from last quarter` : ''}.${h.rolled ? ` <span class="neg">Carriers cancelled ${plural(h.rolled, 'container')} of your booking because ships were full.</span>` : ''}</p>
+        </section>
+        <div class="kpis">
+          <div class="kpi"><div class="small muted">Cost this quarter</div><div class="bignum">${lk0(h.cost)}</div></div>
+          <div class="kpi"><div class="small muted">Cost per container shipped</div><div class="bignum">${perBox ? lk(perBox) : '&ndash;'}</div></div>
+          <div class="kpi ${h.delayed ? 'bad' : 'good'}"><div class="small muted">Containers left waiting</div><div class="bignum">${h.delayed}</div></div>
+          <div class="kpi"><div class="small muted">Total cost so far</div><div class="bignum">${lk0(h.total)}</div></div>
+        </div>
+        <section class="sheet tablewrap"><h3>How your containers shipped</h3>
+          <table class="small"><thead><tr><th>Source</th><th class="r">Booked</th><th class="r">Cancelled by line</th><th class="r">Used</th><th class="r">Empty slots</th><th class="r">Freight</th><th class="r">Fees and delay costs</th></tr></thead>
+          <tbody>${rows}
+            <tr><td><b>Spot market</b><br><span class="tiny muted">${lk(h.spot.rate)} each${esc(spaceNote)}</span></td><td class="r">&ndash;</td><td class="r">&ndash;</td><td class="r">${h.spot.used}</td><td class="r">&ndash;</td><td class="r">${lk(h.spot.cost)}</td><td class="r">&ndash;</td></tr>
+            <tr><td><b>Left waiting</b><br><span class="tiny muted">${lk(FB.DELAY_COST)} each</span></td><td class="r">&ndash;</td><td class="r">&ndash;</td><td class="r ${h.delayed ? 'neg' : ''}">${h.delayed}</td><td class="r">&ndash;</td><td class="r">&ndash;</td><td class="r ${h.delay ? 'neg' : ''}">${h.delay ? lk(h.delay) + ' delay cost' : '&ndash;'}</td></tr>
+            <tr class="tot"><td>Total</td><td></td><td></td><td class="r">${h.shipped} shipped</td><td></td><td class="r">${lk(h.freight)}</td><td class="r">${lk(h.noShow + h.delay)}</td></tr>
+          </tbody></table></section>
+        ${S.done && S.endCost ? `<p class="neg" style="margin-top:12px">${plural(S.backlog, 'container')} still waiting at the end shipped at the last spot rate plus one more delay charge: ${lk(S.endCost)}.</p>` : ''}
+        <div class="row" style="margin-top:20px"><button class="btn primary" data-act="${S.done ? 'final' : 'next'}">${S.done ? 'See the final report' : 'Plan ' + esc(L[S.round])}</button></div>
+      </div>`;
+    app.querySelector('[data-act=next],[data-act=final]')?.focus({ preventScroll: true });
+  }
+
+  function renderFinal() {
+    const you = FB.summary(S);
+    const bench = FB.STRATEGIES.map((st) => { const run = FB.runStrategy(S.code, st); return { st, run, s: FB.summary(run) }; });
+    const rank = [{ n: 'you', t: you.total }].concat(bench.map((b) => ({ n: b.st.id, t: b.s.total }))).sort((a, b) => a.t - b.t);
+    const pos = rank.findIndex((r) => r.n === 'you') + 1;
+    const cum = (st) => { let a = 0; return st.history.map((h) => (a += h.cost)); };
+    const colors = { spot: '#A93A34', cheap: '#2C6B4C', base: '#3A4A63' };
+    const dashes = { spot: '7 5', cheap: '2 5', base: '12 4 2 4' };
+    const shorts = { spot: 'Spot only', cheap: 'Cheapest', base: 'Reliable base' };
+    const series = [{ name: S.name, short: 'You', values: cum(S), color: '#1F4E8C', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cum(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
+    const mk = FB.market(S.code);
+    const qRows = S.history.map((h) => `<tr><td style="white-space:nowrap">${esc(SL[h.round])}</td><td><span class="mstate ${h.market}">${STATE_NAME[h.market]}</span></td><td class="r">${lk(h.spot.rate)}</td><td class="r">${h.lines.anchor.booked} / ${h.lines.seabird.booked}</td><td class="r">${h.spot.used}</td><td class="r ${h.delayed ? 'neg' : ''}">${h.delayed || '&ndash;'}</td><td class="r">${lk0(h.cost)}</td></tr>`).join('');
+    const benchRows = [{ name: S.name + ' (you)', desc: 'Your bookings', s: you }].concat(bench.map((b) => ({ name: b.st.name, desc: b.st.desc, s: b.s })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td class="r"><b>${lk0(r.s.total)}</b></td><td class="r">${lk(r.s.perBox)}</td><td class="r">${lk0(r.s.noShow)}</td><td class="r">${lk0(r.s.delay)}</td><td class="r">${r.s.delayedBoxes}</td></tr>`).join('');
+    const levelText = { severe: 'a severe squeeze, when ships filled up and rates tripled', moderate: 'a moderate squeeze, when space got tight', mild: 'only a mild rise in rates' }[mk.level];
+    const result = `Freight Buyer | ${S.name} | code ${S.code} | total cost ${lk0(you.total)} | ${lk(you.perBox)} per container`;
+    app.innerHTML = bar(FB.ROUNDS) + `
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 6px">
+        <p class="kicker">Final report for ${esc(S.name)}, game code ${esc(S.code)}</p>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${lk0(you.total)}</h1>
+        <p style="font-size:20px;max-width:40em">Total cost of shipping ${you.shipped} containers over two years: ${lk(you.perBox)} per container, including empty-slot fees and delay costs. This game had ${levelText}. Against the three standard strategies below, you placed ${pos} of 4 (lowest cost is best).</p>
+      </section>
+      <div class="grid2">
+        <section class="sheet chart"><h3>Spot and contract rates</h3>${rateChart(FB.ROUNDS)}<p class="tiny muted">Euros per container.</p></section>
+        <section class="sheet chart"><h3>Total cost so far (€ thousand)</h3>
+          ${lineChart(series, SL, { label: 'Total cost so far, in thousands of euros', fmt: (v) => Math.round(v).toLocaleString('en-IE'), r: 112 })}
+          <div class="legend">${series.map((s) => `<span class="${s.dash ? 'dash' : ''}" style="--c:${s.color}">${esc(s.name)}</span>`).join('')}</div></section>
+      </div>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>How the strategies compare</h3>
+        <table class="small"><thead><tr><th>Strategy</th><th class="r">Total cost</th><th class="r">Per container</th><th class="r">Empty-slot fees</th><th class="r">Delay costs</th><th class="r">Containers delayed</th></tr></thead><tbody>${benchRows}</tbody></table>
+        <p class="tiny muted" style="margin-top:8px">Every strategy faced the same orders and the same freight market.</p></section>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>Your quarters</h3>
+        <table class="small"><thead><tr><th>Quarter</th><th>Market</th><th class="r">Spot rate</th><th class="r">Booked Anchor / Seabird</th><th class="r">On spot</th><th class="r">Left waiting</th><th class="r">Cost</th></tr></thead><tbody>${qRows}</tbody></table></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Talk it over</h3>
+          <ol class="questions small">
+            <li>When was the spot market the cheapest place to buy, and when was it the most expensive?</li>
+            <li>Seabird Line was cheaper. What did that saving cost you when ships were full?</li>
+            <li>How much of your forecast did you book on contract? Why not 100%?</li>
+            <li>Did the shipping news help you? What did you do when analysts warned of a rise?</li>
+            <li>Real shippers sign contracts for a year at a time. What would that change in this game?</li>
+          </ol></section>
+        <section class="sheet"><h3>Share your result</h3>
+          <p class="small">Copy this line to share your result.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Play again</button></section>
+      </div>
+      <p class="footer">The company, shipping lines, rates and events in this game are made up for teaching.</p>
+    </div>`;
+  }
+
+  function setBook(id, v) {
+    const n = Math.max(0, Math.min(MAX_BOOK, Math.round(Number(v) || 0)));
+    book[id] = n;
+  }
+
+  app.addEventListener('change', (e) => {
+    const t = e.target;
+    if (view !== 'round' || !t.id || !t.id.startsWith('in-')) return;
+    setBook(t.dataset.c, t.value);
+    keepScroll(renderRound);
+  });
+  app.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (view === 'round' && e.key === 'Enter' && t.id && t.id.startsWith('in-')) { e.preventDefault(); t.blur(); }
+  });
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t || t.disabled) return;
+    const act = t.dataset.act;
+    if (act === 'newcode') { document.getElementById('code').value = FB.randomCode(); return; }
+    if (act === 'resume') { S = store.get(SAVE_KEY); book = S.lastBook || { anchor: 0, seabird: 0 }; delete S.lastBook; go('round'); return; }
+    if (act === 'bk') {
+      const id = t.dataset.c, d = Number(t.dataset.d);
+      const inp = document.getElementById('in-' + id);
+      if (inp) setBook(id, inp.value);
+      setBook(id, book[id] + d);
+      keepScroll(renderRound);
+      const again = app.querySelector(`[data-act=bk][data-c="${id}"][data-d="${d}"]`);
+      (again && !again.disabled ? again : document.getElementById('in-' + id))?.focus({ preventScroll: true });
+      return;
+    }
+    if (act === 'run') {
+      FB.CARRIERS.forEach((c) => { const inp = document.getElementById('in-' + c.id); if (inp) setBook(c.id, inp.value); });
+      S = FB.playRound(S, book); save(); go('result'); return;
+    }
+    if (act === 'next') { go('round'); return; }
+    if (act === 'final') { go('final'); return; }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderRound); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderRound); return; }
+    if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
