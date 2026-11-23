@@ -4,7 +4,7 @@ Nine free games for supply chain and operations management. There are three team
 
 **Play:** https://ashir-mansuri.github.io/supply-chain-games/
 
-Created by Ashir Mansuri.
+Created by Ashir Mansuri. Free to use and adapt with credit, under the [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) licence.
 
 | Game | Play time | What you learn |
 | --- | --- | --- |
@@ -37,6 +37,7 @@ Created by Ashir Mansuri.
     - [Factory Footprint](#factory-footprint-solo)
     - [Freight Buyer](#freight-buyer-solo)
 - [Files](#files)
+- [Licence](#licence)
 
 ---
 
@@ -427,3 +428,16 @@ Every page comes in three files: the India version (`name.html`), the Europe ver
 | `go-global.html` | Go Global solo game |
 | `factory-footprint.html` | Factory Footprint solo game |
 | `freight-buyer.html` | Freight Buyer solo game |
+| `LICENSE` | The licence: free to use and adapt with credit (CC BY 4.0) |
+
+---
+
+## Licence
+
+Supply Chain Games by Ashir Mansuri is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+
+Anyone may use, share and adapt the games, including in courses and workshops, as long as they credit the creator. To credit the games, write:
+
+> "Supply Chain Games" by Ashir Mansuri, https://ashir-mansuri.github.io/supply-chain-games/, licensed under CC BY 4.0.
+
+If you change a game, say so in the credit, for example "adapted from".
