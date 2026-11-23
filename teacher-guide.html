@@ -94,7 +94,8 @@ td.r, th.r { text-align: right; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
 .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 36px; padding: 30px 0 60px; }
-@media (max-width: 880px) { .layout { grid-template-columns: 1fr; } .toc { position: static !important; } }
+@media (max-width: 880px) { .layout table.small { display: block; overflow-x: auto; } }
+@media (max-width: 880px) { .layout { grid-template-columns: minmax(0, 1fr); } .toc { position: static !important; } }
 .toc { position: sticky; top: 16px; align-self: start; font-size: 15px; }
 .toc ol { list-style: none; padding: 0; margin: 0; border-left: 3px solid var(--ink); }
 .toc li { padding: 4px 0 4px 12px; }
@@ -152,15 +153,17 @@ code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4
       <li><a href="#season-planner">Season Planner (solo)</a></li>
       <li><a href="#export-desk">Export Desk (solo)</a></li>
       <li><a href="#go-global">Go Global (solo)</a></li>
+      <li><a href="#factory-footprint">Factory Footprint (solo)</a></li>
+      <li><a href="#freight-buyer">Freight Buyer (solo)</a></li>
     </ol>
   </nav>
   <article>
     <h1>Teacher&rsquo;s guide</h1>
-    <p style="font-size:20px">Three team games and four solo games. Each team game is built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
+    <p style="font-size:20px">Three team games and six solo games. Each team game is built to fill one 60-minute class: about half the time playing and the rest discussing what happened. Students learn more from the debrief than from the game itself, so protect that time.</p>
 
     <section id="running">
       <h2>Running a session</h2>
-      <p><b>Solo games.</b> Boundary Bakes, Season Planner, Export Desk and Go Global are played alone, in class or as homework. There is no class code or login: students type their name and the game code you give them, play, and use <b>Copy my result</b> on the final report to send you a one-line result. Everyone with the same game code faces the same demand and the same events, so results can be compared.</p>
+      <p><b>Solo games.</b> Boundary Bakes, Season Planner, Export Desk, Go Global, Factory Footprint and Freight Buyer are played alone, in class or as homework. There is no class code or login: students type their name and the game code you give them, play, and use <b>Copy my result</b> on the final report to send you a one-line result. Everyone with the same game code faces the same demand and the same events, so results can be compared.</p>
       <p>Each team game can be played in two ways:</p>
       <ul>
         <li><b>Online team play.</b> Every student uses their own phone or laptop. Team members log in with the same team name and PIN, and their screens stay in sync. In Supplier Showdown each member manages some of the four parts, and orders go out only when every member taps Ready. In Warehouse Rush members take turns as the picker while the others help plan the route. In Coffee Chain each member runs one stage of the supply chain and sees only that stage. Your <a href="teacher.html">teacher dashboard</a> shows every team&rsquo;s progress and score live. This works in a classroom and in an online class on Google Meet or Zoom (put teams in breakout rooms so they can talk). It needs the <a href="#setup">one-time setup</a> below.</li>
@@ -578,6 +581,89 @@ code { background: var(--sheet); border: 1px solid var(--line); border-radius: 4
       <ol>
         <li>Rank the five markets for a real Indian brand of the student&rsquo;s choice using size, growth, distance and risk.</li>
         <li>Write a one-page entry plan for one market: which mode first, what would make you commit more, and when.</li>
+      </ol>
+    </section>
+
+    <section id="factory-footprint">
+      <h2 class="game">Factory Footprint (solo)</h2>
+      <p>Students run operations at Kiran Ceramics, a tile maker in Morbi with six plants, selling in India, the Gulf, Europe and the USA. Over six years they decide where to build or close plants: in Morbi, Ras Al Khaimah (UAE), Poland or Monterrey (Mexico). Each year the plants automatically send their tiles to the markets where they earn the most. World news arrives after each year&rsquo;s decisions.</p>
+      <h3>Learning outcomes</h3>
+      <ol>
+        <li>Calculate landed cost: cost to make, plus freight, plus duty, plus other fees.</li>
+        <li>Explain why the cheapest place to make something is not always the cheapest place to supply a market from.</li>
+        <li>Show how tariffs, carbon border fees and freight costs shift the best location for production.</li>
+        <li>Weigh the lead time and fixed cost of a new plant against capacity shortages and concentration risk.</li>
+      </ol>
+      <h3>Lesson plan (about 40 minutes)</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;8</td><td>Open the game together and read the landed cost table on the first year&rsquo;s screen: why does the cheapest source differ by market? Give one game code.</td></tr>
+        <tr><td>8&ndash;28</td><td>Students play the six years.</td></tr>
+        <tr><td>28&ndash;40</td><td>Collect results. Compare the students who stayed in India with those who built abroad, then use the final report to discuss timing: who built before the duty and the carbon fee arrived, and who reacted afterwards?</td></tr>
+      </tbody></table>
+      <h3>How it works</h3>
+      <ul>
+        <li><b>Markets</b> (demand in year 1, growth a year, price per box): India 70 lakh boxes, 7%, &#8377;420; Gulf 20 lakh, 5%, &#8377;560; Europe 30 lakh, 2%, &#8377;700; USA 35 lakh, 4%, &#8377;760. Actual demand varies up to 5% from the forecast.</li>
+        <li><b>Sites</b> (cost to make a box, cost to build a plant, yearly site cost): Morbi &#8377;260, &#8377;60 crore, none; UAE &#8377;300, &#8377;80 crore, &#8377;8 crore; Poland &#8377;360, &#8377;110 crore, &#8377;6 crore; Mexico &#8377;400, &#8377;90 crore, &#8377;10 crore. Every plant makes up to 25 lakh boxes a year and costs &#8377;6 crore a year to run. New plants produce from the following year. Closing a plant costs &#8377;15 crore.</li>
+        <li><b>Freight</b> runs from &#8377;15&ndash;35 a box within a region to &#8377;170&ndash;180 a box across the world. <b>Import duty</b> is 20% into India and 5% into the other markets, charged on the cost of the goods plus freight. Plants in the UAE, Poland and Mexico pay no duty into their own region.</li>
+        <li><b>World news</b> (the same for everyone with the same code): the USA adds a 30% duty on tiles from India (from year 2, 3 or 4); Europe charges a carbon border fee of &#8377;100 a box on tiles from outside Europe (from year 3, 4 or 5); freight rates double for one year; a gas cut leaves one site with a quarter of its capacity for one year; and a building boom raises demand by 20% in India or 50% in the Gulf.</li>
+        <li><b>Score:</b> company worth = cash at the end plus two years of profit at the final year&rsquo;s rate. Starting cash is &#8377;150 crore, and plant changes can&rsquo;t cost more than the cash in hand.</li>
+      </ul>
+      <p>Across 300 test games: <b>Stay in India</b> averaged &#8377;2,163 crore, <b>A plant in every region</b> &#8377;2,438 crore, and <b>Plants where landed cost gaps are biggest</b> (Mexico first, then a second Mexican plant and one in Poland) &#8377;2,507 crore, best in 93% of games. A plant in every region wins only when a gas cut hits Mexico in the final year.</p>
+      <h3>Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>Why build in Mexico when making tiles there costs &#8377;140 a box more?</dt>
+        <dd>Landed cost, not production cost, decides. Mexico saves &#8377;135 a box in freight to the USA and pays no duty, and after the 30% US duty on Indian tiles the gap is large. The Indian plants are then free to serve India&rsquo;s growing market.</dd>
+        <dt>Why does timing matter so much?</dt>
+        <dd>A plant takes a year to build. Students who waited for the duty or carbon fee to arrive paid it for at least a year before their new plant could help. Building ahead is a bet; waiting is a cost.</dd>
+        <dt>What does the gas cut teach?</dt>
+        <dd>A network with all its plants in one place has no backup. When the cut hits Morbi, a single-site company loses most of a year&rsquo;s sales, while a spread-out network keeps shipping.</dd>
+      </dl>
+      <h3>Follow-up work</h3>
+      <ol>
+        <li>Pick a real Indian product that is exported. Build a landed cost table for two possible production sites serving one export market.</li>
+        <li>Explain what a carbon border fee such as the EU&rsquo;s CBAM means for Indian exporters of steel, aluminium or cement.</li>
+      </ol>
+    </section>
+
+    <section id="freight-buyer">
+      <h2 class="game">Freight Buyer (solo)</h2>
+      <p>Students buy container shipping for Kaveri Home Textiles, a towel and bed-linen exporter in Tiruppur that ships about 40 containers a quarter from Chennai to Rotterdam. Before each of eight quarters they book space on contract with Anchor Line (large and reliable) and Seabird Line (smaller and cheaper). Anything not covered goes on the spot market at that quarter&rsquo;s rate, which is revealed afterwards.</p>
+      <h3>Learning outcomes</h3>
+      <ol>
+        <li>Explain the difference between contract and spot freight, and when each is cheaper.</li>
+        <li>Explain why a carrier&rsquo;s reliability matters more than its rate when capacity is short.</li>
+        <li>Balance the risk of booking too much (paying for empty slots) against booking too little (paying spot rates or waiting).</li>
+        <li>Use market signals, while knowing they can be wrong.</li>
+      </ol>
+      <h3>Lesson plan (about 30 minutes)</h3>
+      <table class="plan small"><tbody>
+        <tr><td>0&ndash;5</td><td>Explain contract and spot freight using the start page. Give one game code.</td></tr>
+        <tr><td>5&ndash;20</td><td>Students play the eight quarters.</td></tr>
+        <tr><td>20&ndash;30</td><td>Collect results. Compare students who relied on the spot market with those who booked contracts, then look at the rate chart on the final report together.</td></tr>
+      </tbody></table>
+      <h3>How it works</h3>
+      <ul>
+        <li><b>Need:</b> the forecast is 36, 40, 46 and 42 containers in the four quarters of year 1, and 5% more in year 2. The real number can be up to 15% higher or lower.</li>
+        <li><b>Rates:</b> a normal spot rate is about &#8377;1.6 lakh a container. Anchor Line&rsquo;s contract rate is half last quarter&rsquo;s spot rate plus half of &#8377;1.92 lakh, so it follows the market slowly. Seabird Line charges 7% less.</li>
+        <li><b>Market states:</b> normal (spot below 1.5 times normal), tight (1.5 to 2.2 times), and ships full (above 2.2 times). Anchor Line keeps 100%, 100% and 85% of your booking in these states; Seabird Line keeps 100%, 50% and 30%. Spot space is unlimited in a normal market, 40% of the quarter&rsquo;s need when tight, and 10% when ships are full.</li>
+        <li><b>Costs:</b> unused contract space costs 50% of its rate. Containers that can&rsquo;t ship wait for the next quarter and cost &#8377;2 lakh each for every quarter they wait. Any still waiting at the end ship at the last spot rate plus one more delay charge.</li>
+        <li><b>The market</b> (the same for everyone with the same code): a squeeze starts in quarter 3, 4 or 5. In half the games it is severe (spot rates about triple, then fall below normal); in a quarter it is moderate (up to 1.8 times); in a quarter it is mild (up to 1.3 times). In 70% of games, shipping news warns one quarter ahead; some games also have a false alarm.</li>
+        <li><b>Score:</b> total cost over the eight quarters. Lower is better.</li>
+      </ul>
+      <p>Across 300 test games: <b>Spot only</b> averaged &#8377;803 lakh (from &#8377;510 to &#8377;1,113 lakh), <b>Cheapest contract</b> (everything with Seabird Line) &#8377;727 lakh, and <b>Reliable base, spot top-up</b> (80% of the forecast with Anchor Line) &#8377;693 lakh, with the smallest range. The reliable base was cheapest in 53% of games, including every severe squeeze; spot only was cheapest in 27% (mild markets) and the cheapest contract in 20%.</p>
+      <h3>Debrief: answer points</h3>
+      <dl class="answers">
+        <dt>Why not buy everything on the spot market?</dt>
+        <dd>In calm times it is cheapest. But when ships fill up, spot rates triple and space disappears, so containers wait and customers are let down. One bad year can cost more than several calm years save.</dd>
+        <dt>Why did the cheaper line cost more in the end?</dt>
+        <dd>When space was scarce, Seabird Line cancelled most bookings to sell the space to customers paying more. The cancelled containers had to go on an expensive, crowded spot market or wait. A contract is only worth as much as the carrier&rsquo;s willingness to keep it.</dd>
+        <dt>Why book about 80% of the forecast rather than all of it?</dt>
+        <dd>Need varies by up to 15%. Booking a reliable base below the forecast avoids paying for empty slots, and the spot market tops up the rest when it is cheap.</dd>
+      </dl>
+      <h3>Follow-up work</h3>
+      <ol>
+        <li>Look up how container rates from Asia to Europe moved in 2020&ndash;2022 and explain what happened to shippers who relied on the spot market.</li>
+        <li>Write a one-page freight buying policy for an exporter: what share on contract, with which kind of carrier, and when to change it.</li>
       </ol>
     </section>
     <p class="footer">Supply Chain Games. All content is fictional and for teaching.</p>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Factory Footprint</title>
+<meta name="description" content="A solo decision game about global production: where to build plants to serve India, the Gulf, Europe and the USA as freight, duties and carbon fees change.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1D2B36;
+  --ink-2: #33424D;
+  --muted: #56646E;
+  --concrete: #E3E5E1;
+  --concrete-2: #D5D8D3;
+  --sheet: #FBFBF9;
+  --line: #C3C8C2;
+  --yellow: #F2C200;
+  --yellow-soft: #FBEFB8;
+  --blue: #1F5FA8;
+  --blue-soft: #DCE7F4;
+  --red: #C8372D;
+  --red-soft: #F6DEDB;
+  --green: #2E7D4F;
+  --green-soft: #DCEEE3;
+  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--concrete); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
+h1 { font-size: clamp(44px, 8vw, 84px); }
+h2 { font-size: clamp(28px, 4.2vw, 40px); }
+h3 { font-size: 24px; }
+h4 { font-size: 19px; }
+p { margin: 0 0 .8em; }
+a { color: var(--blue); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+.topbar {
+  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar a:hover { text-decoration: underline; }
+.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .spacer { flex: 1; }
+.lane {
+  height: 10px;
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
+  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
+  cursor: pointer; text-decoration: none; min-height: 46px;
+}
+.btn:hover { background: #fff; }
+.btn.primary { background: var(--yellow); }
+.btn.primary:hover { background: #FFD21F; }
+.btn.dark { background: var(--ink); color: #fff; }
+.btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.tiny { font-size: 13px; }
+.num { font-family: var(--display); font-weight: 600; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+label { display: block; font-weight: 600; font-size: 15px; }
+input[type=text], input[type=number], select {
+  font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+}
+.err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 14px; color: var(--muted); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.tablewrap { overflow-x: auto; }
+.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
+.hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+.gamebar { background: var(--sheet); border-bottom: 1px solid var(--line); }
+.gamebar .wrap { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.teamtag { font-family: var(--display); font-weight: 600; font-size: 20px; }
+.steps6 { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; flex: 1 1 300px; }
+.steps6 span { font-size: 12px; text-align: center; padding: 3px 0 4px; border-bottom: 5px solid var(--concrete-2); color: var(--muted); }
+.steps6 span.now { border-bottom-color: var(--yellow); color: var(--ink); font-weight: 600; }
+.steps6 span.done { border-bottom-color: var(--green); }
+.score { font-family: var(--display); font-weight: 600; font-size: 22px; }
+td.r, th.r { text-align: right; }
+td.r { white-space: nowrap; }
+.lc td { white-space: nowrap; }
+.lc td.best { background: var(--green-soft); }
+.lc td.loss { color: var(--red); }
+.lc .m { display: block; font-size: 12px; color: var(--muted); }
+.lc td.best .m { color: var(--green); font-weight: 600; }
+.sites { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 18px 0; }
+.site { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.site-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); border-top: 6px solid var(--ink-2); }
+.site-head h3 { margin: 0; font-size: 26px; }
+.site.has .site-head { border-top-color: var(--yellow); }
+.site-body { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.sfacts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.sfacts div { background: var(--concrete); border-radius: 8px; padding: 6px 8px; }
+.sfacts b { display: block; font-family: var(--display); font-size: 20px; line-height: 1.05; }
+.sfacts span { font-size: 12px; color: var(--muted); }
+.stepper { display: flex; align-items: center; gap: 10px; margin-top: auto; }
+.stepper .btn { width: 48px; padding: 0; font-size: 24px; line-height: 1; }
+.stepper .count { font-family: var(--display); font-weight: 700; font-size: 34px; min-width: 1.4em; text-align: center; }
+.stepper .lbl { font-size: 14px; line-height: 1.25; }
+.chg { font-size: 14px; font-weight: 600; }
+.chg.build { color: var(--blue); }
+.chg.close { color: var(--red); }
+.plantdots { display: flex; gap: 4px; flex-wrap: wrap; min-height: 14px; }
+.plantdots i { width: 14px; height: 14px; border-radius: 3px; background: var(--ink-2); display: inline-block; }
+.plantdots i.new { background: transparent; border: 2px dashed var(--blue); }
+.plantdots i.gone { background: transparent; border: 2px dashed var(--red); }
+.newsbox { list-style: none; padding: 0; margin: 0; }
+.newsbox li { padding: 10px 12px; border-left: 5px solid var(--blue); background: var(--blue-soft); margin-bottom: 8px; }
+.newsbox li.bad { border-left-color: var(--red); background: var(--red-soft); }
+.newsbox li.good { border-left-color: var(--green); background: var(--green-soft); }
+.actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
+.actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+.actionbar .neg { color: #FFB4AA; font-weight: 600; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+@media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.bignum { font-family: var(--display); font-weight: 700; font-size: 36px; line-height: 1; }
+.kpi.bad .bignum { color: var(--red); }
+.kpi.good .bignum { color: var(--green); }
+.capbar { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 12px; align-items: center; font-size: 15px; }
+.capbar .track { height: 14px; background: var(--concrete-2); border-radius: 7px; position: relative; overflow: hidden; }
+.capbar .fill { position: absolute; inset: 0 auto 0 0; background: var(--ink-2); }
+.capbar .fill.cap { background: var(--yellow); }
+.capbar .dem { position: absolute; top: -3px; bottom: -3px; width: 3px; background: var(--ink); }
+.capbar .track { overflow: visible; }
+.capbar .short { color: var(--red); font-weight: 600; }
+.capbar .spare { color: var(--muted); }
+.chart svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
+.legend span::before { content: ''; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); vertical-align: middle; margin-right: 6px; }
+.legend span.dash::before { border-top-style: dashed; }
+.questions { padding-left: 1.3em; }
+.questions li { margin-bottom: 8px; }
+.copybox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.copybox input { flex: 1 1 280px; margin: 0; }
+tr.tot td { font-weight: 600; border-top: 2px solid var(--ink-2); }
+.grid2 > * { min-width: 0; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Factory Footprint</span><span class="spacer"></span><a href="teacher-guide.html#factory-footprint" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
+<div class="lane" aria-hidden="true"></div>
+<main id="app" tabindex="-1"></main>
+<script>
+/* Factory Footprint engine: where to make the tiles for four markets */
+const FF = (() => {
+  const ROUNDS = 6;
+  const ROUND_LABELS = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6'];
+  const START_CASH = 150;       // ₹ crore
+  const PLANT_CAP = 25;         // lakh boxes a year per plant
+  const PLANT_FIXED = 6;        // ₹ crore a year to run one plant
+  const CLOSE_COST = 15;        // ₹ crore to close one plant
+  const MARKETS = [
+    { id: 'in', name: 'India', demand: 70, growth: 0.07, price: 420, note: 'Your home market. Big and growing, but prices are low.' },
+    { id: 'gu', name: 'Gulf', demand: 20, growth: 0.05, price: 560, note: 'UAE, Saudi Arabia and Oman. Close to India.' },
+    { id: 'eu', name: 'Europe', demand: 30, growth: 0.02, price: 700, note: 'High prices, slow growth, strict on carbon.' },
+    { id: 'us', name: 'USA', demand: 35, growth: 0.04, price: 760, note: 'The best prices, but far from India.' }
+  ];
+  const SITES = [
+    { id: 'in', name: 'Morbi, India', short: 'India', place: 'Morbi', make: 260, build: 60, overhead: 0, max: 9, start: 6, note: 'Your home base. The cheapest place to make tiles.' },
+    { id: 'ae', name: 'Ras Al Khaimah, UAE', short: 'UAE', place: 'Ras Al Khaimah', make: 300, build: 80, overhead: 8, max: 3, start: 0, note: 'Cheap gas and a free-trade zone between India, Europe and the USA.' },
+    { id: 'pl', name: 'Poland', short: 'Poland', place: 'Poland', make: 360, build: 110, overhead: 6, max: 3, start: 0, note: 'Inside Europe: no duty or carbon fee into Europe, but costly to run.' },
+    { id: 'mx', name: 'Monterrey, Mexico', short: 'Mexico', place: 'Monterrey', make: 400, build: 90, overhead: 10, max: 3, start: 0, note: 'Next to the USA, with duty-free access under a trade deal.' }
+  ];
+  // freight in ₹ per box, from site to market
+  const FREIGHT = {
+    in: { in: 20, gu: 45, eu: 120, us: 170 },
+    ae: { in: 50, gu: 15, eu: 100, us: 160 },
+    pl: { in: 130, gu: 100, eu: 25, us: 110 },
+    mx: { in: 180, gu: 160, eu: 110, us: 35 }
+  };
+  // import duty, as a share of the cost of the goods plus freight
+  const DUTY = { in: 0.20, gu: 0.05, eu: 0.05, us: 0.05 };
+  const LOCAL = { in: 'in', ae: 'gu', pl: 'eu', mx: 'us' };       // which market counts as home for each site
+  const US_TARIFF = 0.30;       // extra US duty on tiles from India
+  const CARBON_FEE = 100;       // ₹ per box into Europe from outside Europe
+  const FREIGHT_SPIKE = 2;      // freight multiplier in the expensive-shipping year
+  const BOOM = 0.2;             // extra Indian demand once the housing boom starts
+  const BOOM_GULF = 0.5;        // extra Gulf demand if the boom is in the Gulf instead
+  const OUTAGE = 0.25;          // share of capacity left at a site hit by the gas cut
+
+  const siteById = (id) => SITES.find((s) => s.id === id);
+  const marketById = (id) => MARKETS.find((m) => m.id === id);
+
+  function hash(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  }
+  function rand(seed) {
+    let a = hash(seed);
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  const normCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'PRACTICE';
+  const pick = (code, tag, arr) => arr[Math.floor(rand(code + '|' + tag) * arr.length)];
+
+  /* the news, the same for everyone with the same code. Each event starts in its round (0 = year 1). */
+  function schedule(code) {
+    const c = normCode(code);
+    const out = pick(c, 'outsite', ['in', 'in', 'ae', 'pl', 'mx', 'mx']);
+    const boomIn = rand(c + '|boomwhere') < 0.6;
+    return [
+      { id: 'ustariff', round: pick(c, 'ust', [1, 2, 3]), title: 'USA adds a ' + Math.round(US_TARIFF * 100) + '% duty on tiles from India', text: 'An anti-dumping duty of ' + Math.round(US_TARIFF * 100) + '% now applies to tiles shipped from India to the USA, on top of the normal duty, for the rest of the game.' },
+      { id: 'carbon', round: pick(c, 'cbn', [2, 3, 4]), title: 'Europe starts a carbon border fee', text: 'Tiles brought into Europe from outside Europe now pay a fee of ₹' + CARBON_FEE + ' a box, for the rest of the game.' },
+      { id: 'freight', round: pick(c, 'frt', [1, 2, 3, 4]), title: 'Container freight rates double', text: 'Port congestion doubles shipping costs on every route for this year.' },
+      { id: 'outage', round: pick(c, 'out', [1, 2, 3, 4, 5]), site: out, title: 'Gas supply cut in ' + siteById(out).place, text: 'Plants at ' + siteById(out).name + ' can run at only a quarter of their capacity this year.' },
+      boomIn ? { id: 'boom', market: 'in', round: pick(c, 'boom', [2, 3, 4]), title: 'Housing boom in India', text: 'Demand for tiles in India rises 20%, for the rest of the game.' }
+             : { id: 'boom', market: 'gu', round: pick(c, 'boom', [2, 3, 4]), title: 'Building boom in the Gulf', text: 'Demand for tiles in the Gulf rises 50%, for the rest of the game.' }
+    ];
+  }
+  const active = (sched, id, r) => sched.find((e) => e.id === id && e.round <= r);
+
+  /* demand in lakh boxes for round r, with small ups and downs fixed by the code */
+  function demand(code, r, withEvents) {
+    const c = normCode(code);
+    const sched = schedule(c);
+    const out = {};
+    MARKETS.forEach((m) => {
+      let d = m.demand * Math.pow(1 + m.growth, r);
+      if (withEvents) {
+        d *= 1 + (rand(c + '|d|' + m.id + '|' + r) * 2 - 1) * 0.05;
+        const b = active(sched, 'boom', r); if (b && b.market === m.id) d *= 1 + (m.id === 'in' ? BOOM : BOOM_GULF);
+      }
+      out[m.id] = Math.round(d * 10) / 10;
+    });
+    return out;
+  }
+
+  /* the forecast shown before deciding: normal growth plus any boom already announced */
+  function forecast(code, r) {
+    const base = demand(code, r, false);
+    const b = schedule(code).find((e) => e.id === 'boom' && e.round < r);
+    if (b) base[b.market] = Math.round(base[b.market] * (1 + (b.market === 'in' ? BOOM : BOOM_GULF)) * 10) / 10;
+    return base;
+  }
+
+  /* cost of one box made at site s and sold in market m, given the events known in round r */
+  function landed(code, s, m, r, known) {
+    const sched = schedule(code).filter((e) => e.round < r || (!known && e.round === r));
+    const has = (id) => sched.find((e) => e.id === id && e.round <= r);
+    const make = siteById(s).make;
+    let freight = FREIGHT[s][m];
+    if (sched.find((e) => e.id === 'freight' && e.round === r)) freight *= FREIGHT_SPIKE;
+    let dutyRate = LOCAL[s] === m ? 0 : DUTY[m];
+    if (s === 'in' && m === 'us' && has('ustariff')) dutyRate += US_TARIFF;
+    const duty = Math.round((make + freight) * dutyRate);
+    const carbon = m === 'eu' && s !== 'pl' && has('carbon') ? CARBON_FEE : 0;
+    const total = make + freight + duty + carbon;
+    return { make, freight, duty, carbon, total, margin: marketById(m).price - total };
+  }
+
+  /* send boxes from sites to markets to earn the most (a small min-cost flow) */
+  function allocate(cap, dem, marginOf) {
+    const S = SITES.map((s) => s.id), M = MARKETS.map((m) => m.id);
+    const n = 2 + S.length + M.length, src = 0, snk = n - 1;
+    const edges = [], adj = Array.from({ length: n }, () => []);
+    const add = (u, v, c, w) => { adj[u].push(edges.length); edges.push({ u, v, c, w }); adj[v].push(edges.length); edges.push({ u: v, v: u, c: 0, w: -w }); };
+    S.forEach((s, i) => add(src, 1 + i, cap[s] || 0, 0));
+    M.forEach((m, j) => add(1 + S.length + j, snk, dem[m] || 0, 0));
+    S.forEach((s, i) => M.forEach((m, j) => { const g = marginOf(s, m); if (g > 0) add(1 + i, 1 + S.length + j, 1e9, -g); }));
+    for (let iter = 0; iter < 50; iter++) {
+      const dist = Array(n).fill(Infinity), prev = Array(n).fill(-1);
+      dist[src] = 0;
+      for (let k = 0; k < n; k++) {
+        let changed = false;
+        edges.forEach((e, idx) => { if (e.c > 1e-9 && dist[e.u] + e.w < dist[e.v] - 1e-9) { dist[e.v] = dist[e.u] + e.w; prev[e.v] = idx; changed = true; } });
+        if (!changed) break;
+      }
+      if (!(dist[snk] < -1e-9)) break;
+      let f = Infinity, v = snk;
+      while (v !== src) { const e = edges[prev[v]]; f = Math.min(f, e.c); v = e.u; }
+      v = snk;
+      while (v !== src) { const idx = prev[v]; edges[idx].c -= f; edges[idx ^ 1].c += f; v = edges[idx].u; }
+    }
+    const flow = {};
+    S.forEach((s, i) => { flow[s] = {}; M.forEach((m) => { flow[s][m] = 0; }); adj[1 + i].forEach((idx) => { const e = edges[idx]; if (idx % 2 === 0 && e.v > S.length) { flow[s][M[e.v - 1 - S.length]] = Math.round(edges[idx ^ 1].c * 10) / 10; } }); });
+    return flow;
+  }
+
+  function newGame(code, name) {
+    const plants = {}; SITES.forEach((s) => { plants[s.id] = s.start; });
+    return { code: normCode(code), name: String(name || '').slice(0, 24), round: 0, cash: START_CASH, plants, building: {}, history: [], done: false };
+  }
+
+  function changeCost(s, choice) {
+    let build = 0, close = 0;
+    SITES.forEach((st) => {
+      const want = choice[st.id] === undefined ? s.plants[st.id] : choice[st.id];
+      const d = want - s.plants[st.id];
+      if (d > 0) build += d * st.build;
+      if (d < 0) close += -d * CLOSE_COST;
+    });
+    return { build, close, total: build + close };
+  }
+
+  /* one year: choice = target number of plants at each site. New plants start producing next year. */
+  function playRound(state, choice) {
+    const s = JSON.parse(JSON.stringify(state));
+    const r = s.round, sched = schedule(s.code);
+    const lastRound = r === ROUNDS - 1;
+    const opened = {}, closed = {};
+    SITES.forEach((st) => {
+      let want = choice[st.id] === undefined ? s.plants[st.id] : Math.max(0, Math.min(st.max, Math.round(choice[st.id])));
+      if (lastRound && want > s.plants[st.id]) want = s.plants[st.id];
+      if (want > s.plants[st.id]) opened[st.id] = want - s.plants[st.id];
+      if (want < s.plants[st.id]) { closed[st.id] = s.plants[st.id] - want; s.plants[st.id] = want; }
+    });
+    const cost = { build: 0, close: 0 };
+    SITES.forEach((st) => { cost.build += (opened[st.id] || 0) * st.build; cost.close += (closed[st.id] || 0) * CLOSE_COST; });
+    cost.total = cost.build + cost.close;
+    s.cash -= cost.total;
+    const outage = sched.find((e) => e.id === 'outage' && e.round === r);
+    const cap = {};
+    SITES.forEach((st) => { cap[st.id] = s.plants[st.id] * PLANT_CAP * (outage && outage.site === st.id ? OUTAGE : 1); });
+    const dem = demand(s.code, r, true);
+    const flow = allocate(cap, dem, (a, b) => landed(s.code, a, b, r, false).margin);
+    let gross = 0;
+    const sites = {}, markets = {};
+    MARKETS.forEach((m) => { markets[m.id] = { demand: dem[m.id], served: 0, lost: 0 }; });
+    SITES.forEach((st) => {
+      let made = 0, profit = 0;
+      MARKETS.forEach((m) => { const q = flow[st.id][m.id]; if (q > 0) { made += q; const g = q * landed(s.code, st.id, m.id, r, false).margin / 100; profit += g; markets[m.id].served += q; } });
+      const fixed = s.plants[st.id] * PLANT_FIXED + (s.plants[st.id] > 0 ? st.overhead : 0);
+      sites[st.id] = { plants: s.plants[st.id], cap: cap[st.id], made: Math.round(made * 10) / 10, gross: Math.round(profit * 100) / 100, fixed, profit: Math.round((profit - fixed) * 100) / 100 };
+      gross += profit - fixed;
+    });
+    MARKETS.forEach((m) => { markets[m.id].served = Math.round(markets[m.id].served * 10) / 10; markets[m.id].lost = Math.max(0, Math.round((dem[m.id] - markets[m.id].served) * 10) / 10); });
+    const operating = Math.round(gross * 100) / 100;
+    s.cash = Math.round((s.cash + operating) * 100) / 100;
+    SITES.forEach((st) => { if (opened[st.id]) s.plants[st.id] += opened[st.id]; });
+    s.history.push({ round: r, opened, closed, build: cost.build, close: cost.close, flow, sites, markets, operating, cash: s.cash, events: sched.filter((e) => e.round === r).map((e) => e.id) });
+    s.round = r + 1;
+    if (s.round >= ROUNDS) s.done = true;
+    return s;
+  }
+
+  function summary(s) {
+    const last = s.history[s.history.length - 1] || { operating: 0 };
+    const sold = s.history.reduce((a, h) => a + MARKETS.reduce((b, m) => b + h.markets[m.id].served, 0), 0);
+    const lost = s.history.reduce((a, h) => a + MARKETS.reduce((b, m) => b + h.markets[m.id].lost, 0), 0);
+    const built = s.history.reduce((a, h) => a + h.build, 0);
+    const plants = SITES.reduce((a, st) => a + s.plants[st.id], 0);
+    const sites = SITES.filter((st) => s.plants[st.id] > 0).length;
+    return { cash: Math.round(s.cash * 10) / 10, runRate: Math.round(last.operating * 10) / 10, worth: Math.round((s.cash + 2 * last.operating) * 10) / 10, sold: Math.round(sold), lost: Math.round(lost), built, plants, sites };
+  }
+
+  const STRATEGIES = [
+    { id: 'home', name: 'Stay in India', desc: 'Adds plants only in Morbi as demand grows, and ships everything from India.',
+      plan: () => [{ in: 7 }, { in: 8 }, {}, { in: 9 }, {}, {}] },
+    { id: 'all', name: 'A plant in every region', desc: 'Builds one plant in Mexico, then one in the UAE and one in Poland, so every region has a nearby plant.',
+      plan: () => [{ mx: 1 }, { ae: 1, pl: 1 }, {}, {}, {}, {}] },
+    { id: 'hubs', name: 'Plants where landed cost gaps are biggest', desc: 'Builds in Mexico for the USA first, then a second Mexican plant and a Polish plant for Europe. India\u2019s plants then serve the growing Indian market.',
+      plan: () => [{ mx: 1 }, { mx: 2, pl: 1 }, {}, {}, {}, {}] }
+  ];
+  function runStrategy(code, st) {
+    let s = newGame(code, st.name);
+    const plan = st.plan();
+    for (let r = 0; r < ROUNDS; r++) {
+      const ch = Object.assign({}, s.plants, plan[r] || {});
+      s = playRound(s, changeCost(s, ch).total <= s.cash ? ch : {});
+    }
+    return s;
+  }
+  function randomCode() {
+    const w = ['KILN', 'GLAZE', 'MORBI', 'FURNACE', 'MOSAIC', 'PORCELAIN', 'TERRACOTTA', 'QUARRY'];
+    return w[Math.floor(Math.random() * w.length)] + (10 + Math.floor(Math.random() * 90));
+  }
+  return { ROUNDS, ROUND_LABELS, START_CASH, PLANT_CAP, PLANT_FIXED, CLOSE_COST, MARKETS, SITES, FREIGHT, DUTY, LOCAL, US_TARIFF, CARBON_FEE, FREIGHT_SPIKE, BOOM, BOOM_GULF, OUTAGE, siteById, marketById, schedule, demand, forecast, landed, allocate, newGame, changeCost, playRound, summary, STRATEGIES, runStrategy, normCode, randomCode };
+})();
+if (typeof module !== 'undefined') module.exports = FF;
+
+</script>
+<script>
+(function () {
+  const app = document.getElementById('app');
+  const SAVE_KEY = 'ff-game-v1';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const cr = (n) => (n < 0 ? '−' : '') + '₹' + Math.abs(n).toLocaleString('en-IN', { maximumFractionDigits: 0 }) + ' cr';
+  const cr1 = (n) => (n < 0 ? '−' : '') + '₹' + Math.abs(n).toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' cr';
+  const rs = (n) => (n < 0 ? '−' : '') + '₹' + Math.abs(Math.round(n)).toLocaleString('en-IN');
+  const lb = (n) => (Math.round(n * 10) / 10).toLocaleString('en-IN', { maximumFractionDigits: 1 });
+  const L = FF.ROUND_LABELS;
+
+  let view = 'start', S = null, choice = {}, formError = '', confirmRestart = false;
+
+  function go(v) { view = v; render(); window.scrollTo(0, 0); app.focus({ preventScroll: true }); }
+  function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+  function save() { if (S) store.set(SAVE_KEY, S); }
+  function resetChoice() { choice = Object.assign({}, S.plants); }
+
+  function render() {
+    if (view === 'start') return renderStart();
+    if (view === 'round') return renderRound();
+    if (view === 'result') return renderResult();
+    if (view === 'final') return renderFinal();
+  }
+
+  function renderStart() {
+    const saved = store.get(SAVE_KEY);
+    const resumable = saved && !saved.done && saved.history && saved.history.length > 0;
+    app.innerHTML = `
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <p class="kicker">A solo decision game about global production, 6 years</p>
+          <h1>Factory Footprint</h1>
+          <p style="font-size:20px;max-width:34em">You run operations at Kiran Ceramics, a tile maker in Morbi with six plants. You sell tiles in India, the Gulf, Europe and the USA, and ship everything from Morbi. Each year you decide where to build or close plants: in Morbi, the UAE, Poland or Mexico. Duties, carbon fees and freight costs will change along the way. Build the most valuable company in six years.</p>
+        </div>
+        <form class="sheet" id="startForm" novalidate>
+          <h3>Start a game</h3>
+          <label for="name">Your name</label>
+          <input type="text" id="name" maxlength="24" autocomplete="off" placeholder="For example, Riya">
+          <div style="height:12px"></div>
+          <label for="code">Game code</label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input type="text" id="code" maxlength="16" autocomplete="off" value="${esc(FF.randomCode())}" style="text-transform:uppercase">
+            <button type="button" class="btn small" data-act="newcode" style="margin-top:4px">New code</button>
+          </div>
+          <p class="tiny muted" style="margin-top:6px">Players with the same code face the same demand and world events, so results can be compared.</p>
+          ${formError ? `<p class="err" role="alert">${esc(formError)}</p>` : ''}
+          <button class="btn primary" type="submit" style="width:100%;margin-top:6px">Start the game</button>
+          ${resumable ? `<button class="btn" type="button" data-act="resume" style="width:100%;margin-top:10px">Continue ${esc(saved.name)} (${esc(L[saved.round])})</button>` : ''}
+        </form>
+      </section>
+      <div class="grid2" style="margin-top:12px">
+        <section class="sheet tablewrap"><h3>Your markets</h3>
+          <table class="small"><thead><tr><th>Market</th><th class="r">Demand in year 1</th><th class="r">Growth a year</th><th class="r">Price per box</th></tr></thead>
+          <tbody>${FF.MARKETS.map((m) => `<tr><td><b>${m.name}</b><br><span class="tiny muted">${esc(m.note)}</span></td><td class="r">${m.demand} lakh boxes</td><td class="r">${Math.round(m.growth * 100)}%</td><td class="r">${rs(m.price)}</td></tr>`).join('')}</tbody></table></section>
+        <section class="sheet tablewrap"><h3>Where you can make tiles</h3>
+          <table class="small"><thead><tr><th>Site</th><th class="r">Cost to make a box</th><th class="r">Cost to build a plant</th><th class="r">Yearly cost</th></tr></thead>
+          <tbody>${FF.SITES.map((st) => `<tr><td><b>${st.name}</b><br><span class="tiny muted">${esc(st.note)}</span></td><td class="r">${rs(st.make)}</td><td class="r">${cr(st.build)}</td><td class="r">${cr(FF.PLANT_FIXED)} a plant${st.overhead ? `<br>+ ${cr(st.overhead)} for the site` : ''}</td></tr>`).join('')}</tbody></table></section>
+      </div>
+      <section class="sheet" style="margin-top:16px"><h3>How it works</h3>
+        <ul class="small" style="margin:0;padding-left:1.2em">
+          <li>Each plant makes up to ${FF.PLANT_CAP} lakh boxes a year. A new plant takes a year to build: plants you start this year produce from next year. Closing a plant costs ${cr(FF.CLOSE_COST)} and takes effect at once.</li>
+          <li><b>Landed cost</b> is what one box costs by the time it reaches the customer: the cost to make it, plus freight, plus import duty (${Math.round(FF.DUTY.in * 100)}% into India, ${Math.round(FF.DUTY.gu * 100)}% elsewhere, none from a plant in the same region), plus any other fees.</li>
+          <li>Each year your plants send their tiles to the markets where they earn the most. Demand you can&rsquo;t meet is lost.</li>
+          <li>You start with ${cr(FF.START_CASH)}. Your score is <b>company worth</b>: cash at the end plus two years of profit at your final year&rsquo;s rate.</li>
+        </ul></section>
+      <p class="footer">The company, markets, figures and events in this game are made up for teaching.</p>
+    </div>`;
+    const f = document.getElementById('startForm');
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) { formError = 'Enter your name to start.'; renderStart(); document.getElementById('name').focus(); return; }
+      formError = '';
+      S = FF.newGame(document.getElementById('code').value, name);
+      resetChoice(); save(); go('round');
+    });
+    document.getElementById('name').addEventListener('input', () => { if (formError) { formError = ''; f.querySelector('.err')?.remove(); } });
+  }
+
+  function bar(now) {
+    const n = now === undefined ? S.round : now;
+    return `<div class="gamebar"><div class="wrap"><span class="teamtag">${esc(S.name)}</span><span class="small muted">Code ${esc(S.code)}</span>
+      <div class="steps6" aria-label="Years">${L.map((l, i) => `<span class="${i === n ? 'now' : S.history[i] ? 'done' : ''}">${esc(l)}</span>`).join('')}</div>
+      <span class="score" title="Cash">${cr(S.cash)}</span></div></div>`;
+  }
+
+  function lastingNews() {
+    const out = [];
+    FF.schedule(S.code).forEach((e) => {
+      if (e.round >= S.round) return;
+      if (['ustariff', 'carbon', 'boom'].includes(e.id)) out.push({ kind: e.id === 'boom' ? 'good' : 'bad', text: e.title + '. ' + e.text });
+    });
+    return out;
+  }
+
+  function landedTable(r) {
+    const best = {};
+    FF.MARKETS.forEach((m) => { best[m.id] = FF.SITES.reduce((a, st) => (FF.landed(S.code, st.id, m.id, r, true).total < FF.landed(S.code, a, m.id, r, true).total ? st.id : a), 'in'); });
+    return `<table class="small lc"><thead><tr><th>Made in</th>${FF.MARKETS.map((m) => `<th class="r">To ${m.name}<br><span class="tiny muted">sells for ${rs(m.price)}</span></th>`).join('')}</tr></thead><tbody>
+      ${FF.SITES.map((st) => `<tr><td><b>${st.short}</b></td>${FF.MARKETS.map((m) => {
+        const c = FF.landed(S.code, st.id, m.id, r, true);
+        const parts = [`make ${rs(c.make)}`, `freight ${rs(c.freight)}`].concat(c.duty ? [`duty ${rs(c.duty)}`] : []).concat(c.carbon ? [`carbon fee ${rs(c.carbon)}`] : []);
+        return `<td class="r ${best[m.id] === st.id ? 'best' : ''} ${c.margin <= 0 ? 'loss' : ''}" title="${esc(parts.join(' + '))}"><b>${rs(c.total)}</b><span class="m">${c.margin > 0 ? 'earns ' + rs(c.margin) : c.margin === 0 ? 'earns nothing' : 'loses ' + rs(-c.margin)}</span></td>`;
+      }).join('')}</tr>`).join('')}
+    </tbody></table>`;
+  }
+
+  function capRow(label, cap, dem) {
+    const max = Math.max(cap, dem, 1);
+    const gap = cap - dem;
+    return `<span>${label}</span><div class="track" aria-hidden="true"><div class="fill cap" style="width:${(cap / max) * 100}%"></div><div class="dem" style="left:calc(${(dem / max) * 100}% - 1px)"></div></div><span>${gap < -0.05 ? `<span class="short">${lb(-gap)} short</span>` : `<span class="spare">${lb(gap)} spare</span>`}</span>`;
+  }
+
+  function renderRound() {
+    const r = S.round, last = r === FF.ROUNDS - 1;
+    const cc = FF.changeCost(S, choice);
+    const after = S.cash - cc.total;
+    const prev = S.history[S.history.length - 1];
+    const news = lastingNews();
+    const fc = FF.forecast(S.code, r), fcNext = r + 1 < FF.ROUNDS ? FF.forecast(S.code, r + 1) : null;
+    const totalFc = FF.MARKETS.reduce((a, m) => a + fc[m.id], 0);
+    const capNow = FF.SITES.reduce((a, st) => a + Math.min(choice[st.id], S.plants[st.id]) * FF.PLANT_CAP, 0);
+    const capNext = FF.SITES.reduce((a, st) => a + choice[st.id] * FF.PLANT_CAP, 0);
+    const totalNext = fcNext ? FF.MARKETS.reduce((a, m) => a + fcNext[m.id], 0) : 0;
+    const cards = FF.SITES.map((st) => {
+      const have = S.plants[st.id], want = choice[st.id];
+      const d = want - have;
+      const dots = Array.from({ length: Math.max(have, want) }, (_, i) => `<i class="${i >= have ? 'new' : i >= want ? 'gone' : ''}"></i>`).join('');
+      const ps = prev && prev.sites[st.id];
+      const canAdd = !last && want < st.max;
+      return `<section class="site ${have || want ? 'has' : ''}" aria-labelledby="sh-${st.id}">
+        <div class="site-head"><h3 id="sh-${st.id}">${st.name}</h3><span class="small muted">${esc(st.note)}</span></div>
+        <div class="site-body">
+          <div class="sfacts">
+            <div><b>${rs(st.make)}</b><span>To make a box</span></div>
+            <div><b>${cr(st.build)}</b><span>To build a plant</span></div>
+            <div><b>${cr(FF.PLANT_FIXED)}</b><span>Yearly per plant${st.overhead ? `, plus ${cr(st.overhead)} for the site` : ''}</span></div>
+          </div>
+          ${ps && ps.plants ? `<p class="small" style="margin:0">Last year: made ${lb(ps.made)} of ${lb(ps.cap)} lakh boxes, profit ${cr1(ps.profit)}.</p>` : ''}
+          <div class="plantdots" aria-hidden="true">${dots}</div>
+          <div class="stepper">
+            <button class="btn" data-act="plant" data-site="${st.id}" data-d="-1" ${want <= 0 ? 'disabled' : ''} aria-label="One plant fewer in ${esc(st.short)}">&minus;</button>
+            <span class="count" aria-live="polite">${want}</span>
+            <button class="btn" data-act="plant" data-site="${st.id}" data-d="1" ${canAdd ? '' : 'disabled'} aria-label="One more plant in ${esc(st.short)}">+</button>
+            <span class="lbl">plant${want === 1 ? '' : 's'}<br>${d > 0 ? `<span class="chg build">Build ${d}: ${cr(d * st.build)}</span>` : d < 0 ? `<span class="chg close">Close ${-d}: ${cr(-d * FF.CLOSE_COST)}</span>` : '<span class="muted small">No change</span>'}</span>
+          </div>
+        </div>
+      </section>`;
+    }).join('');
+    app.innerHTML = bar() + `
+      <div class="wrap">
+        <h2 style="margin-top:22px">${esc(L[r])}</h2>
+        <p class="muted">Round ${r + 1} of ${FF.ROUNDS}. ${last ? 'This is the last year: a plant started now would not produce before the game ends, so you can only close plants.' : 'Plants you start this year produce from next year. News arrives after you decide.'}</p>
+        ${news.length ? `<section class="sheet" style="margin-top:12px"><h3>Still in effect</h3><ul class="newsbox">${news.map((n) => `<li class="${n.kind}">${esc(n.text)}</li>`).join('')}</ul></section>` : ''}
+        <div class="grid2" style="margin-top:16px">
+          <section class="sheet"><h3>Capacity and demand</h3>
+            <div class="capbar">
+              ${capRow(esc(L[r]), capNow, totalFc)}
+              ${fcNext ? capRow(esc(L[r + 1]), capNext, totalNext) : ''}
+            </div>
+            <p class="tiny muted" style="margin-top:10px">Yellow bar: what your plants can make. Black line: forecast demand in all four markets. In lakh boxes. ${fcNext ? 'Next year includes the changes you make now.' : ''}</p>
+            <div class="tablewrap"><table class="small" style="margin-top:6px"><thead><tr><th>Lakh boxes</th><th class="r">Capacity</th>${FF.MARKETS.map((m) => `<th class="r">${m.name} demand</th>`).join('')}</tr></thead>
+              <tbody><tr><td>${esc(L[r])}</td><td class="r"><b>${lb(capNow)}</b></td>${FF.MARKETS.map((m) => `<td class="r">${lb(fc[m.id])}</td>`).join('')}</tr>
+              ${fcNext ? `<tr><td>${esc(L[r + 1])}</td><td class="r"><b>${lb(capNext)}</b></td>${FF.MARKETS.map((m) => `<td class="r">${lb(fcNext[m.id])}</td>`).join('')}</tr>` : ''}</tbody></table></div>
+          </section>
+          <section class="sheet tablewrap"><h3>Landed cost per box</h3>
+            ${landedTable(r)}
+            <p class="tiny muted" style="margin-top:8px">Make + freight + duty + fees, with the duties and fees in force now. Green is the cheapest source for each market. &ldquo;Earns&rdquo; is the price minus the landed cost.</p>
+          </section>
+        </div>
+        <div class="sites">${cards}</div>
+      </div>
+      <div class="actionbar"><div class="wrap">
+        <div><b>Cash now:</b> ${cr(S.cash)}. <b>Changes this year:</b> ${cr(cc.total)}. <span class="${after < 0 ? 'neg' : ''}"><b>Cash after changes:</b> ${cr(after)}</span></div>
+        <div class="row">${after < 0 ? '<span class="neg small">Not enough cash for these plants</span>' : ''}<button class="btn primary" data-act="run" ${after < 0 ? 'disabled' : ''}>Run ${esc(L[r])}</button></div>
+      </div></div>
+      <div class="wrap footer">${confirmRestart ? `<span style="color:var(--red)">This deletes the game on this device.</span> <button class="btn small dark" data-act="restart-yes">Delete and start over</button> <button class="btn small" data-act="restart-no">Keep playing</button>` : `<button class="btn ghost small" data-act="restart">Start over</button>`}</div>`;
+  }
+
+  function eventLine(e) {
+    const good = e.id === 'boom';
+    return `<li class="${good ? 'good' : 'bad'}"><b>${esc(e.title)}.</b> ${esc(e.text)}</li>`;
+  }
+
+  function renderResult() {
+    const h = S.history[S.history.length - 1];
+    const sched = FF.schedule(S.code).filter((e) => e.round === h.round);
+    const lost = FF.MARKETS.reduce((a, m) => a + h.markets[m.id].lost, 0);
+    const openedList = Object.entries(h.opened || {}).map(([k, v]) => `${v} in ${FF.siteById(k).short}`);
+    const openedN = Object.values(h.opened || {}).reduce((a, b) => a + b, 0);
+    const opened = openedList.length ? openedList.slice(0, -1).join(', ') + (openedList.length > 1 ? ' and ' : '') + openedList[openedList.length - 1] : '';
+    const rows = FF.SITES.filter((st) => h.sites[st.id].plants > 0).map((st) => {
+      const x = h.sites[st.id];
+      return `<tr><td><b>${st.short}</b><br><span class="tiny muted">${x.plants} plant${x.plants > 1 ? 's' : ''}</span></td><td class="r">${lb(x.cap)}</td>${FF.MARKETS.map((m) => `<td class="r">${h.flow[st.id][m.id] ? lb(h.flow[st.id][m.id]) : '&ndash;'}</td>`).join('')}<td class="r"><b>${cr1(x.profit)}</b></td></tr>`;
+    }).join('');
+    app.innerHTML = bar(h.round) + `
+      <div class="wrap" style="padding-bottom:40px">
+        <h2 style="margin-top:22px">${esc(L[h.round])}: results</h2>
+        ${sched.length ? `<section class="sheet"><h3>World news this year</h3><ul class="newsbox">${sched.map(eventLine).join('')}</ul></section>` : '<p class="muted">A quiet year: no major news.</p>'}
+        <div class="kpis">
+          <div class="kpi"><div class="small muted">Spent on plants</div><div class="bignum">${cr(h.build + h.close)}</div></div>
+          <div class="kpi ${h.operating < 0 ? 'bad' : 'good'}"><div class="small muted">Profit from selling tiles</div><div class="bignum">${cr(h.operating)}</div></div>
+          <div class="kpi ${lost > 0.5 ? 'bad' : ''}"><div class="small muted">Demand you couldn&rsquo;t meet</div><div class="bignum">${lb(lost)}</div><div class="tiny muted">lakh boxes</div></div>
+          <div class="kpi"><div class="small muted">Cash now</div><div class="bignum">${cr(h.cash)}</div></div>
+        </div>
+        ${opened ? `<p>Under construction: ${openedN} new plant${openedN > 1 ? 's' : ''} (${esc(opened)}), ready next year.</p>` : ''}
+        <section class="sheet tablewrap"><h3>Where your tiles went (lakh boxes)</h3>
+          <table class="small"><thead><tr><th>Plants in</th><th class="r">Capacity</th>${FF.MARKETS.map((m) => `<th class="r">To ${m.name}</th>`).join('')}<th class="r">Profit after plant costs</th></tr></thead>
+          <tbody>${rows}
+            <tr class="tot"><td>Demand</td><td></td>${FF.MARKETS.map((m) => `<td class="r">${lb(h.markets[m.id].demand)}</td>`).join('')}<td></td></tr>
+            <tr><td>Not met</td><td></td>${FF.MARKETS.map((m) => `<td class="r" style="${h.markets[m.id].lost > 0.05 ? 'color:var(--red);font-weight:600' : ''}">${h.markets[m.id].lost > 0.05 ? lb(h.markets[m.id].lost) : '&ndash;'}</td>`).join('')}<td></td></tr>
+          </tbody></table>
+          <p class="tiny muted" style="margin-top:8px">Your plants sent their tiles where they earned the most. When capacity is short, the lowest-earning demand goes unmet first.</p></section>
+        <div class="row" style="margin-top:20px"><button class="btn primary" data-act="${S.done ? 'final' : 'next'}">${S.done ? 'See the final report' : 'Plan ' + esc(L[S.round])}</button></div>
+      </div>`;
+    app.querySelector('[data-act=next],[data-act=final]')?.focus({ preventScroll: true });
+  }
+
+  function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = (raw || 1) / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function cashChart(series) {
+    const W = 680, H = 280, Lm = 56, R = 110, T = 14, B = 30;
+    const all = series.flatMap((s) => s.values);
+    const lo = Math.min(0, ...all), hi = Math.max(1, ...all) * 1.08;
+    const n = series[0].values.length;
+    const x = (i) => Lm + (i * (W - Lm - R)) / (n - 1);
+    const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
+    const step = niceStep((hi - lo) / 5);
+    let g = '';
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1D2B36' : '#C3C8C2'}"/><text x="${Lm - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#56646E">${v.toLocaleString('en-IN')}</text>`;
+    const xl = ['Start'].concat(L.map((l) => l.replace('Year ', 'Y'))).map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#56646E">${l}</text>`).join('');
+    const ends = [];
+    const lines = series.map((s) => { ends.push({ y: y(s.values[n - 1]), x: x(n - 1), name: s.short, c: s.color }); return `<path d="${s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.5}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`; }).join('');
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cash in crore rupees after each year">${g}${xl}${lines}${ends.map((e) => `<text x="${e.x + 8}" y="${e.y + 4}" font-size="13" font-weight="600" fill="${e.c}">${esc(e.name)}</text>`).join('')}</svg>`;
+  }
+
+  function renderFinal() {
+    const you = FF.summary(S);
+    const bench = FF.STRATEGIES.map((st) => { const run = FF.runStrategy(S.code, st); return { st, run, s: FF.summary(run) }; });
+    const rank = [{ n: 'you', w: you.worth }].concat(bench.map((b) => ({ n: b.st.id, w: b.s.worth }))).sort((a, b) => b.w - a.w);
+    const pos = rank.findIndex((r) => r.n === 'you') + 1;
+    const cash = (st) => [FF.START_CASH].concat(st.history.map((h) => h.cash));
+    const colors = { home: '#C8372D', all: '#2E7D4F', hubs: '#33424D' };
+    const dashes = { home: '7 5', all: '2 5', hubs: '12 4 2 4' };
+    const shorts = { home: 'Stay in India', all: 'Every region', hubs: 'Biggest gaps' };
+    const series = [{ name: S.name, short: 'You', values: cash(S), color: '#1F5FA8', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cash(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
+    const net = (st) => FF.SITES.filter((x) => st.plants[x.id] > 0).map((x) => `${x.short} ${st.plants[x.id]}`).join(', ');
+    const plantRows = FF.SITES.map((st) => {
+      const changes = [];
+      S.history.forEach((h) => { if (h.opened[st.id]) changes.push(`built ${h.opened[st.id]} in ${L[h.round]}`); if (h.closed[st.id]) changes.push(`closed ${h.closed[st.id]} in ${L[h.round]}`); });
+      const made = S.history.reduce((a, h) => a + h.sites[st.id].made, 0);
+      const profit = S.history.reduce((a, h) => a + h.sites[st.id].profit, 0);
+      return `<tr><td><b>${st.short}</b></td><td class="r">${st.start}</td><td>${changes.length ? esc(changes.join(', ')) : '<span class="muted">No change</span>'}</td><td class="r"><b>${S.plants[st.id]}</b></td><td class="r">${lb(made)}</td><td class="r">${cr(profit)}</td></tr>`;
+    }).join('');
+    const benchRows = [{ name: S.name + ' (you)', desc: 'Your decisions', s: you, net: net(S) }].concat(bench.map((b) => ({ name: b.st.name, desc: b.st.desc, s: b.s, net: net(b.run) })))
+      .map((r) => `<tr><td><b>${esc(r.name)}</b><br><span class="tiny muted">${esc(r.desc)}</span></td><td>${esc(r.net)}</td><td class="r"><b>${cr(r.s.worth)}</b></td><td class="r">${cr(r.s.cash)}</td><td class="r">${cr(r.s.runRate)}</td><td class="r">${lb(r.s.lost)}</td></tr>`).join('');
+    const result = `Factory Footprint | ${S.name} | code ${S.code} | company worth ${cr(you.worth)} | plants: ${net(S)}`;
+    app.innerHTML = bar(FF.ROUNDS) + `
+    <div class="wrap" style="padding-bottom:40px">
+      <section style="padding:26px 0 6px">
+        <p class="kicker">Final report for ${esc(S.name)}, game code ${esc(S.code)}</p>
+        <h1 style="font-size:clamp(40px,7vw,72px)">${cr(you.worth)}</h1>
+        <p style="font-size:20px;max-width:40em">Company worth after six years: ${cr(you.cash)} in cash plus two years of profit at your final rate of ${cr(you.runRate)} a year. Against the three standard strategies below, you placed ${pos} of 4.</p>
+      </section>
+      <section class="sheet chart"><h3>Cash after each year</h3>
+        ${cashChart(series)}
+        <div class="legend">${series.map((s) => `<span class="${s.dash ? 'dash' : ''}" style="--c:${s.color}">${esc(s.name)}</span>`).join('')}</div>
+        <p class="tiny muted">Figures in &#8377; crore. Every strategy faced the same demand and world events.</p></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet tablewrap"><h3>Your plants, year by year</h3>
+          <table class="small"><thead><tr><th>Site</th><th class="r">Plants at start</th><th>Changes</th><th class="r">Plants at end</th><th class="r">Boxes made (lakh)</th><th class="r">Profit</th></tr></thead><tbody>${plantRows}</tbody></table></section>
+        <section class="sheet"><h3>This game&rsquo;s world news</h3>
+          <table class="small"><tbody>${FF.schedule(S.code).sort((a, b) => a.round - b.round).map((e) => `<tr><td style="white-space:nowrap">${esc(L[e.round])}</td><td>${esc(e.title)}</td></tr>`).join('')}</tbody></table></section>
+      </div>
+      <section class="sheet tablewrap" style="margin-top:16px"><h3>How the strategies compare</h3>
+        <table class="small"><thead><tr><th>Strategy</th><th>Plants at the end</th><th class="r">Company worth</th><th class="r">Cash</th><th class="r">Profit a year at the end</th><th class="r">Demand not met (lakh boxes)</th></tr></thead><tbody>${benchRows}</tbody></table></section>
+      <div class="grid2" style="margin-top:16px">
+        <section class="sheet"><h3>Talk it over</h3>
+          <ol class="questions small">
+            <li>Making tiles is cheapest in India. Why can it still pay to make them somewhere more expensive?</li>
+            <li>Which change hurt exports from India most: the US duty, the carbon fee or the freight spike? How did plants abroad help?</li>
+            <li>A plant takes a year to build. Did you build ahead of the news, or wait and react? What did each cost you?</li>
+            <li>Was it worth having plants in several regions even when one site was cheaper? Think about the gas cut.</li>
+            <li>Where would you have built if the duties and the carbon fee had never come?</li>
+          </ol></section>
+        <section class="sheet"><h3>Send your result</h3>
+          <p class="small">Copy this line and send it to your teacher.</p>
+          <div class="copybox"><input type="text" id="resultLine" readonly value="${esc(result)}"><button class="btn primary" data-act="copy">Copy my result</button></div>
+          <p class="small" id="copymsg" role="status"></p>
+          <button class="btn" data-act="again" style="margin-top:8px">Play again</button></section>
+      </div>
+      <p class="footer">The company, markets, figures and events in this game are made up for teaching.</p>
+    </div>`;
+  }
+
+  app.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-act]');
+    if (!t || t.disabled) return;
+    const act = t.dataset.act;
+    if (act === 'newcode') { document.getElementById('code').value = FF.randomCode(); return; }
+    if (act === 'resume') { S = store.get(SAVE_KEY); resetChoice(); go('round'); return; }
+    if (act === 'plant') {
+      const id = t.dataset.site, d = Number(t.dataset.d), st = FF.siteById(id);
+      const last = S.round === FF.ROUNDS - 1;
+      const nv = Math.max(0, Math.min(last ? S.plants[id] : st.max, choice[id] + d));
+      choice[id] = nv;
+      keepScroll(renderRound);
+      const again = app.querySelector(`[data-act=plant][data-site="${id}"][data-d="${d}"]`);
+      (again && !again.disabled ? again : app.querySelector(`[data-act=plant][data-site="${id}"]:not([disabled])`))?.focus({ preventScroll: true });
+      return;
+    }
+    if (act === 'run') { if (FF.changeCost(S, choice).total > S.cash + 1e-9) return; S = FF.playRound(S, choice); save(); go('result'); return; }
+    if (act === 'next') { resetChoice(); go('round'); return; }
+    if (act === 'final') { go('final'); return; }
+    if (act === 'restart') { confirmRestart = true; keepScroll(renderRound); return; }
+    if (act === 'restart-no') { confirmRestart = false; keepScroll(renderRound); return; }
+    if (act === 'restart-yes' || act === 'again') { confirmRestart = false; store.del(SAVE_KEY); S = null; go('start'); return; }
+    if (act === 'copy') {
+      const inp = document.getElementById('resultLine'), msg = document.getElementById('copymsg');
+      try { await navigator.clipboard.writeText(inp.value); msg.textContent = 'Copied. Paste it into your message to your teacher.'; }
+      catch (err) { inp.focus(); inp.select(); msg.textContent = 'Select the line above and copy it.'; }
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Supply Chain Games
 
-Seven free classroom games for supply chain and operations management. There are three team games, played in a classroom or an online class with each student on their own phone or laptop, and four solo games for practice or homework, two of them about doing business across borders. Nothing to install.
+Nine free classroom games for supply chain and operations management. There are three team games, played in a classroom or an online class with each student on their own phone or laptop, and six solo games for practice or homework, four of them about doing business across borders. Nothing to install.
 
 **Play:** https://ashir-mansuri.github.io/supply-chain-games/
 
@@ -13,6 +13,8 @@ Seven free classroom games for supply chain and operations management. There are
 | **Season Planner** (solo) | About 20 minutes | Aggregate planning, level versus chase strategy, overtime, subcontracting, building stock |
 | **Export Desk** (solo) | About 15 minutes | International shipping, transit time versus cost, currency risk and forward contracts, cargo insurance |
 | **Go Global** (solo) | About 20 minutes | Choosing foreign markets, entry modes (online, distributor, joint venture, subsidiary), step-by-step expansion, country risk |
+| **Factory Footprint** (solo) | About 20 minutes | Global plant location, landed cost, tariffs and carbon border fees, capacity planning, concentration risk |
+| **Freight Buyer** (solo) | About 15 minutes | Buying freight, contract versus spot rates, carrier reliability, price swings |
 
 ---
 
@@ -31,9 +33,11 @@ Seven free classroom games for supply chain and operations management. There are
     - [Season Planner](#season-planner-solo)
     - [Export Desk](#export-desk-solo)
     - [Go Global](#go-global-solo)
+    - [Factory Footprint](#factory-footprint-solo)
+    - [Freight Buyer](#freight-buyer-solo)
   - [For teachers](#for-teachers)
     - [Running an online class](#running-an-online-class)
-    - [Solo games](#solo-games-boundary-bakes-season-planner-export-desk-and-go-global)
+    - [Solo games](#solo-games)
     - [Practice games and solo play in the team games](#practice-games-and-solo-play-in-the-team-games)
     - [Trying it out](#trying-it-out)
 - [Files](#files)
@@ -351,6 +355,72 @@ The final report shows your company worth, a chart of your cash after each round
 
 ---
 
+### Factory Footprint (solo)
+
+**Your job:** You run operations at Kiran Ceramics, a tile maker in Morbi with six plants. You sell tiles in India, the Gulf, Europe and the USA, and at the start everything is made in Morbi.
+
+**Goal:** The highest **company worth** after six years: your cash at the end plus two years of profit at your final year's rate. You start with ₹150 crore.
+
+**Your decision each year:** how many plants to have at each of four sites: Morbi (India), Ras Al Khaimah (UAE), Poland and Monterrey (Mexico).
+- Each plant makes up to 25 lakh boxes a year and costs ₹6 crore a year to run. Sites outside India also have a yearly site cost.
+- A new plant takes a year to build: plants you start this year produce from next year.
+- Closing a plant costs ₹15 crore and takes effect at once.
+
+**Landed cost** is what one box costs by the time it reaches the customer: the cost to make it, plus freight, plus import duty, plus any other fees. Tiles are cheapest to make in India, but freight and duties can make another site cheaper for some markets. Each year your plants automatically send their tiles to the markets where they earn the most. Demand you can't meet is lost.
+
+**What can change:** a US duty on tiles from India, a European carbon fee on tiles made outside Europe, a year of double freight rates, a gas cut at one site, and a building boom in India or the Gulf.
+
+#### How to play
+1. Open **Factory Footprint**, type your name and the game code your teacher gives you, then tap **Start the game**.
+2. **Check capacity and demand:** the yellow bar shows what your plants can make, and the black line shows forecast demand. The table shows each market's forecast.
+3. **Read the landed cost table.** Green shows the cheapest site for each market, with the duties and fees in force now.
+4. **Set the number of plants at each site** with the **−** and **+** buttons. The card shows what the change costs.
+5. **Check the dark bar at the bottom:** your cash now, what this year's changes cost, and your cash after them. You can't spend more than you have.
+6. Tap **Run [year]**. You then see the world news for that year, where your tiles went, how much demand you couldn't meet, and your profit.
+7. Tap **Plan [next year]** and repeat for all six years. In the last year you can only close plants.
+
+#### At the end
+The final report shows your company worth, a chart of your cash after each year, your plants at each site and the world news for your game code. Your result is compared with **Stay in India**, **A plant in every region** and **Plants where landed cost gaps are biggest**. Tap **Copy my result** and send the line to your teacher.
+
+**Tip:** A plant takes a year to build. Think about where costs are heading, not just where they are today.
+
+---
+
+### Freight Buyer (solo)
+
+**Your job:** You buy shipping for Kaveri Home Textiles, a towel and bed-linen exporter in Tiruppur. About 40 containers a quarter go from Chennai to Rotterdam.
+
+**Goal:** Ship every container at the lowest **total cost** over two years (eight quarters). Lower is better.
+
+**Your decision each quarter:** how many containers to book on contract with each of two shipping lines. Anything you don't book goes on the **spot market** at that quarter's rate.
+
+| | Anchor Line | Seabird Line | Spot market |
+| --- | --- | --- | --- |
+| Rate | Fixed before the quarter | About 7% lower than Anchor | The going rate, known only afterwards |
+| Normal market | Keeps all your booking | Keeps all your booking | Plenty of space |
+| Tight market | Keeps all your booking | Keeps half | Space for 40% of your need |
+| Ships full | Keeps 85% | Keeps 30% | Space for 10% of your need |
+
+**What it costs:**
+- Contract rates follow the market slowly, so they're below the spot rate when rates are rising and above it when rates are falling.
+- If you book more than you need, you pay half the rate for each empty slot.
+- Containers that can't ship wait for next quarter and cost ₹2 lakh each for every quarter they wait.
+
+#### How to play
+1. Open **Freight Buyer**, type your name and the game code your teacher gives you, then tap **Start the game**.
+2. **Check this quarter:** the forecast number of containers (the real number can be 15% higher or lower), any containers still waiting, last quarter's spot rate and the shipping news.
+3. **Look at the rate chart** to see how spot and contract rates have moved.
+4. **Book containers** with Anchor Line and Seabird Line: type a number or use **−5** and **+5**. Your bookings carry over to the next quarter, so you only need to change them.
+5. Tap **Book and ship**. You then see the spot rate, any bookings the lines cancelled, how many containers went on spot, how many were left waiting, and the cost.
+6. Tap **Plan [next quarter]** and repeat for all eight quarters.
+
+#### At the end
+The final report shows your total cost and cost per container, charts of the rates and your cost over time, and every quarter's results. Your result is compared with **Spot only**, **Cheapest contract** and **Reliable base, spot top-up**. Tap **Copy my result** and send the line to your teacher.
+
+**Tip:** A cheap contract is only worth something if the shipping line keeps it when space runs short.
+
+---
+
 ### For teachers
 
 #### Running an online class
@@ -363,7 +433,8 @@ The final report shows your company worth, a chart of your cash after each round
 
 To open the same class on another device, use **Open a class from another device** with the class code and your teacher password.
 
-#### Solo games (Boundary Bakes, Season Planner, Export Desk and Go Global)
+#### Solo games
+This applies to Boundary Bakes, Season Planner, Export Desk, Go Global, Factory Footprint and Freight Buyer.
 - Give the class one game code, so everyone faces the same demand and the same events.
 - Students play on their own and tap **Copy my result** at the end. They paste the line into the class group or a form for you.
 
@@ -391,6 +462,8 @@ The **teacher's guide** (`teacher-guide.html`) has 60-minute lesson plans, the r
 | `season-planner.html` | Season Planner solo game |
 | `export-desk.html` | Export Desk solo game |
 | `go-global.html` | Go Global solo game |
+| `factory-footprint.html` | Factory Footprint solo game |
+| `freight-buyer.html` | Freight Buyer solo game |
 | `teacher.html` | Teacher dashboard |
 | `teacher-guide.html` | Teacher's guide |
 | `firebase-config.js` | Online play settings (paste your Firebase config here) |
