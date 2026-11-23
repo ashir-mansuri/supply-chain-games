@@ -7,70 +7,73 @@
 <meta name="description" content="Free classroom games for supply chain and operations management: Supplier Showdown, Warehouse Rush, Coffee Chain, Boundary Bakes, Season Planner, Export Desk, Go Global, Factory Footprint and Freight Buyer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #1D2B36;
-  --ink-2: #33424D;
-  --muted: #56646E;
-  --concrete: #E3E5E1;
-  --concrete-2: #D5D8D3;
-  --sheet: #FBFBF9;
-  --line: #C3C8C2;
-  --yellow: #F2C200;
-  --yellow-soft: #FBEFB8;
-  --blue: #1F5FA8;
-  --blue-soft: #DCE7F4;
-  --red: #C8372D;
-  --red-soft: #F6DEDB;
-  --green: #2E7D4F;
-  --green-soft: #DCEEE3;
-  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
-  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--concrete); color: var(--ink);
-  font-family: var(--body); font-size: 17px; line-height: 1.5;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
 }
-h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
-h1 { font-size: clamp(44px, 8vw, 84px); }
-h2 { font-size: clamp(28px, 4.2vw, 40px); }
-h3 { font-size: 24px; }
-h4 { font-size: 19px; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
 p { margin: 0 0 .8em; }
-a { color: var(--blue); }
+a { color: var(--blue); text-underline-offset: 2px; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.topbar {
-  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
-}
-.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
-.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
 .topbar a:hover { text-decoration: underline; }
-.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
 .topbar .spacer { flex: 1; }
-.lane {
-  height: 10px;
-  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
-}
+.lane { display: none; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
-  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
-  cursor: pointer; text-decoration: none; min-height: 46px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
 }
-.btn:hover { background: #fff; }
-.btn.primary { background: var(--yellow); }
-.btn.primary:hover { background: #FFD21F; }
-.btn.dark { background: var(--ink); color: #fff; }
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
 .btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
 .btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
-.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
 .muted { color: var(--muted); }
 .small { font-size: 15px; }
 .tiny { font-size: 13px; }
@@ -79,189 +82,128 @@ button { font: inherit; color: inherit; }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
 label { display: block; font-weight: 600; font-size: 15px; }
-input[type=text], input[type=number], select {
+input[type=text], input[type=number], input[type=password], select {
   font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
-  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
 }
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
 .err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 14px; color: var(--muted); font-weight: 600; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
 td.r, th.r { text-align: right; }
 .tablewrap { overflow-x: auto; }
 .footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
-.hero { padding: 44px 0 26px; }
-.hero h1 { font-size: clamp(52px, 10vw, 112px); line-height: .92; margin-bottom: 18px; }
-.hero p { font-size: 21px; max-width: 32em; }
-.docks { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin: 10px 0 26px; }
-.dock { background: var(--sheet); border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-.door {
-  height: 118px; position: relative; border-bottom: 2px solid var(--ink);
-  background: repeating-linear-gradient(180deg, #AEB5AE 0 9px, #98A098 9px 11px);
-}
-.door .no {
-  position: absolute; left: 20px; bottom: 14px; background: var(--yellow); color: var(--ink);
-  font-family: var(--display); font-weight: 700; font-size: 26px; padding: 2px 14px; border-radius: 4px; border: 2px solid var(--ink);
-}
-.door.blue .no { background: var(--blue); color: #fff; }
-.door.brown .no { background: #6B4226; color: #fff; }
-.door.green .no { background: var(--green); color: #fff; }
-.door.red .no { background: var(--red); color: #fff; }
-.door.teal .no { background: #0F6E56; color: #fff; }
-.door.ink .no { background: var(--ink); color: #fff; }
-.door.plum .no { background: #6B3A6E; color: #fff; }
-.door.navy .no { background: #24456E; color: #fff; }
-.solo-tag { display: inline-block; font-size: 13px; font-weight: 600; background: var(--concrete); padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
-.dock-body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
-.dock-body h2 { font-size: clamp(36px, 5vw, 50px); margin-bottom: 10px; }
-.dock-body .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 6px 0 18px; font-size: 15px; }
-.dock-body .facts dt { color: var(--muted); }
-.dock-body .facts dd { margin: 0; }
-.dock-body .btn { align-self: flex-start; margin-top: auto; }
-@media (prefers-reduced-motion: no-preference) {
-  .door { transition: background-position .5s ease; }
-  .dock:hover .door { background-position: 0 -22px; }
-}
+.hero { padding: 48px 0 30px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+.hero h1 { margin-bottom: 14px; }
+.hero p { font-size: 20px; max-width: 36em; color: var(--ink-2); margin: 0; }
+.group { padding: 34px 0 10px; }
+.group-head { display: grid; grid-template-columns: 360px 1fr; gap: 8px 32px; align-items: baseline; margin-bottom: 18px; }
+@media (max-width: 760px) { .group-head { grid-template-columns: 1fr; } }
+.group-head h2 { margin: 0; }
+.group-head p { margin: 0; color: var(--muted); }
+.games { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.group.ops .games, .group.global .games { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 960px) { .games, .group.ops .games, .group.global .games { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .games, .group.ops .games, .group.global .games { grid-template-columns: 1fr; } }
+.game { background: var(--sheet); border: 1px solid var(--line); border-top: 3px solid var(--ink); border-radius: 4px; padding: 20px 22px 22px; display: flex; flex-direction: column; }
+.group.ops .game { border-top-color: var(--blue); }
+.group.global .game { border-top-color: var(--yellow); }
+.game h3 { font-size: 26px; margin-bottom: 8px; }
+.game p { color: var(--ink-2); }
+.game .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 4px 0 18px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 15px; }
+.game .facts dt { color: var(--muted); }
+.game .facts dd { margin: 0; }
+.game .btn { align-self: flex-start; margin-top: auto; }
 .teacher { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; }
 @media (max-width: 700px) { .teacher { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="spacer"></span><a href="teacher.html" style="font-size:16px">Teacher dashboard</a><a href="teacher-guide.html" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
-<div class="lane" aria-hidden="true"></div>
 <main class="wrap">
   <section class="hero">
     <h1>Supply Chain Games</h1>
     <p>Nine classroom games about the decisions that keep goods moving. Three team games, played in class or online with each student on their own phone or laptop, and six solo games for practice or homework, four of them about doing business across borders. Nothing to install.</p>
   </section>
-  <section class="docks" aria-label="Games">
-    <article class="dock">
-      <div class="door blue" aria-hidden="true"><span class="no">Dock 1</span></div>
-      <div class="dock-body">
-        <h2>Supplier Showdown</h2>
+  <section class="group team" aria-labelledby="g-team">
+    <div class="group-head"><h2 id="g-team">Team games</h2><p>Played by teams in class or in an online class, with each student on their own phone or laptop. The teacher follows every team live.</p></div>
+    <div class="games">
+      <article class="game">
+        <h3>Supplier Showdown</h3>
         <p>Buy four parts for an electric scooter maker in Sanand from suppliers in China, Vietnam, India and Germany. Fires, floods, tariffs and chip shortages hit over eight months. Cheap or safe: which one wins?</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>Teams of 3 to 5, each member on their own device</dd>
-          <dt>Time</dt><dd>About 30 minutes of play, plus debrief</dd>
-          <dt>Topics</dt><dd>Supplier selection, total cost of ownership, dual sourcing, buffer stock, supply risk</dd>
-        </dl>
+        <dl class="facts"><dt>Players</dt><dd>Teams of 3 to 5, each member on their own device</dd><dt>Time</dt><dd>About 30 minutes of play, plus debrief</dd><dt>Topics</dt><dd>Supplier selection, total cost of ownership, dual sourcing, buffer stock, supply risk</dd></dl>
         <a class="btn primary" href="supplier-showdown.html">Play Supplier Showdown</a>
-      </div>
-    </article>
-    <article class="dock">
-      <div class="door" aria-hidden="true"><span class="no">Dock 2</span></div>
-      <div class="dock-body">
-        <h2>Warehouse Rush</h2>
+      </article>
+      <article class="game">
+        <h3>Warehouse Rush</h3>
         <p>Pick customer orders on a warehouse map, then use last month&rsquo;s sales to move fast sellers next to dispatch, then try batch picking. The same six orders, three times, getting faster each time.</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>Teams of 2 to 4, taking turns as the picker</dd>
-          <dt>Time</dt><dd>About 20 minutes of play, plus debrief</dd>
-          <dt>Topics</dt><dd>ABC analysis, Pareto principle, slotting, pick routes, batch picking, productivity</dd>
-        </dl>
+        <dl class="facts"><dt>Players</dt><dd>Teams of 2 to 4, taking turns as the picker</dd><dt>Time</dt><dd>About 20 minutes of play, plus debrief</dd><dt>Topics</dt><dd>ABC analysis, Pareto principle, slotting, pick routes, batch picking, productivity</dd></dl>
         <a class="btn primary" href="warehouse-rush.html">Play Warehouse Rush</a>
-      </div>
-    </article>
-    <article class="dock">
-      <div class="door brown" aria-hidden="true"><span class="no">Dock 3</span></div>
-      <div class="dock-body">
-        <h2>Coffee Chain</h2>
+      </article>
+      <article class="game">
+        <h3>Coffee Chain</h3>
         <p>Run one stage of a coffee supply chain, from a roaster in Bengaluru to a caf&eacute; in Vadodara. Order week by week, see only your own stage, and find out what one small change in demand does further up the chain. Modelled on the beer game.</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>Teams of 4, one stage each, or solo against the computer</dd>
-          <dt>Time</dt><dd>About 25 minutes of play, plus debrief</dd>
-          <dt>Topics</dt><dd>Bullwhip effect, lead times, information sharing, stock versus backlog costs</dd>
-        </dl>
+        <dl class="facts"><dt>Players</dt><dd>Teams of 4, one stage each, or solo against the computer</dd><dt>Time</dt><dd>About 25 minutes of play, plus debrief</dd><dt>Topics</dt><dd>Bullwhip effect, lead times, information sharing, stock versus backlog costs</dd></dl>
         <a class="btn primary" href="coffee-chain.html">Play Coffee Chain</a>
-      </div>
-    </article>
-    <article class="dock">
-      <div class="door green" aria-hidden="true"><span class="no">Dock 4</span></div>
-      <div class="dock-body">
-        <h2>Boundary Bakes <span class="solo-tag">Solo</span></h2>
-        <p>Run a bakery stall outside a cricket stadium during a 10-day tournament. Each morning, decide how many brownies and sandwiches to make. Too few and fans walk away; too many and the leftovers lose money.</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>One student, on any phone or laptop</dd>
-          <dt>Time</dt><dd>About 15 minutes, plus debrief</dd>
-          <dt>Topics</dt><dd>Perishable stock, uncertain demand, cost of too many versus too few, critical ratio</dd>
-        </dl>
-        <a class="btn primary" href="boundary-bakes.html">Play Boundary Bakes</a>
-      </div>
-    </article>
-    <article class="dock">
-      <div class="door red" aria-hidden="true"><span class="no">Dock 5</span></div>
-      <div class="dock-body">
-        <h2>Season Planner <span class="solo-tag">Solo</span></h2>
-        <p>Plan six months of production at a school uniform factory in Surat, with a big peak before schools reopen. Hire, run overtime, subcontract or build stock early, and meet the orders at the lowest cost.</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>One student, on any phone or laptop</dd>
-          <dt>Time</dt><dd>About 20 minutes, plus debrief</dd>
-          <dt>Topics</dt><dd>Aggregate planning, level versus chase strategy, capacity, overtime, subcontracting</dd>
-        </dl>
-        <a class="btn primary" href="season-planner.html">Play Season Planner</a>
-      </div>
-    </article>
-    <article class="dock">
-      <div class="door teal" aria-hidden="true"><span class="no">Dock 6</span></div>
-      <div class="dock-body">
-        <h2>Export Desk <span class="solo-tag">Solo</span></h2>
-        <p>Ship a Rajkot pump maker&rsquo;s orders to Germany, the USA, the UAE and Kenya. Choose sea, sea-air or air for each order, decide whether to lock the exchange rate, and whether to insure the cargo, while canal blockages, port strikes and currency swings hit along the way.</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>One student, on any phone or laptop</dd>
-          <dt>Time</dt><dd>About 15 minutes, plus debrief</dd>
-          <dt>Topics</dt><dd>International logistics, transit time versus cost, currency risk and forward contracts, cargo insurance</dd>
-        </dl>
-        <a class="btn primary" href="export-desk.html">Play Export Desk</a>
-      </div>
-    </article>
-    <article class="dock">
-      <div class="door ink" aria-hidden="true"><span class="no">Dock 7</span></div>
-      <div class="dock-body">
-        <h2>Go Global <span class="solo-tag">Solo</span></h2>
-        <p>Take an Ayurvedic skincare brand from Ahmedabad into the UAE, UK, USA, Germany and Kenya over three years. In each market, choose an online store, a distributor, a joint venture or your own subsidiary, and face tariffs, currency crashes and partner disputes.</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>One student, on any phone or laptop</dd>
-          <dt>Time</dt><dd>About 20 minutes, plus debrief</dd>
-          <dt>Topics</dt><dd>Market selection, entry modes, step-by-step internationalisation, country risk</dd>
-        </dl>
-        <a class="btn primary" href="go-global.html">Play Go Global</a>
-      </div>
-    </article>
-    <article class="dock">
-      <div class="door plum" aria-hidden="true"><span class="no">Dock 8</span></div>
-      <div class="dock-body">
-        <h2>Factory Footprint <span class="solo-tag">Solo</span></h2>
-        <p>A tile maker in Morbi sells in India, the Gulf, Europe and the USA. Over six years, decide where to build plants: at home, in the UAE, Poland or Mexico. Compare landed costs as a US duty, a European carbon fee, a freight spike and a gas cut change the picture.</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>One student, on any phone or laptop</dd>
-          <dt>Time</dt><dd>About 20 minutes, plus debrief</dd>
-          <dt>Topics</dt><dd>Global facility location, landed cost, tariffs and carbon border fees, capacity planning, concentration risk</dd>
-        </dl>
-        <a class="btn primary" href="factory-footprint.html">Play Factory Footprint</a>
-      </div>
-    </article>
-    <article class="dock">
-      <div class="door navy" aria-hidden="true"><span class="no">Dock 9</span></div>
-      <div class="dock-body">
-        <h2>Freight Buyer <span class="solo-tag">Solo</span></h2>
-        <p>Buy container space for a Tiruppur textile exporter shipping to Rotterdam for two years. Each quarter, book space on contract with a large or a small shipping line, or leave it to the spot market, while freight rates calm, spike and crash.</p>
-        <dl class="facts">
-          <dt>Players</dt><dd>One student, on any phone or laptop</dd>
-          <dt>Time</dt><dd>About 15 minutes, plus debrief</dd>
-          <dt>Topics</dt><dd>Freight procurement, contract versus spot, carrier reliability, price volatility</dd>
-        </dl>
-        <a class="btn primary" href="freight-buyer.html">Play Freight Buyer</a>
-      </div>
-    </article>
+      </article>
+    </div>
   </section>
-  <section class="sheet teacher">
+  <section class="group ops" aria-labelledby="g-ops">
+    <div class="group-head"><h2 id="g-ops">Solo games: operations</h2><p>One student per device, for practice or homework.</p></div>
+    <div class="games">
+      <article class="game">
+        <h3>Boundary Bakes</h3>
+        <p>Run a bakery stall outside a cricket stadium during a 10-day tournament. Each morning, decide how many brownies and sandwiches to make. Too few and fans walk away; too many and the leftovers lose money.</p>
+        <dl class="facts"><dt>Players</dt><dd>One student, on any phone or laptop</dd><dt>Time</dt><dd>About 15 minutes, plus debrief</dd><dt>Topics</dt><dd>Perishable stock, uncertain demand, cost of too many versus too few, critical ratio</dd></dl>
+        <a class="btn primary" href="boundary-bakes.html">Play Boundary Bakes</a>
+      </article>
+      <article class="game">
+        <h3>Season Planner</h3>
+        <p>Plan six months of production at a school uniform factory in Surat, with a big peak before schools reopen. Hire, run overtime, subcontract or build stock early, and meet the orders at the lowest cost.</p>
+        <dl class="facts"><dt>Players</dt><dd>One student, on any phone or laptop</dd><dt>Time</dt><dd>About 20 minutes, plus debrief</dd><dt>Topics</dt><dd>Aggregate planning, level versus chase strategy, capacity, overtime, subcontracting</dd></dl>
+        <a class="btn primary" href="season-planner.html">Play Season Planner</a>
+      </article>
+    </div>
+  </section>
+  <section class="group global" aria-labelledby="g-global">
+    <div class="group-head"><h2 id="g-global">Solo games: global business</h2><p>One student per device. Trade, shipping and production decisions across borders.</p></div>
+    <div class="games">
+      <article class="game">
+        <h3>Export Desk</h3>
+        <p>Ship a Rajkot pump maker&rsquo;s orders to Germany, the USA, the UAE and Kenya. Choose sea, sea-air or air for each order, decide whether to lock the exchange rate, and whether to insure the cargo, while canal blockages, port strikes and currency swings hit along the way.</p>
+        <dl class="facts"><dt>Players</dt><dd>One student, on any phone or laptop</dd><dt>Time</dt><dd>About 15 minutes, plus debrief</dd><dt>Topics</dt><dd>International logistics, transit time versus cost, currency risk and forward contracts, cargo insurance</dd></dl>
+        <a class="btn primary" href="export-desk.html">Play Export Desk</a>
+      </article>
+      <article class="game">
+        <h3>Go Global</h3>
+        <p>Take an Ayurvedic skincare brand from Ahmedabad into the UAE, UK, USA, Germany and Kenya over three years. In each market, choose an online store, a distributor, a joint venture or your own subsidiary, and face tariffs, currency crashes and partner disputes.</p>
+        <dl class="facts"><dt>Players</dt><dd>One student, on any phone or laptop</dd><dt>Time</dt><dd>About 20 minutes, plus debrief</dd><dt>Topics</dt><dd>Market selection, entry modes, step-by-step internationalisation, country risk</dd></dl>
+        <a class="btn primary" href="go-global.html">Play Go Global</a>
+      </article>
+      <article class="game">
+        <h3>Factory Footprint</h3>
+        <p>A tile maker in Morbi sells in India, the Gulf, Europe and the USA. Over six years, decide where to build plants: at home, in the UAE, Poland or Mexico. Compare landed costs as a US duty, a European carbon fee, a freight spike and a gas cut change the picture.</p>
+        <dl class="facts"><dt>Players</dt><dd>One student, on any phone or laptop</dd><dt>Time</dt><dd>About 20 minutes, plus debrief</dd><dt>Topics</dt><dd>Global facility location, landed cost, tariffs and carbon border fees, capacity planning, concentration risk</dd></dl>
+        <a class="btn primary" href="factory-footprint.html">Play Factory Footprint</a>
+      </article>
+      <article class="game">
+        <h3>Freight Buyer</h3>
+        <p>Buy container space for a Tiruppur textile exporter shipping to Rotterdam for two years. Each quarter, book space on contract with a large or a small shipping line, or leave it to the spot market, while freight rates calm, spike and crash.</p>
+        <dl class="facts"><dt>Players</dt><dd>One student, on any phone or laptop</dd><dt>Time</dt><dd>About 15 minutes, plus debrief</dd><dt>Topics</dt><dd>Freight procurement, contract versus spot, carrier reliability, price volatility</dd></dl>
+        <a class="btn primary" href="freight-buyer.html">Play Freight Buyer</a>
+      </article>
+    </div>
+  </section>
+  <section class="sheet teacher" style="margin-top:34px">
     <div>
       <h2 style="margin-bottom:6px">Teaching with these games</h2>
       <p style="margin:0">Create a class with team PINs and follow every team live on the teacher dashboard. The guide has setup steps, lesson plans for a 60-minute class, debrief answers and follow-up work.</p>
     </div>
-    <div class="row"><a class="btn primary" href="teacher.html">Teacher dashboard</a><a class="btn dark" href="teacher-guide.html">Teacher&rsquo;s guide</a></div>
+    <div class="row"><a class="btn primary" href="teacher.html">Teacher dashboard</a><a class="btn" href="teacher-guide.html">Teacher&rsquo;s guide</a></div>
   </section>
   <p class="footer">All companies, products, prices and events in these games are made up for teaching. Online classes store team results in the teacher&rsquo;s own Firebase project until the class is deleted.</p>
 </main>

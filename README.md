@@ -141,8 +141,8 @@ After November, tap **See the final report**. It shows:
 #### Reading the map
 - Four aisles, **A** to **D**. **Dispatch** is at the bottom; every trip starts and ends there.
 - Each shelf shows a product's SKU number. A slot name like **B3L** means aisle B, bay 3 counting from the dispatch end, left side.
-- **Yellow** shelves are on your pick list. **Green** shelves are picked.
-- The **dark circle with a yellow ring** is the picker. The **blue line** is the path walked.
+- **Gold** shelves are on your pick list. **Green** shelves are picked.
+- The **dark circle with a gold ring** is the picker. The **blue line** is the path walked.
 - The picker can only walk along aisles and the cross-aisles at the front and back.
 
 #### How time is counted
@@ -153,7 +153,7 @@ After November, tap **See the final report**. It shows:
 #### Round 1: Day one (products scattered at random)
 1. Tap **Start round 1**.
 2. Read the pick list on the right: SKU, product name and slot.
-3. Tap the yellow shelves **in the order you want to visit them**. The picker walks your route.
+3. Tap the gold shelves **in the order you want to visit them**. The picker walks your route.
 4. After the last shelf, the picker returns to dispatch. The **Trip done** panel shows the metres you walked, the shortest possible route, your route efficiency and the picker time. Tap **Show the shortest route** to see the best route drawn in red dashes.
 5. Tap **Next order**. There are 6 orders in the round.
 6. The round results show lines per hour, metres walked, picker time and route efficiency.
@@ -279,7 +279,7 @@ The final report shows your profit and the best possible profit. It compares you
 
 #### How to play
 1. Open **Season Planner**, type your name and the game code, then tap **Start the game**.
-2. **Look at the forecast chart** for all six months before you decide. The yellow bar is this month. You start with 20 workers and 2,000 sets in stock.
+2. **Look at the forecast chart** for all six months before you decide. The gold bar is this month. You start with 20 workers and 2,000 sets in stock.
 3. **Set this month's plan:** workers (**−5**, **−1**, **+1**, **+5**), overtime, and subcontracting (in steps of 250 or 1,000).
 4. **Check the preview.** It shows what you'll make, the stock you'll have left (or how many you'll be short) if orders match the forecast, and the expected cost for the month.
 5. Tap **Run [month]**. You then see the actual orders, sets made, orders lost, stock at month end and the month's costs.
@@ -372,7 +372,7 @@ The final report shows your company worth, a chart of your cash after each round
 
 #### How to play
 1. Open **Factory Footprint**, type your name and the game code your teacher gives you, then tap **Start the game**.
-2. **Check capacity and demand:** the yellow bar shows what your plants can make, and the black line shows forecast demand. The table shows each market's forecast.
+2. **Check capacity and demand:** the gold bar shows what your plants can make, and the black line shows forecast demand. The table shows each market's forecast.
 3. **Read the landed cost table.** Green shows the cheapest site for each market, with the duties and fees in force now.
 4. **Set the number of plants at each site** with the **−** and **+** buttons. The card shows what the change costs.
 5. **Check the dark bar at the bottom:** your cash now, what this year's changes cost, and your cash after them. You can't spend more than you have.

@@ -8,70 +8,73 @@
 <script src="firebase-config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #1D2B36;
-  --ink-2: #33424D;
-  --muted: #56646E;
-  --concrete: #E3E5E1;
-  --concrete-2: #D5D8D3;
-  --sheet: #FBFBF9;
-  --line: #C3C8C2;
-  --yellow: #F2C200;
-  --yellow-soft: #FBEFB8;
-  --blue: #1F5FA8;
-  --blue-soft: #DCE7F4;
-  --red: #C8372D;
-  --red-soft: #F6DEDB;
-  --green: #2E7D4F;
-  --green-soft: #DCEEE3;
-  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
-  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--concrete); color: var(--ink);
-  font-family: var(--body); font-size: 17px; line-height: 1.5;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
 }
-h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
-h1 { font-size: clamp(44px, 8vw, 84px); }
-h2 { font-size: clamp(28px, 4.2vw, 40px); }
-h3 { font-size: 24px; }
-h4 { font-size: 19px; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
 p { margin: 0 0 .8em; }
-a { color: var(--blue); }
+a { color: var(--blue); text-underline-offset: 2px; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.topbar {
-  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
-}
-.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
-.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
 .topbar a:hover { text-decoration: underline; }
-.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
 .topbar .spacer { flex: 1; }
-.lane {
-  height: 10px;
-  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
-}
+.lane { display: none; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
-  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
-  cursor: pointer; text-decoration: none; min-height: 46px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
 }
-.btn:hover { background: #fff; }
-.btn.primary { background: var(--yellow); }
-.btn.primary:hover { background: #FFD21F; }
-.btn.dark { background: var(--ink); color: #fff; }
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
 .btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
 .btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
-.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
 .muted { color: var(--muted); }
 .small { font-size: 15px; }
 .tiny { font-size: 13px; }
@@ -80,31 +83,33 @@ button { font: inherit; color: inherit; }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
 label { display: block; font-weight: 600; font-size: 15px; }
-input[type=text], input[type=number], select {
+input[type=text], input[type=number], input[type=password], select {
   font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
-  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
 }
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
 .err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 14px; color: var(--muted); font-weight: 600; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
 td.r, th.r { text-align: right; }
 .tablewrap { overflow-x: auto; }
 .footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
-:root { --c-cafe: #C8372D; --c-dist: #2E7D4F; --c-whole: #1F5FA8; --c-roaster: #8A5B00; }
+:root { --c-cafe: #A93A34; --c-dist: #2C6B4C; --c-whole: #1F4E8C; --c-roaster: #8A5B00; }
 .kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
 .choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 8px; }
 @media (max-width: 860px) { .choice { grid-template-columns: 1fr; } }
 .chain { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; margin: 22px 0 8px; align-items: stretch; }
-.chain .st { position: relative; padding: 12px 10px 10px; border: 2px solid var(--ink); background: var(--sheet); margin-right: 18px; border-radius: 8px; }
+.chain .st { position: relative; padding: 12px 10px 10px; border: 1px solid var(--ink-2); background: var(--sheet); margin-right: 18px; border-radius: 4px; }
 .chain .st:not(:last-child)::after { content: ''; position: absolute; right: -18px; top: 50%; width: 18px; height: 2px; background: var(--ink); }
 .chain .st b { display: block; font-family: var(--display); font-size: 20px; line-height: 1.1; }
 .chain .st span { font-size: 13px; color: var(--muted); }
 .chain .st.edge { border-style: dashed; background: transparent; }
-.chain .st.me { background: var(--yellow); }
+.chain .st.me { background: var(--ink); color: #fff; border-color: var(--ink); }
+.chain .st.me span { color: #C5CDD8; }
 .chain .st .bar4 { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-radius: 6px 0 0 6px; }
 @media (max-width: 760px) { .chain { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 10px; } .chain .st:nth-child(3)::after { display: none; } }
 .flow { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 18px; }
@@ -116,16 +121,16 @@ td.r, th.r { text-align: right; }
 .teamstrip .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; padding-top: 8px; padding-bottom: 8px; font-size: 15px; }
 .teamstrip .who { display: inline-flex; align-items: center; gap: 6px; }
 .teamstrip .dot { width: 10px; height: 10px; border-radius: 50%; background: #8FD3A8; display: inline-block; }
-.teamstrip .muted { color: #C9D2D8; }
+.teamstrip .muted { color: #C5CDD8; }
 .teamstrip .tick { color: var(--yellow); font-weight: 700; }
 .roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px; margin: 18px 0; }
 .roles.one { max-width: 760px; }
-.role { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.role { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
 .role-head { padding: 14px 16px 10px; border-top: 8px solid var(--rc); border-bottom: 1px solid var(--line); }
 .role-head h2 { margin: 0 0 2px; font-size: 32px; }
 .role-body { padding: 14px 16px 16px; }
 .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
-.tile { background: var(--concrete); border-radius: 8px; padding: 8px 10px; }
+.tile { background: var(--concrete); border-radius: 4px; padding: 8px 10px; }
 .tile b { display: block; font-family: var(--display); font-size: 30px; line-height: 1.05; }
 .tile span { font-size: 13px; color: var(--muted); }
 .tile.bad b { color: var(--red); }
@@ -140,18 +145,18 @@ td.r, th.r { text-align: right; }
 .sent { color: var(--green); font-weight: 600; }
 .hist { font-size: 14px; margin-top: 12px; }
 .hist td, .hist th { padding: 4px 6px; }
-.sales { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-top: 18px; }
+.sales { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; margin-top: 18px; }
 .sales .bars { display: flex; align-items: flex-end; gap: 3px; height: 70px; margin-top: 8px; }
 .sales .bars span { flex: 0 0 16px; background: var(--ink-2); border-radius: 2px 2px 0 0; min-height: 2px; }
 .actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
 .actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
-.actionbar .muted { color: #C9D2D8; }
+.actionbar .muted { color: #C5CDD8; }
 .waiting { color: #FFE27A; font-weight: 600; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
 @media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } .tiles { grid-template-columns: 1fr 1fr 1fr; } .tile b { font-size: 24px; } }
-.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
 .bignum { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; }
-.reveal { background: var(--yellow); border: 2px solid var(--ink); border-radius: 10px; padding: 18px 20px; margin: 16px 0; font-size: 20px; }
+.reveal { background: var(--yellow); border: 2px solid var(--ink); border-radius: 4px; padding: 18px 20px; margin: 16px 0; font-size: 20px; }
 .reveal b { font-family: var(--display); font-size: 26px; }
 .chart svg { width: 100%; height: auto; display: block; }
 .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; margin-top: 6px; }
@@ -172,7 +177,6 @@ td.r, th.r { text-align: right; }
 </head>
 <body>
 <header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Coffee Chain</span><span class="spacer"></span><a href="teacher-guide.html#coffee-chain" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
-<div class="lane" aria-hidden="true"></div>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Coffee Chain engine: a four-stage coffee supply chain, modelled on the beer game */
@@ -612,7 +616,7 @@ const ONLINE = (() => {
   const inr = (n) => (n < 0 ? '−' : '') + '₹' + Math.round(Math.abs(n)).toLocaleString('en-IN');
   const listNames = (arr) => arr.length <= 1 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
   const RC = ['var(--c-cafe)', 'var(--c-dist)', 'var(--c-whole)', 'var(--c-roaster)'];
-  const RHEX = ['#C8372D', '#2E7D4F', '#1F5FA8', '#8A5B00'];
+  const RHEX = ['#A93A34', '#2C6B4C', '#1F4E8C', '#8A5B00'];
 
   let view = 'start', mode = null, S = null, settings = null, aiMem = null;
   let on = null, formError = '', errorMsg = '', showJoin = false, boardError = '', confirmClear = false, confirmRestart = false;
@@ -933,10 +937,10 @@ const ONLINE = (() => {
     let grid = '';
     for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) {
       const z = Math.abs(v) < step / 2;
-      grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${z ? '#1D2B36' : '#C3C8C2'}" stroke-width="${z ? 1.5 : 1}"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#56646E">${fmt(v)}</text>`;
+      grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${z ? '#1B2A41' : '#D5DAE1'}" stroke-width="${z ? 1.5 : 1}"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${fmt(v)}</text>`;
     }
     let xl = '';
-    for (let i = 0; i < n; i += 4) xl += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="12" fill="#56646E">Wk ${i + 1}</text>`;
+    for (let i = 0; i < n; i += 4) xl += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="12" fill="#5B6676">Wk ${i + 1}</text>`;
     const ends = [];
     const lines = series.map((s) => {
       const d = s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
@@ -954,7 +958,7 @@ const ONLINE = (() => {
     const bench = CC.BENCHMARKS.map((b) => ({ b, s: CC.summary(CC.runPolicy(b.id, { share: S.share })) }));
     const n = S.roles[0].hist.length;
     const demand = S.demandHist.slice(0, n);
-    const orderSeries = [{ name: 'Customer sales', short: 'Customers', values: demand, color: '#1D2B36', dash: '6 5', width: 2 }]
+    const orderSeries = [{ name: 'Customer sales', short: 'Customers', values: demand, color: '#1B2A41', dash: '6 5', width: 2 }]
       .concat(S.roles.map((r, i) => ({ name: CC.ROLES[i].name + ' orders', short: CC.ROLES[i].name, values: r.hist.map((h) => h.order || 0), color: RHEX[i], width: 3 })));
     const stockSeries = S.roles.map((r, i) => ({ name: CC.ROLES[i].name + ' stock minus owed', short: CC.ROLES[i].name, values: r.hist.map((h) => h.inv - h.backlog), color: RHEX[i], width: 3 }));
     const rank = [{ name: S.team + ' (you)', total: sm.total }].concat(bench.map((x) => ({ name: x.b.name, total: x.s.total }))).sort((a, b) => a.total - b.total);
@@ -973,7 +977,7 @@ const ONLINE = (() => {
     <div class="wrap" style="padding-bottom:40px">
       <section style="padding:26px 0 4px">
         <p class="kicker">Final report for ${esc(S.team)}${mode === 'online' ? ', class ' + esc(on.s.code) : ''}</p>
-        <h1 style="font-size:clamp(40px,7vw,72px)">${inr(sm.total)}</h1>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${inr(sm.total)}</h1>
         <p style="font-size:20px;max-width:40em">Total cost for the whole chain over ${n} weeks. Lower is better. Against the three computer teams below, you placed ${pos} of 4.</p>
       </section>
       <div class="reveal"><b>Here is the secret.</b> Customers bought ${CC.BASE} bags a week for the first ${CC.STEP_WEEK - 1} weeks, then ${CC.STEP} a week from week ${CC.STEP_WEEK} to the end. That was the only change all game.</div>
@@ -1020,7 +1024,7 @@ const ONLINE = (() => {
     const rows = board.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.team)}</td><td class="r">${inr(r.cost)}</td><td class="r"><button class="btn small" data-act="delrow" data-i="${esc(r.id)}" aria-label="Remove ${esc(r.team)}">Remove</button></td></tr>`).join('');
     app.innerHTML = `
     <div class="wrap">
-      <section style="padding:26px 0 6px"><h1 style="font-size:clamp(40px,7vw,68px)">Practice scoreboard</h1>
+      <section style="padding:26px 0 6px"><h1>Practice scoreboard</h1>
         <p style="font-size:19px">For solo games and games on one device. Type in each team&rsquo;s total cost; lowest cost ranks first. Kept on this device only. Online classes appear on the <a href="teacher.html">teacher dashboard</a> automatically.</p></section>
       <div class="grid2">
         <form class="sheet" id="boardForm" novalidate><h3>Add a team</h3>

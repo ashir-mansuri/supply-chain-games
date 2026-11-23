@@ -7,70 +7,73 @@
 <meta name="description" content="A solo decision game about global production: where to build plants to serve India, the Gulf, Europe and the USA as freight, duties and carbon fees change.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #1D2B36;
-  --ink-2: #33424D;
-  --muted: #56646E;
-  --concrete: #E3E5E1;
-  --concrete-2: #D5D8D3;
-  --sheet: #FBFBF9;
-  --line: #C3C8C2;
-  --yellow: #F2C200;
-  --yellow-soft: #FBEFB8;
-  --blue: #1F5FA8;
-  --blue-soft: #DCE7F4;
-  --red: #C8372D;
-  --red-soft: #F6DEDB;
-  --green: #2E7D4F;
-  --green-soft: #DCEEE3;
-  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
-  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--concrete); color: var(--ink);
-  font-family: var(--body); font-size: 17px; line-height: 1.5;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
 }
-h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
-h1 { font-size: clamp(44px, 8vw, 84px); }
-h2 { font-size: clamp(28px, 4.2vw, 40px); }
-h3 { font-size: 24px; }
-h4 { font-size: 19px; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
 p { margin: 0 0 .8em; }
-a { color: var(--blue); }
+a { color: var(--blue); text-underline-offset: 2px; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.topbar {
-  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
-}
-.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
-.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
 .topbar a:hover { text-decoration: underline; }
-.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
 .topbar .spacer { flex: 1; }
-.lane {
-  height: 10px;
-  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
-}
+.lane { display: none; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
-  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
-  cursor: pointer; text-decoration: none; min-height: 46px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
 }
-.btn:hover { background: #fff; }
-.btn.primary { background: var(--yellow); }
-.btn.primary:hover { background: #FFD21F; }
-.btn.dark { background: var(--ink); color: #fff; }
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
 .btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
 .btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
-.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
 .muted { color: var(--muted); }
 .small { font-size: 15px; }
 .tiny { font-size: 13px; }
@@ -79,14 +82,15 @@ button { font: inherit; color: inherit; }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
 label { display: block; font-weight: 600; font-size: 15px; }
-input[type=text], input[type=number], select {
+input[type=text], input[type=number], input[type=password], select {
   font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
-  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
 }
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
 .err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 14px; color: var(--muted); font-weight: 600; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
 td.r, th.r { text-align: right; }
 .tablewrap { overflow-x: auto; }
 .footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
@@ -111,14 +115,15 @@ td.r { white-space: nowrap; }
 .lc td.loss { color: var(--red); }
 .lc .m { display: block; font-size: 12px; color: var(--muted); }
 .lc td.best .m { color: var(--green); font-weight: 600; }
-.sites { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 18px 0; }
-.site { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.sites { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+@media (max-width: 700px) { .sites { grid-template-columns: 1fr; } }
+.site { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
 .site-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); border-top: 6px solid var(--ink-2); }
 .site-head h3 { margin: 0; font-size: 26px; }
 .site.has .site-head { border-top-color: var(--yellow); }
 .site-body { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
 .sfacts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.sfacts div { background: var(--concrete); border-radius: 8px; padding: 6px 8px; }
+.sfacts div { background: var(--concrete); border-radius: 4px; padding: 6px 8px; }
 .sfacts b { display: block; font-family: var(--display); font-size: 20px; line-height: 1.05; }
 .sfacts span { font-size: 12px; color: var(--muted); }
 .stepper { display: flex; align-items: center; gap: 10px; margin-top: auto; }
@@ -141,7 +146,7 @@ td.r { white-space: nowrap; }
 .actionbar .neg { color: #FFB4AA; font-weight: 600; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
 @media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
-.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
 .bignum { font-family: var(--display); font-weight: 700; font-size: 36px; line-height: 1; }
 .kpi.bad .bignum { color: var(--red); }
 .kpi.good .bignum { color: var(--green); }
@@ -167,7 +172,6 @@ tr.tot td { font-weight: 600; border-top: 2px solid var(--ink-2); }
 </head>
 <body>
 <header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Factory Footprint</span><span class="spacer"></span><a href="teacher-guide.html#factory-footprint" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
-<div class="lane" aria-hidden="true"></div>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Factory Footprint engine: where to make the tiles for four markets */
@@ -569,7 +573,7 @@ if (typeof module !== 'undefined') module.exports = FF;
               ${capRow(esc(L[r]), capNow, totalFc)}
               ${fcNext ? capRow(esc(L[r + 1]), capNext, totalNext) : ''}
             </div>
-            <p class="tiny muted" style="margin-top:10px">Yellow bar: what your plants can make. Black line: forecast demand in all four markets. In lakh boxes. ${fcNext ? 'Next year includes the changes you make now.' : ''}</p>
+            <p class="tiny muted" style="margin-top:10px">Gold bar: what your plants can make. Black line: forecast demand in all four markets. In lakh boxes. ${fcNext ? 'Next year includes the changes you make now.' : ''}</p>
             <div class="tablewrap"><table class="small" style="margin-top:6px"><thead><tr><th>Lakh boxes</th><th class="r">Capacity</th>${FF.MARKETS.map((m) => `<th class="r">${m.name} demand</th>`).join('')}</tr></thead>
               <tbody><tr><td>${esc(L[r])}</td><td class="r"><b>${lb(capNow)}</b></td>${FF.MARKETS.map((m) => `<td class="r">${lb(fc[m.id])}</td>`).join('')}</tr>
               ${fcNext ? `<tr><td>${esc(L[r + 1])}</td><td class="r"><b>${lb(capNext)}</b></td>${FF.MARKETS.map((m) => `<td class="r">${lb(fcNext[m.id])}</td>`).join('')}</tr>` : ''}</tbody></table></div>
@@ -637,8 +641,8 @@ if (typeof module !== 'undefined') module.exports = FF;
     const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
     const step = niceStep((hi - lo) / 5);
     let g = '';
-    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1D2B36' : '#C3C8C2'}"/><text x="${Lm - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#56646E">${v.toLocaleString('en-IN')}</text>`;
-    const xl = ['Start'].concat(L.map((l) => l.replace('Year ', 'Y'))).map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#56646E">${l}</text>`).join('');
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1B2A41' : '#D5DAE1'}"/><text x="${Lm - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${v.toLocaleString('en-IN')}</text>`;
+    const xl = ['Start'].concat(L.map((l) => l.replace('Year ', 'Y'))).map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#5B6676">${l}</text>`).join('');
     const ends = [];
     const lines = series.map((s) => { ends.push({ y: y(s.values[n - 1]), x: x(n - 1), name: s.short, c: s.color }); return `<path d="${s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.5}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`; }).join('');
     ends.sort((a, b) => a.y - b.y);
@@ -652,10 +656,10 @@ if (typeof module !== 'undefined') module.exports = FF;
     const rank = [{ n: 'you', w: you.worth }].concat(bench.map((b) => ({ n: b.st.id, w: b.s.worth }))).sort((a, b) => b.w - a.w);
     const pos = rank.findIndex((r) => r.n === 'you') + 1;
     const cash = (st) => [FF.START_CASH].concat(st.history.map((h) => h.cash));
-    const colors = { home: '#C8372D', all: '#2E7D4F', hubs: '#33424D' };
+    const colors = { home: '#A93A34', all: '#2C6B4C', hubs: '#3A4A63' };
     const dashes = { home: '7 5', all: '2 5', hubs: '12 4 2 4' };
     const shorts = { home: 'Stay in India', all: 'Every region', hubs: 'Biggest gaps' };
-    const series = [{ name: S.name, short: 'You', values: cash(S), color: '#1F5FA8', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cash(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
+    const series = [{ name: S.name, short: 'You', values: cash(S), color: '#1F4E8C', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cash(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
     const net = (st) => FF.SITES.filter((x) => st.plants[x.id] > 0).map((x) => `${x.short} ${st.plants[x.id]}`).join(', ');
     const plantRows = FF.SITES.map((st) => {
       const changes = [];
@@ -671,7 +675,7 @@ if (typeof module !== 'undefined') module.exports = FF;
     <div class="wrap" style="padding-bottom:40px">
       <section style="padding:26px 0 6px">
         <p class="kicker">Final report for ${esc(S.name)}, game code ${esc(S.code)}</p>
-        <h1 style="font-size:clamp(40px,7vw,72px)">${cr(you.worth)}</h1>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${cr(you.worth)}</h1>
         <p style="font-size:20px;max-width:40em">Company worth after six years: ${cr(you.cash)} in cash plus two years of profit at your final rate of ${cr(you.runRate)} a year. Against the three standard strategies below, you placed ${pos} of 4.</p>
       </section>
       <section class="sheet chart"><h3>Cash after each year</h3>

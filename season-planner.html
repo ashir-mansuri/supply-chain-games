@@ -7,70 +7,73 @@
 <meta name="description" content="A solo decision game about aggregate planning: hire, use overtime, subcontract or build stock to meet a seasonal peak at the lowest cost.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #1D2B36;
-  --ink-2: #33424D;
-  --muted: #56646E;
-  --concrete: #E3E5E1;
-  --concrete-2: #D5D8D3;
-  --sheet: #FBFBF9;
-  --line: #C3C8C2;
-  --yellow: #F2C200;
-  --yellow-soft: #FBEFB8;
-  --blue: #1F5FA8;
-  --blue-soft: #DCE7F4;
-  --red: #C8372D;
-  --red-soft: #F6DEDB;
-  --green: #2E7D4F;
-  --green-soft: #DCEEE3;
-  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
-  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--concrete); color: var(--ink);
-  font-family: var(--body); font-size: 17px; line-height: 1.5;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
 }
-h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
-h1 { font-size: clamp(44px, 8vw, 84px); }
-h2 { font-size: clamp(28px, 4.2vw, 40px); }
-h3 { font-size: 24px; }
-h4 { font-size: 19px; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
 p { margin: 0 0 .8em; }
-a { color: var(--blue); }
+a { color: var(--blue); text-underline-offset: 2px; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.topbar {
-  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
-}
-.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
-.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
 .topbar a:hover { text-decoration: underline; }
-.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
 .topbar .spacer { flex: 1; }
-.lane {
-  height: 10px;
-  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
-}
+.lane { display: none; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
-  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
-  cursor: pointer; text-decoration: none; min-height: 46px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
 }
-.btn:hover { background: #fff; }
-.btn.primary { background: var(--yellow); }
-.btn.primary:hover { background: #FFD21F; }
-.btn.dark { background: var(--ink); color: #fff; }
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
 .btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
 .btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
-.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
 .muted { color: var(--muted); }
 .small { font-size: 15px; }
 .tiny { font-size: 13px; }
@@ -79,14 +82,15 @@ button { font: inherit; color: inherit; }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
 label { display: block; font-weight: 600; font-size: 15px; }
-input[type=text], input[type=number], select {
+input[type=text], input[type=number], input[type=password], select {
   font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
-  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
 }
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
 .err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 14px; color: var(--muted); font-weight: 600; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
 td.r, th.r { text-align: right; }
 .tablewrap { overflow-x: auto; }
 .footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
@@ -114,7 +118,7 @@ td.r, th.r { text-align: right; }
 .fcbars .v { font-family: var(--display); font-weight: 600; font-size: 15px; margin-bottom: 2px; }
 .fcbars .m { margin-top: 4px; color: var(--muted); }
 .status { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
-.status div { background: var(--concrete); border-radius: 8px; padding: 8px 10px; }
+.status div { background: var(--concrete); border-radius: 4px; padding: 8px 10px; }
 .status b { display: block; font-family: var(--display); font-size: 30px; line-height: 1.05; }
 .status span { font-size: 13px; color: var(--muted); }
 .lever { border-top: 1px solid var(--line); padding: 14px 0; }
@@ -134,10 +138,10 @@ td.r, th.r { text-align: right; }
 .bad { color: var(--red); font-weight: 600; }
 .actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
 .actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
-.actionbar .muted { color: #C9D2D8; }
+.actionbar .muted { color: #C5CDD8; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
 @media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
-.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
 .bignum { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; }
 .kpi.bad .bignum { color: var(--red); }
 .chart svg { width: 100%; height: auto; display: block; }
@@ -153,7 +157,6 @@ td.r, th.r { text-align: right; }
 </head>
 <body>
 <header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Season Planner</span><span class="spacer"></span><a href="teacher-guide.html#season-planner" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
-<div class="lane" aria-hidden="true"></div>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Season Planner engine: aggregate production planning for a school uniform maker */
@@ -426,7 +429,7 @@ if (typeof module !== 'undefined') module.exports = FP;
         <div class="plan">
           <section class="sheet">
             <h3>Orders: forecast for each month</h3>
-            <p class="small muted" style="margin:0">Past months show actual orders. The yellow bar is this month.</p>
+            <p class="small muted" style="margin:0">Past months show actual orders. The gold bar is this month.</p>
             <div class="fcbars" aria-hidden="true">${cols}</div>
             <div class="status">
               <div><b>${S.workers}</b><span>Workers now</span></div>
@@ -503,12 +506,12 @@ if (typeof module !== 'undefined') module.exports = FP;
     const y = (v) => T + ((hi - v) * (H - T - B)) / hi;
     const step = niceStep(hi / 5);
     let g = '';
-    for (let v = 0; v <= hi; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1D2B36' : '#C3C8C2'}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#56646E">${int(v)}</text>`;
+    for (let v = 0; v <= hi; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1B2A41' : '#D5DAE1'}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${int(v)}</text>`;
     const bw = ((W - L - R) / n) * 0.35;
-    const bars = hist.map((r, i) => `<rect x="${x(i) - bw / 2}" y="${y(r.stock)}" width="${bw}" height="${y(0) - y(r.stock)}" fill="#DCE7F4" stroke="#1F5FA8"><title>${M[i]} stock at month end: ${int(r.stock)}</title></rect>`).join('');
+    const bars = hist.map((r, i) => `<rect x="${x(i) - bw / 2}" y="${y(r.stock)}" width="${bw}" height="${y(0) - y(r.stock)}" fill="#DCE7F4" stroke="#1F4E8C"><title>${M[i]} stock at month end: ${int(r.stock)}</title></rect>`).join('');
     const line = (k, c, dash) => `<path d="${hist.map((r, i) => `${i ? 'L' : 'M'}${x(i)},${y(r[k])}`).join(' ')}" fill="none" stroke="${c}" stroke-width="3" ${dash ? `stroke-dasharray="${dash}"` : ''}/>` + hist.map((r, i) => `<circle cx="${x(i)}" cy="${y(r[k])}" r="4" fill="${c}"><title>${M[i]}: ${int(r[k])}</title></circle>`).join('');
-    const xl = hist.map((r, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#56646E">${M[i].slice(0, 3)}</text>`).join('');
-    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Orders, production and stock by month">${g}${bars}${line('demand', '#1D2B36', '6 5')}${line('made', '#C8372D')}${xl}</svg>`;
+    const xl = hist.map((r, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#5B6676">${M[i].slice(0, 3)}</text>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Orders, production and stock by month">${g}${bars}${line('demand', '#1B2A41', '6 5')}${line('made', '#A93A34')}${xl}</svg>`;
   }
 
   function renderFinal() {
@@ -524,12 +527,12 @@ if (typeof module !== 'undefined') module.exports = FP;
     <div class="wrap" style="padding-bottom:40px">
       <section style="padding:26px 0 6px">
         <p class="kicker">Final report for ${esc(S.name)}, game code ${esc(S.code)}</p>
-        <h1 style="font-size:clamp(40px,7vw,72px)">${lakh(you.cost.total)}</h1>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${lakh(you.cost.total)}</h1>
         <p style="font-size:20px;max-width:40em">Total cost for the season, January to June. You delivered ${(you.fill * 100).toFixed(1)}% of orders at ${inr(you.perSet)} per set. Against the three standard plans below, you placed ${pos} of 4. Lower cost is better.</p>
       </section>
       <section class="sheet chart"><h3>Orders, production and stock</h3>
         ${chart(S.history)}
-        <div class="legend"><span class="dash" style="--c:#1D2B36">Orders</span><span style="--c:#C8372D">Sets made</span><span class="blk" style="--c:#9DB8DA">Stock at month end</span></div></section>
+        <div class="legend"><span class="dash" style="--c:#1B2A41">Orders</span><span style="--c:#A93A34">Sets made</span><span class="blk" style="--c:#9DB8DA">Stock at month end</span></div></section>
       <section class="sheet tablewrap" style="margin-top:16px"><h3>How the plans compare</h3>
         <table class="small"><thead><tr><th>Plan</th><th class="r">Total cost</th><th class="r">Cost per set sold</th><th class="r">Orders delivered</th><th class="r">Workers hired or laid off</th></tr></thead><tbody>${rows}</tbody></table>
         <p class="tiny muted" style="margin-top:8px">All four plans faced the same actual orders. The three standard plans were fixed in advance from the forecast.</p></section>

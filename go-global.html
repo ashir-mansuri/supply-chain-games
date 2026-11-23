@@ -7,70 +7,73 @@
 <meta name="description" content="A solo decision game about taking an Indian brand abroad: which markets to enter, how to enter them, and when to commit more.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #1D2B36;
-  --ink-2: #33424D;
-  --muted: #56646E;
-  --concrete: #E3E5E1;
-  --concrete-2: #D5D8D3;
-  --sheet: #FBFBF9;
-  --line: #C3C8C2;
-  --yellow: #F2C200;
-  --yellow-soft: #FBEFB8;
-  --blue: #1F5FA8;
-  --blue-soft: #DCE7F4;
-  --red: #C8372D;
-  --red-soft: #F6DEDB;
-  --green: #2E7D4F;
-  --green-soft: #DCEEE3;
-  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
-  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--concrete); color: var(--ink);
-  font-family: var(--body); font-size: 17px; line-height: 1.5;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
 }
-h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
-h1 { font-size: clamp(44px, 8vw, 84px); }
-h2 { font-size: clamp(28px, 4.2vw, 40px); }
-h3 { font-size: 24px; }
-h4 { font-size: 19px; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
 p { margin: 0 0 .8em; }
-a { color: var(--blue); }
+a { color: var(--blue); text-underline-offset: 2px; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.topbar {
-  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
-}
-.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
-.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
 .topbar a:hover { text-decoration: underline; }
-.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
 .topbar .spacer { flex: 1; }
-.lane {
-  height: 10px;
-  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
-}
+.lane { display: none; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
-  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
-  cursor: pointer; text-decoration: none; min-height: 46px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
 }
-.btn:hover { background: #fff; }
-.btn.primary { background: var(--yellow); }
-.btn.primary:hover { background: #FFD21F; }
-.btn.dark { background: var(--ink); color: #fff; }
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
 .btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
 .btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
-.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
 .muted { color: var(--muted); }
 .small { font-size: 15px; }
 .tiny { font-size: 13px; }
@@ -79,14 +82,15 @@ button { font: inherit; color: inherit; }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
 label { display: block; font-weight: 600; font-size: 15px; }
-input[type=text], input[type=number], select {
+input[type=text], input[type=number], input[type=password], select {
   font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
-  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
 }
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
 .err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 14px; color: var(--muted); font-weight: 600; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
 td.r, th.r { text-align: right; }
 .tablewrap { overflow-x: auto; }
 .footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
@@ -106,16 +110,16 @@ td.r, th.r { text-align: right; }
 .steps6 span.down { border-bottom-color: var(--red); }
 .score { font-family: var(--display); font-weight: 600; font-size: 22px; }
 .mkts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin: 18px 0; }
-.mkt { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.mkt { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
 .mkt-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); border-top: 6px solid var(--ink-2); }
 .mkt-head h3 { margin: 0; font-size: 28px; }
 .mkt-body { padding: 12px 16px 14px; }
 .mfacts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
-.mfacts div { background: var(--concrete); border-radius: 8px; padding: 6px 8px; }
+.mfacts div { background: var(--concrete); border-radius: 4px; padding: 6px 8px; }
 .mfacts b { display: block; font-family: var(--display); font-size: 22px; line-height: 1.05; }
 .mfacts span { font-size: 12px; color: var(--muted); }
 .modes { display: grid; gap: 6px; }
-.mode { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; border: 2px solid var(--line); border-radius: 8px; padding: 7px 10px; background: #fff; cursor: pointer; font-size: 15px; }
+.mode { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; border: 2px solid var(--line); border-radius: 4px; padding: 7px 10px; background: #fff; cursor: pointer; font-size: 15px; }
 .mode:has(input:checked) { border-color: var(--ink); background: var(--yellow-soft); }
 .mode input { width: 18px; height: 18px; margin: 0; }
 .mode .cost { font-family: var(--display); font-weight: 600; font-size: 17px; text-align: right; }
@@ -129,11 +133,11 @@ td.r, th.r { text-align: right; }
 .newsbox li.good { border-left-color: var(--green); background: var(--green-soft); }
 .actionbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; z-index: 4; }
 .actionbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
-.actionbar .muted { color: #C9D2D8; }
+.actionbar .muted { color: #C5CDD8; }
 .actionbar .neg { color: #FFB4AA; font-weight: 600; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
 @media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
-.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
 .bignum { font-family: var(--display); font-weight: 700; font-size: 38px; line-height: 1; }
 .kpi.bad .bignum { color: var(--red); }
 .kpi.good .bignum { color: var(--green); }
@@ -150,7 +154,6 @@ td.r { white-space: nowrap; }
 </head>
 <body>
 <header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Go Global</span><span class="spacer"></span><a href="teacher-guide.html#go-global" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
-<div class="lane" aria-hidden="true"></div>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Go Global engine: choosing markets and entry modes for an Indian brand going abroad */
@@ -507,8 +510,8 @@ if (typeof module !== 'undefined') module.exports = GG;
     const y = (v) => T + ((hi - v) * (H - T - B)) / (hi - lo);
     const step = niceStep((hi - lo) / 5);
     let g = '';
-    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1D2B36' : '#C3C8C2'}"/><text x="${Lm - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#56646E">${v}</text>`;
-    const xl = ['Start'].concat(L.map((l, i) => (i < 2 ? 'Y1' : i < 4 ? 'Y2' : 'Y3') + (i % 2 ? ' H2' : ' H1'))).map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#56646E">${l}</text>`).join('');
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line x1="${Lm}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#1B2A41' : '#D5DAE1'}"/><text x="${Lm - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${v}</text>`;
+    const xl = ['Start'].concat(L.map((l, i) => (i < 2 ? 'Y1' : i < 4 ? 'Y2' : 'Y3') + (i % 2 ? ' H2' : ' H1'))).map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#5B6676">${l}</text>`).join('');
     const ends = [];
     const lines = series.map((s) => { ends.push({ y: y(s.values[n - 1]), x: x(n - 1), name: s.short, c: s.color }); return `<path d="${s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.5}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`; }).join('');
     ends.sort((a, b) => a.y - b.y);
@@ -522,10 +525,10 @@ if (typeof module !== 'undefined') module.exports = GG;
     const rank = [{ n: 'you', w: you.worth }].concat(bench.map((b) => ({ n: b.st.id, w: b.s.worth }))).sort((a, b) => b.w - a.w);
     const pos = rank.findIndex((r) => r.n === 'you') + 1;
     const cash = (st) => [GG.START_CASH].concat(st.history.map((h) => h.cash));
-    const colors = { dist: '#2E7D4F', allin: '#C8372D', steps: '#33424D' };
+    const colors = { dist: '#2C6B4C', allin: '#A93A34', steps: '#3A4A63' };
     const dashes = { dist: '2 5', allin: '7 5', steps: '12 4 2 4' };
     const shorts = { dist: 'Distributors', allin: 'All in', steps: 'Step by step' };
-    const series = [{ name: S.name, short: 'You', values: cash(S), color: '#1F5FA8', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cash(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
+    const series = [{ name: S.name, short: 'You', values: cash(S), color: '#1F4E8C', width: 4 }].concat(bench.map((b) => ({ name: b.st.name, short: shorts[b.st.id], values: cash(b.run), color: colors[b.st.id], dash: dashes[b.st.id] })));
     const pathOf = (st, id) => { const modes = st.history.map((h) => h.markets[id].mode); const out = []; modes.forEach((m, i) => { if (i === 0 || m !== modes[i - 1]) out.push((m === 'none' ? 'Out' : GG.modeById(m).name) + (i ? ' (Y' + (Math.floor(i / 2) + 1) + (i % 2 ? ' H2' : ' H1') + ')' : '')); }); return out.join(' → '); };
     const mktRows = GG.MARKETS.map((mk) => {
       const profit = S.history.reduce((a, h) => a + (h.markets[mk.id].profit || 0), 0);
@@ -538,7 +541,7 @@ if (typeof module !== 'undefined') module.exports = GG;
     <div class="wrap" style="padding-bottom:40px">
       <section style="padding:26px 0 6px">
         <p class="kicker">Final report for ${esc(S.name)}, game code ${esc(S.code)}</p>
-        <h1 style="font-size:clamp(40px,7vw,72px)">${cr(you.worth)}</h1>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${cr(you.worth)}</h1>
         <p style="font-size:20px;max-width:40em">Company worth after three years: ${cr(you.cash)} in cash plus two years of profit at your final rate of ${cr(you.runRate)} a year. You started with ${cr(GG.START_CASH)}. Against the three standard strategies below, you placed ${pos} of 4.</p>
       </section>
       <section class="sheet chart"><h3>Cash after each round</h3>

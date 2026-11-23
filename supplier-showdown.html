@@ -8,70 +8,73 @@
 <script src="firebase-config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #1D2B36;
-  --ink-2: #33424D;
-  --muted: #56646E;
-  --concrete: #E3E5E1;
-  --concrete-2: #D5D8D3;
-  --sheet: #FBFBF9;
-  --line: #C3C8C2;
-  --yellow: #F2C200;
-  --yellow-soft: #FBEFB8;
-  --blue: #1F5FA8;
-  --blue-soft: #DCE7F4;
-  --red: #C8372D;
-  --red-soft: #F6DEDB;
-  --green: #2E7D4F;
-  --green-soft: #DCEEE3;
-  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
-  --body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ink: #1B2A41;
+  --ink-2: #3A4A63;
+  --muted: #5B6676;
+  --concrete: #F2F3F5;
+  --concrete-2: #DFE3E8;
+  --sheet: #FFFFFF;
+  --line: #D5DAE1;
+  --yellow: #D6B25E;
+  --yellow-soft: #F6F0DE;
+  --blue: #1F4E8C;
+  --blue-soft: #E4EBF5;
+  --red: #A93A34;
+  --red-soft: #F6E3E1;
+  --green: #2C6B4C;
+  --green-soft: #E1EEE6;
+  --display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--concrete); color: var(--ink);
-  font-family: var(--body); font-size: 17px; line-height: 1.5;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--body); font-size: 17px; line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
 }
-h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .005em; }
-h1 { font-size: clamp(44px, 8vw, 84px); }
-h2 { font-size: clamp(28px, 4.2vw, 40px); }
-h3 { font-size: 24px; }
-h4 { font-size: 19px; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0 0 .45em; letter-spacing: -.005em; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); }
+h2 { font-size: clamp(24px, 3.4vw, 32px); }
+h3 { font-size: 21px; }
+h4 { font-size: 18px; }
 p { margin: 0 0 .8em; }
-a { color: var(--blue); }
+a { color: var(--blue); text-underline-offset: 2px; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.topbar {
-  background: var(--ink); color: #fff; border-bottom: 6px solid var(--yellow);
-}
-.topbar .wrap { display: flex; align-items: center; gap: 16px; min-height: 52px; flex-wrap: wrap; }
-.topbar a { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 20px; }
+.topbar { background: var(--ink); color: #fff; border-bottom: 3px solid var(--yellow); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 56px; flex-wrap: wrap; }
+.topbar a { color: #fff; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 16px; }
+.topbar a:first-child { font-family: var(--display); font-size: 20px; letter-spacing: .01em; }
 .topbar a:hover { text-decoration: underline; }
-.topbar .here { color: #C9D2D8; font-size: 15px; }
+.topbar .here { color: #C5CDD8; font-size: 15px; padding-left: 16px; border-left: 1px solid #4A5A73; }
 .topbar .spacer { flex: 1; }
-.lane {
-  height: 10px;
-  background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
-}
+.lane { display: none; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink);
-  border-radius: 6px; padding: 10px 18px; font-weight: 600; font-size: 17px;
-  cursor: pointer; text-decoration: none; min-height: 46px;
+  border: 1px solid var(--ink-2); background: var(--sheet); color: var(--ink);
+  border-radius: 4px; padding: 10px 18px; font-weight: 600; font-size: 16px;
+  cursor: pointer; text-decoration: none; min-height: 44px; letter-spacing: .01em; white-space: nowrap;
 }
-.btn:hover { background: #fff; }
-.btn.primary { background: var(--yellow); }
-.btn.primary:hover { background: #FFD21F; }
-.btn.dark { background: var(--ink); color: #fff; }
+.btn:hover { background: var(--concrete); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { background: #2A3D5C; }
+.btn.dark { background: var(--sheet); color: var(--ink); border-color: var(--ink); }
+.btn.dark:hover { background: var(--concrete); }
 .btn.small { padding: 6px 12px; min-height: 36px; font-size: 15px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary:disabled:hover { background: var(--ink); }
+.actionbar .btn.primary, .orderbar .btn.primary { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.actionbar .btn.primary:hover, .orderbar .btn.primary:hover { background: #E2C47A; }
+.actionbar .btn.primary:disabled:hover, .orderbar .btn.primary:disabled:hover { background: var(--yellow); }
+.actionbar .btn:not(.primary), .orderbar .btn:not(.primary) { background: transparent; color: #fff; border-color: #8FA0B8; }
 .btn.ghost { border-color: transparent; background: transparent; text-decoration: underline; padding-left: 4px; padding-right: 4px; }
-.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 22px; }
+.sheet > h3:first-child, .sheet > h2:first-child { padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
 .muted { color: var(--muted); }
 .small { font-size: 15px; }
 .tiny { font-size: 13px; }
@@ -80,14 +83,15 @@ button { font: inherit; color: inherit; }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
 label { display: block; font-weight: 600; font-size: 15px; }
-input[type=text], input[type=number], select {
+input[type=text], input[type=number], input[type=password], select {
   font: inherit; font-weight: 400; display: block; width: 100%; margin-top: 4px;
-  padding: 10px 12px; border: 2px solid var(--ink-2); border-radius: 6px; background: #fff; color: var(--ink);
+  padding: 10px 12px; border: 1px solid #8C98A8; border-radius: 4px; background: #fff; color: var(--ink);
 }
+input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, select:focus { border-color: var(--blue); }
 .err { color: var(--red); font-size: 15px; font-weight: 600; margin-top: 6px; }
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 14px; color: var(--muted); font-weight: 600; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
 td.r, th.r { text-align: right; }
 .tablewrap { overflow-x: auto; }
 .footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
@@ -120,7 +124,7 @@ td.r, th.r { text-align: right; }
 .news li.still { border-left-color: var(--red); background: var(--red-soft); }
 .news li.lasting { border-left-color: var(--blue); background: var(--blue-soft); }
 .news li.late { border-left-color: var(--ink-2); }
-.part { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.part { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
 .part-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 14px 16px 10px; border-bottom: 2px solid var(--ink); flex-wrap: wrap; }
 .part-head h3 { margin: 0; }
 .sup { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 16px 12px; border-bottom: 1px solid var(--line); }
@@ -149,24 +153,24 @@ td.r, th.r { text-align: right; }
 .seg button[aria-pressed=true] { background: var(--ink); color: #fff; }
 .orderbar { position: sticky; bottom: 0; background: var(--ink); color: #fff; margin-top: 20px; z-index: 4; }
 .orderbar .wrap { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
-.orderbar .muted { color: #C9D2D8; }
+.orderbar .muted { color: #C5CDD8; }
 @media (max-width: 600px) { .orderbar .wrap { padding-top: 8px; padding-bottom: 8px; gap: 8px; font-size: 15px; } }
 .event-stage { min-height: 70vh; display: grid; place-items: center; padding: 30px 0; }
-.event { width: min(640px, 100%); background: var(--sheet); border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; }
+.event { width: min(640px, 100%); background: var(--sheet); border: 2px solid var(--ink); border-radius: 4px; overflow: hidden; }
 @media (prefers-reduced-motion: no-preference) {
   .event { animation: cardin .7s cubic-bezier(.2,.8,.2,1) both; transform-origin: 50% 0; }
   @keyframes cardin { from { transform: perspective(900px) rotateX(-75deg); opacity: 0; } to { transform: none; opacity: 1; } }
 }
-.event-band { height: 26px; background: repeating-linear-gradient(-45deg, var(--red) 0 16px, var(--ink) 16px 32px); }
-.event.good .event-band { background: repeating-linear-gradient(-45deg, var(--green) 0 16px, var(--ink) 16px 32px); }
-.event.calm .event-band { background: repeating-linear-gradient(-45deg, var(--concrete-2) 0 16px, var(--ink-2) 16px 32px); }
+.event-band { height: 6px; background: var(--red); }
+.event.good .event-band { background: var(--green); }
+.event.calm .event-band { background: var(--ink-2); }
 .event-body { padding: 22px 26px 26px; }
 .event-body .when { font-weight: 600; color: var(--muted); }
 .event-body h2 { font-size: clamp(36px, 6vw, 56px); margin: 6px 0 14px; }
 .event-body p { font-size: 20px; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
 @media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } }
-.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
 .kpi .bignum { font-size: 40px; }
 .kpi.bad .bignum { color: var(--red); }
 .kpi.good .bignum { color: var(--green); }
@@ -191,7 +195,7 @@ td.r, th.r { text-align: right; }
 .teamstrip .who { display: inline-flex; align-items: center; gap: 6px; }
 .teamstrip .dot { width: 10px; height: 10px; border-radius: 50%; background: #8FD3A8; display: inline-block; }
 .teamstrip .who.ready .tick { color: var(--yellow); font-weight: 700; }
-.teamstrip .muted { color: #C9D2D8; }
+.teamstrip .muted { color: #C5CDD8; }
 .owner { font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--concrete); color: var(--ink-2); }
 .owner.mine { background: var(--yellow); color: var(--ink); }
 .part.locked .stepper button { opacity: .25; }
@@ -200,7 +204,6 @@ td.r, th.r { text-align: right; }
 </head>
 <body>
 <header class="topbar"><div class="wrap"><a href="index.html">Supply Chain Games</a><span class="here">Supplier Showdown</span><span class="spacer"></span><a href="teacher-guide.html#supplier-showdown" class="small" style="font-size:16px">Teacher&rsquo;s guide</a></div></header>
-<div class="lane" aria-hidden="true"></div>
 <main id="app" tabindex="-1"></main>
 <script>
 /* Supplier Showdown engine: pure functions, same results for the same game code */
@@ -1460,10 +1463,10 @@ const ONLINE = (() => {
     const step = niceStep((hi - lo) / 5);
     let grid = '';
     for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) {
-      grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${Math.abs(v) < step / 2 ? '#1D2B36' : '#C3C8C2'}" stroke-width="${Math.abs(v) < step / 2 ? 1.5 : 1}"/>
-        <text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#56646E">${fmt(v)}</text>`;
+      grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${Math.abs(v) < step / 2 ? '#1B2A41' : '#D5DAE1'}" stroke-width="${Math.abs(v) < step / 2 ? 1.5 : 1}"/>
+        <text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#5B6676">${fmt(v)}</text>`;
     }
-    const xl = labels.map((l, i) => `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="12" fill="#56646E">${l}</text>`).join('');
+    const xl = labels.map((l, i) => `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="12" fill="#5B6676">${l}</text>`).join('');
     const ends = [];
     const lines = series.map((s) => {
       const d = s.values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
@@ -1487,7 +1490,7 @@ const ONLINE = (() => {
     const you = SS.summary(game);
     const bench = SS.BENCHMARKS.map((b) => { const st = SS.runBenchmark(game.code, b); return { b, st, s: SS.summary(st) }; });
     const cum = (h) => { let a = 0; return h.map((r) => (a += r.profit) / 1e5); };
-    const colors = { you: '#1F5FA8', cheap: '#C8372D', local: '#2E7D4F', dual: '#33424D' };
+    const colors = { you: '#1F4E8C', cheap: '#A93A34', local: '#2C6B4C', dual: '#3A4A63' };
     const dashes = { cheap: '7 5', local: '2 5', dual: '12 4 2 4' };
     const series = [{ name: game.team, short: 'You', values: cum(game.history), color: colors.you, width: 4 }]
       .concat(bench.map((x) => ({ name: x.b.name, short: x.b.short, values: cum(x.st.history), color: colors[x.b.id], dash: dashes[x.b.id], width: 2.5 })));
@@ -1514,7 +1517,7 @@ const ONLINE = (() => {
     <div class="wrap">
       <section style="padding:26px 0 8px">
         <p class="kicker">Final report for ${esc(game.team)}, ${mode === 'online' ? 'class ' + esc(on.s.code) : 'game code ' + esc(game.code)}</p>
-        <h1 style="font-size:clamp(40px,7vw,72px)">${lakh(you.profit)}</h1>
+        <h1 style="font-size:clamp(40px,6vw,60px)">${lakh(you.profit)}</h1>
         <p style="font-size:20px">Total profit from April to November. You built ${int(you.built)} of ${int(you.demand)} scooters ordered (${pct(you.fillRate, 1)}). Against the three fixed strategies below, you placed ${pos} of 4.</p>
       </section>
       <div class="kpis">
@@ -1568,7 +1571,7 @@ const ONLINE = (() => {
     app.innerHTML = `
     <div class="wrap">
       <section style="padding:26px 0 6px">
-        <h1 style="font-size:clamp(40px,7vw,68px)">Practice scoreboard</h1>
+        <h1>Practice scoreboard</h1>
         <p class="lede" style="font-size:19px">For games played on one device per team. Type in each team&rsquo;s final profit. The scoreboard is kept on this device only. Online classes appear on the <a href="teacher.html">teacher dashboard</a> automatically.</p>
       </section>
       <div class="grid2">
