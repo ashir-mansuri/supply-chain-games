@@ -4,6 +4,8 @@ Nine free games for supply chain and operations management. There are three team
 
 **Play:** https://ashir-mansuri.github.io/supply-chain-games/
 
+Created by Ashir Mansuri.
+
 | Game | Play time | What you learn |
 | --- | --- | --- |
 | **Supplier Showdown** | About 30 minutes | Supplier selection, total cost of ownership, dual sourcing, buffer stock, supply risk |

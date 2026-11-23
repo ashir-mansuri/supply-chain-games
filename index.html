@@ -100,9 +100,11 @@ th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--lin
 th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
 td.r, th.r { text-align: right; }
 .tablewrap { overflow-x: auto; }
-.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.footer { padding: 40px 0 16px; color: var(--muted); font-size: 14px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+.credit { margin-top: 40px; border-top: 1px solid var(--line); background: var(--sheet); color: var(--muted); font-size: 13px; }
+.credit .wrap { padding-top: 14px; padding-bottom: 18px; }
 
 .hero { padding: 48px 0 30px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
 .hero h1 { margin-bottom: 14px; }
@@ -205,5 +207,6 @@ td.r, th.r { text-align: right; }
   </section>
   <p class="footer">All companies, products, prices and events in these games are made up for teaching.</p>
 </main>
+<footer class="credit"><div class="wrap">Created by Ashir Mansuri</div></footer>
 </body>
 </html>

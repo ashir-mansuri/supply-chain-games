@@ -100,9 +100,11 @@ th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--lin
 th { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; border-bottom: 1px solid var(--ink-2); }
 td.r, th.r { text-align: right; }
 .tablewrap { overflow-x: auto; }
-.footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+.footer { padding: 40px 0 16px; color: var(--muted); font-size: 14px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+.credit { margin-top: 40px; border-top: 1px solid var(--line); background: var(--sheet); color: var(--muted); font-size: 13px; }
+.credit .wrap { padding-top: 14px; padding-bottom: 18px; }
 
 .kicker { font-weight: 600; color: var(--blue); margin-bottom: 6px; }
 .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: start; padding: 36px 0 10px; }
@@ -597,5 +599,6 @@ if (typeof module !== 'undefined') module.exports = ED;
   render();
 })();
 </script>
+<footer class="credit"><div class="wrap">Erstellt von Ashir Mansuri</div></footer>
 </body>
 </html>
